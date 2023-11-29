@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/29 14:22:30 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/11/29 15:34:42 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,16 @@
 #include "ast.h"
 
 t_lr_token	g_tokens[] = {
-{.id = TOKEN_WORD, .data = "cat"},
-{.id = TOKEN_WORD, .data = "file1"},
-{.id = TOKEN_WORD, .data = "file2"},
-{.id = TOKEN_IO, .data = &(t_io_type){IO_OUT}},
-{.id = TOKEN_WORD, .data = "outfile"},
-{.id = TOKEN_END, .data = NULL}
+{.id = TOKEN_WORD, .data = "wc"},
+{.id = TOKEN_WORD, .data = "-l"},
+{.id = TOKEN_WORD, .data = "file"},
+{.id = TOKEN_IO, &(t_io_info){IO_IN}},
+{.id = TOKEN_WORD, .data = "file"},
+{.id = TOKEN_IO, &(t_io_info){IO_OUT}},
+{.id = TOKEN_WORD, .data = "file"},
+{.id = TOKEN_IO, &(t_io_info){IO_IN}},
+{.id = TOKEN_WORD, .data = "file"},
+{.id = TOKEN_END, .data = NULL},
 };
 
 static void	command_print(t_command *command)
@@ -57,6 +61,8 @@ static void	command_print(t_command *command)
 	}
 	printf("NULL\n");
 	k = 0;
+	if (command->cio == NULL)
+		return ;
 	while (k < command->cio->used)
 	{
 		if (command->cio->io_infos[k]->type == IO_IN)

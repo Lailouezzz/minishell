@@ -19,7 +19,7 @@ define bite-$(TFILENAME)
 
 MAKE_RULE_$(TFILENAME): $(THIRDPARTY)/$(LIBDIR)/$(LIBA_$(TFILENAME))
 $(THIRDPARTY)/$(LIBDIR)/$(LIBA_$(TFILENAME)): $(THIRDPARTY)/$(LIBDIR)/Makefile
-	@$(THIRDPARTY)/$(LIBDIR)/configure.sh
+	@$(THIRDPARTY)/$(LIBDIR)/configure.sh --optimize-disable --debug
 	@$(MAKE) -C $(THIRDPARTY)/$(LIBDIR)
 
 CLEAN_RULE_$(TFILENAME):
