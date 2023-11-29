@@ -1,0 +1,3 @@
+[submodule "thirdparty/microparser"]
+	path = thirdparty/microparser
+	url = git@github.com:Lailouezzz/microparser.git

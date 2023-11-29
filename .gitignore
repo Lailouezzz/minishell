@@ -1,0 +1,10 @@
+# Minishell
+bin/minishell
+
+# Build/Doc
+build/
+doc/html
+doc/man
+
+# Buildsystem
+Makefile.cfg

@@ -1,0 +1,16 @@
+{
+	"files.associations": {
+		"*.h": "c",
+		"*.dep": "makefile",
+		"*.d": "makefile",
+		"Makefile.*": "makefile",
+		"cmath": "c"
+	},
+	"cSpell.words": [
+		"lrparser",
+		"lrprod",
+		"lrrule",
+		"lrstack",
+		"popn"
+	]
+}
