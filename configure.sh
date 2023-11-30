@@ -59,6 +59,7 @@ for arg ; do case "$arg" in
 --outdir=*) outdir="${arg#*=}" ;;
 --cflags=*) cflags="${arg#*=}" ;;
 --ldflags=*) ldflags="${arg#*=}" ;;
+*) echo "Unknown option: ${arg#*=}";exit 1 ;;
 esac; done
 
 # ---
