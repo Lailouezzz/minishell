@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 14:12:05 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/30 17:14:03 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/11/30 17:34:40 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,14 +44,15 @@ typedef struct s_int_token {
 	size_t			len;
 }	t_int_token;
 
-typedef int		(*t_token_gen_cb)(t_lr_token *lrtok, const t_int_token *int_token);
-typedef void	(*t_token_free_cb)(void *data);
+typedef int						(*t_token_gen_cb)(t_lr_token *lrtok,
+	const t_int_token *int_token);
+typedef void					(*t_token_free_cb)(void *data);
 
 typedef struct s_token_list {
 	t_lr_token	*lrtoks;
 	size_t		alloced;
 	size_t		used;
-}	t_token_list;
+}								t_token_list;
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -59,7 +60,7 @@ typedef struct s_token_list {
 // *                                                                        * //
 // ************************************************************************** //
 
-extern const t_token_gen_cb	g_tok_gen_cbs[TOKEN__COUNT];
+extern const t_token_gen_cb		g_tok_gen_cbs[TOKEN__COUNT];
 extern const t_token_free_cb	g_tok_free_cbs[TOKEN__COUNT];
 
 // ************************************************************************** //

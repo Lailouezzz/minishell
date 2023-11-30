@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 16:41:44 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/30 17:16:41 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/11/30 17:39:42 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,7 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-static t_token_list	*_tokenizer_init(
-						void
-						);
+static t_token_list	*_tokenizer_init(void);
 
 static int			_tokenizer_add(
 						t_token_list *lrtoks,
@@ -66,13 +64,14 @@ t_token_list	*tokenizer(
 			return (NULL);
 		}
 	}
-	if (lrtoks->lrtoks[lrtoks->used - 1].id != TOKEN_END)
-		if (_tokenizer_add(lrtoks,
-			&(static const t_lr_token){.id = TOKEN_END, .data = NULL}))
+	if (lrtoks->used == 0 || lrtoks->lrtoks[lrtoks->used - 1].id != TOKEN_END)
+	{
+		if (_tokenizer_add(lrtoks, &(static const t_lr_token){TOKEN_END, NULL}))
 		{
 			token_list_destoy(lrtoks);
 			return (NULL);
 		}
+	}
 	return (lrtoks);
 }
 
@@ -83,21 +82,21 @@ void	token_list_destoy(
 	size_t	k;
 
 	if (lrtoks != NULL)
+	{
+		if (lrtoks->lrtoks != NULL)
 		{
-			if (lrtoks->lrtoks != NULL)
+			k = 0;
+			while (k < lrtoks->used)
 			{
-				k = 0;
-				while (k < lrtoks->used)
-				{
-					if (g_tok_free_cbs[lrtoks->lrtoks[k].id] != NULL)
-						g_tok_free_cbs[lrtoks->lrtoks[k].id](
-							lrtoks->lrtoks[k].data);
-					++k;
-				}
-				free(lrtoks->lrtoks);
+				if (g_tok_free_cbs[lrtoks->lrtoks[k].id] != NULL)
+					g_tok_free_cbs[lrtoks->lrtoks[k].id](
+						lrtoks->lrtoks[k].data);
+				++k;
 			}
-			free(lrtoks);
+			free(lrtoks->lrtoks);
 		}
+		free(lrtoks);
+	}
 }
 
 // ************************************************************************** //
@@ -106,16 +105,15 @@ void	token_list_destoy(
 // *                                                                        * //
 // ************************************************************************** //
 
-static t_token_list	*_tokenizer_init(
-						void
-						)
+static t_token_list	*_tokenizer_init(void)
 {
 	t_token_list	*lrtoks;
 
 	lrtoks = malloc(sizeof(*lrtoks));
 	if (lrtoks == NULL)
 		return (NULL);
-	(lrtoks->alloced = 1, lrtoks->used = 0);
+	lrtoks->alloced = 1;
+	lrtoks->used = 0;
 	lrtoks->lrtoks = malloc(sizeof(*lrtoks->lrtoks) * lrtoks->alloced);
 	if (lrtoks->lrtoks == NULL)
 	{
@@ -133,8 +131,8 @@ static int	_tokenizer_add(
 	if (lrtoks->used >= lrtoks->alloced)
 	{
 		lrtoks->lrtoks = ft_realloc(lrtoks->lrtoks,
-			lrtoks->alloced * sizeof(*lrtoks->lrtoks),
-			lrtoks->alloced * sizeof(*lrtoks->lrtoks) * 2);
+				lrtoks->alloced * sizeof(*lrtoks->lrtoks),
+				lrtoks->alloced * sizeof(*lrtoks->lrtoks) * 2);
 		if (lrtoks->lrtoks == NULL)
 			return (1);
 		lrtoks->alloced *= 2;
