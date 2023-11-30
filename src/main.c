@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/30 12:28:25 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/11/30 15:04:49 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@
 
 #include "prod.h"
 
-#include "token.h"
+#include "tokenizer/token.h"
 #include "table.h"
 #include "ast.h"
 
