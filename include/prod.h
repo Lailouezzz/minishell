@@ -64,83 +64,103 @@ extern const t_lr_prod_cb	g_prod_cbs[PROD__COUNT];
 // ************************************************************************** //
 
 void	*_prod_command__1_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			);
 
 void	_prod_command__1_free_cb(
-			void *item
+			void *item,
+			void *usrptr
 			);
 
 void	*_prod_command__2_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			);
 
 void	_prod_command__2_free_cb(
-			void *item
+			void *item,
+			void *usrptr
 			);
 
 void	*_prod_command_simple__1_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			);
 
 void	_prod_command_simple__1_free_cb(
-			void *item
+			void *item,
+			void *usrptr
 			);
 
 void	*_prod_command_simple__2_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			);
 
 void	_prod_command_simple__2_free_cb(
-			void *item
+			void *item,
+			void *usrptr
 			);
 
 void	*_prod_args__1_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			);
 
 void	_prod_args__1_free_cb(
-			void *item
+			void *item,
+			void *usrptr
 			);
 
 void	*_prod_args__2_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			);
 
 void	_prod_args__2_free_cb(
-			void *item
+			void *item,
+			void *usrptr
 			);
 
 void	*_prod_progname_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			);
 
 void	_prod_progname_free_cb(
-			void *item
+			void *item,
+			void *usrptr
 			);
 
 void	*_prod_command_io__1_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			);
 
 void	_prod_command_io__1_free_cb(
-			void *item
+			void *item,
+			void *usrptr
 			);
 
 void	*_prod_command_io__2_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			);
 
 void	_prod_command_io__2_free_cb(
-			void *item
+			void *item,
+			void *usrptr
 			);
 
 void	*_prod_io_info_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			);
 
 void	_prod_io_info_free_cb(
-			void *item
+			void *item,
+			void *usrptr
 			);
 
 #endif

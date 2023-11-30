@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/30 12:02:39 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/11/30 12:28:25 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int	main(void)
 	ctx.token_count = TOKEN__COUNT;
 	ctx.goto_table = (t_lr_state_id *)g_lr_goto_table;
 	ctx.prod_cb = (t_lr_prod_cb *)g_prod_cbs;
-	if (lr_parser_init(&ctx))
+	if (lr_parser_init(&ctx, NULL))
 		return (EXIT_FAILURE);
 	if (lr_parser_exec(&ctx, g_tokens, sizeof(g_tokens) / sizeof(*g_tokens),
 			&data))

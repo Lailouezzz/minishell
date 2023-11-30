@@ -57,21 +57,24 @@ const t_lr_prod_cb	g_prod_cbs[PROD__COUNT] = {
 // ************************************************************************** //
 
 void	*_prod_command__1_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			)
 {
 	return (item[0].data.derived.data);
 }
 
 void	_prod_command__1_free_cb(
-			void *to_free
+			void *to_free,
+			void *usrptr
 			)
 {
 	command_destroy(to_free);
 }
 
 void	*_prod_command__2_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			)
 {
 	if (command_add_io(item[0].data.derived.data, item[1].data.derived.data))
@@ -80,28 +83,32 @@ void	*_prod_command__2_cb(
 }
 
 void	_prod_command__2_free_cb(
-			void *to_free
+			void *to_free,
+			void *usrptr
 			)
 {
 	command_destroy(to_free);
 }
 
 void	*_prod_command_simple__1_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			)
 {
 	return (command_create((t_progname)item[0].data.derived.data));
 }
 
 void	_prod_command_simple__1_free_cb(
-			void *to_free
+			void *to_free,
+			void *usrptr
 			)
 {
 	command_destroy(to_free);
 }
 
 void	*_prod_command_simple__2_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			)
 {
 	return (command_create_args(item[0].data.derived.data,
@@ -109,28 +116,32 @@ void	*_prod_command_simple__2_cb(
 }
 
 void	_prod_command_simple__2_free_cb(
-			void *to_free
+			void *to_free,
+			void *usrptr
 			)
 {
 	command_destroy(to_free);
 }
 
 void	*_prod_args__1_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			)
 {
 	return (args_create(item[0].data.token.data));
 }
 
 void	_prod_args__1_free_cb(
-			void *to_free
+			void *to_free,
+			void *usrptr
 			)
 {
 	args_destroy(to_free);
 }
 
 void	*_prod_args__2_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			)
 {
 	return (args_append(item[1].data.derived.data,
@@ -138,42 +149,48 @@ void	*_prod_args__2_cb(
 }
 
 void	_prod_args__2_free_cb(
-			void *to_free
+			void *to_free,
+			void *usrptr
 			)
 {
 	args_destroy(to_free);
 }
 
 void	*_prod_progname_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			)
 {
 	return (ft_strdup(item[0].data.token.data));
 }
 
 void	_prod_progname_free_cb(
-			void *to_free
+			void *to_free,
+			void *usrptr
 			)
 {
 	free(to_free);
 }
 
 void	*_prod_command_io__1_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			)
 {
 	return (cio_create((t_io_info *)item[0].data.derived.data));
 }
 
 void	_prod_command_io__1_free_cb(
-			void *to_free
+			void *to_free,
+			void *usrptr
 			)
 {
 	cio_destroy(to_free);
 }
 
 void	*_prod_command_io__2_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			)
 {
 	if (cio_append((t_command_io *)item[1].data.derived.data,
@@ -183,14 +200,16 @@ void	*_prod_command_io__2_cb(
 }
 
 void	_prod_command_io__2_free_cb(
-			void *to_free
+			void *to_free,
+			void *usrptr
 			)
 {
 	cio_destroy(to_free);
 }
 
 void	*_prod_io_info_cb(
-			t_lr_stack_item *item
+			t_lr_stack_item *item,
+			void *usrptr
 			)
 {
 	return (io_info_create(*(t_io_type *)(item[0].data.token.data),
@@ -198,7 +217,8 @@ void	*_prod_io_info_cb(
 }
 
 void	_prod_io_info_free_cb(
-			void *to_free
+			void *to_free,
+			void *usrptr
 			)
 {
 	io_info_destroy(to_free);
