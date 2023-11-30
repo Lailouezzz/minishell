@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/29 15:34:42 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/11/30 12:02:39 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,11 @@ t_lr_token	g_tokens[] = {
 {.id = TOKEN_WORD, .data = "wc"},
 {.id = TOKEN_WORD, .data = "-l"},
 {.id = TOKEN_WORD, .data = "file"},
-{.id = TOKEN_IO, &(t_io_info){IO_IN}},
+{.id = TOKEN_IO, &(t_io_type){IO_IN}},
 {.id = TOKEN_WORD, .data = "file"},
-{.id = TOKEN_IO, &(t_io_info){IO_OUT}},
+{.id = TOKEN_IO, &(t_io_type){IO_OUT}},
 {.id = TOKEN_WORD, .data = "file"},
-{.id = TOKEN_IO, &(t_io_info){IO_IN}},
+{.id = TOKEN_IO, &(t_io_type){IO_IN}},
 {.id = TOKEN_WORD, .data = "file"},
 {.id = TOKEN_END, .data = NULL},
 };
