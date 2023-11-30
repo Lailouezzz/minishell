@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/30 15:04:49 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/11/30 17:18:16 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,22 +30,9 @@
 
 #include "prod.h"
 
-#include "tokenizer/token.h"
+#include "tokenizer/tokenizer.h"
 #include "table.h"
 #include "ast.h"
-
-t_lr_token	g_tokens[] = {
-{.id = TOKEN_WORD, .data = "wc"},
-{.id = TOKEN_WORD, .data = "-l"},
-{.id = TOKEN_WORD, .data = "file"},
-{.id = TOKEN_IO, &(t_io_type){IO_IN}},
-{.id = TOKEN_WORD, .data = "file"},
-{.id = TOKEN_IO, &(t_io_type){IO_OUT}},
-{.id = TOKEN_WORD, .data = "file"},
-{.id = TOKEN_IO, &(t_io_type){IO_IN}},
-{.id = TOKEN_WORD, .data = "file"},
-{.id = TOKEN_END, .data = NULL},
-};
 
 static void	command_print(t_command *command)
 {
@@ -78,24 +65,38 @@ static void	command_print(t_command *command)
 	}
 }
 
-int	main(void)
+int	main(int argc, char **argv)
 {
 	t_lr_parser_ctx	ctx;
-	void			*data;
+	t_command		*data;
+	t_token_list	*lrtoks;
 
+	if (argc != 2)
+		return (EXIT_FAILURE);
 	ctx.action_table = (t_lr_action *)g_lr_table;
 	ctx.prod_count = PROD__COUNT;
 	ctx.state_count = STATE__COUNT;
 	ctx.token_count = TOKEN__COUNT;
 	ctx.goto_table = (t_lr_state_id *)g_lr_goto_table;
 	ctx.prod_cb = (t_lr_prod_cb *)g_prod_cbs;
+	lrtoks = tokenizer(argv[1]);
+	if (lrtoks == NULL)
+		return (EXIT_FAILURE);
 	if (lr_parser_init(&ctx, NULL))
+	{
+		token_list_destoy(lrtoks);
 		return (EXIT_FAILURE);
-	if (lr_parser_exec(&ctx, g_tokens, sizeof(g_tokens) / sizeof(*g_tokens),
-			&data))
-		return (EXIT_FAILURE);
-	lr_parser_destroy(&ctx);
-	command_print(data);
-	command_destroy(data);
+	}
+	if (lr_parser_exec(&ctx, lrtoks->lrtoks, lrtoks->used, (void **)&data))
+	{
+		fprintf(stderr, "Syntax error!\n");
+	}
+	else
+	{
+		command_print(data);
+		command_destroy(data);
+		lr_parser_destroy(&ctx);
+	}
+	token_list_destoy(lrtoks);
 	return (EXIT_SUCCESS);
 }

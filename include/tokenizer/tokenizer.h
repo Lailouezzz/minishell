@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 14:12:05 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/30 14:42:21 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/11/30 17:14:03 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,18 @@
 // ************************************************************************** //
 
 typedef struct s_int_token {
-	t_lr_token_id	id;
 	const char		*start;
 	size_t			len;
 }	t_int_token;
 
-typedef int	(*t_token_gen_cb)(t_lr_token *rtok, const t_int_token *int_token);
+typedef int		(*t_token_gen_cb)(t_lr_token *lrtok, const t_int_token *int_token);
+typedef void	(*t_token_free_cb)(void *data);
+
+typedef struct s_token_list {
+	t_lr_token	*lrtoks;
+	size_t		alloced;
+	size_t		used;
+}	t_token_list;
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -54,6 +60,7 @@ typedef int	(*t_token_gen_cb)(t_lr_token *rtok, const t_int_token *int_token);
 // ************************************************************************** //
 
 extern const t_token_gen_cb	g_tok_gen_cbs[TOKEN__COUNT];
+extern const t_token_free_cb	g_tok_free_cbs[TOKEN__COUNT];
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -61,25 +68,38 @@ extern const t_token_gen_cb	g_tok_gen_cbs[TOKEN__COUNT];
 // *                                                                        * //
 // ************************************************************************** //
 
-int	_token_gen_word_cb(
-		t_lr_token *rtok,
-		const t_int_token *int_token
-		);
+int				_token_gen_word_cb(
+					t_lr_token *lrtok,
+					const t_int_token *int_token
+					);
 
-int	_token_gen_io_cb(
-		t_lr_token *rtok,
-		const t_int_token *int_token
-		);
+int				_token_gen_io_cb(
+					t_lr_token *lrtok,
+					const t_int_token *int_token
+					);
 
-int	_token_gen_end_cb(
-		t_lr_token *rtok,
-		const t_int_token *int_token
-		);
+int				_token_gen_end_cb(
+					t_lr_token *lrtok,
+					const t_int_token *int_token
+					);
 
 // ************************************************************************** //
 // *                                                                        * //
 // * Function prototypes.                                                   * //
 // *                                                                        * //
 // ************************************************************************** //
+
+t_token_list	*tokenizer(
+					const char *str
+					);
+
+int				tokenize(
+					t_lr_token *lrtok,
+					const char **start
+					);
+
+void			token_list_destoy(
+					t_token_list *lrtoks
+					);
 
 #endif

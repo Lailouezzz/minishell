@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 12:31:37 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/30 14:44:32 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/11/30 15:43:07 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,14 @@ int	ft_strlen(
 	while (str[k] != '\0')
 		++k;
 	return (k);
+}
+
+int	ft_isspace(
+		char c
+		)
+{
+	return (c == ' '
+		|| c == '\t');
 }
 
 char	*ft_strdup(
