@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ast.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 08:25:01 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/30 14:13:22 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/01 21:52:36 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static void	_strs_free(
 // ************************************************************************** //
 
 t_args	args_create(
-			const char *str
+			char *str
 			)
 {
 	t_args	args;
@@ -56,7 +56,7 @@ t_args	args_create(
 	if (args == NULL)
 		return (NULL);
 	args[1] = NULL;
-	args[0] = ft_strdup(str);
+	args[0] = str;
 	if (args[0] == NULL)
 	{
 		free(args);
@@ -67,7 +67,7 @@ t_args	args_create(
 
 t_args	args_append(
 			t_args args,
-			const char *str
+			char *str
 			)
 {
 	size_t	k;
@@ -83,7 +83,7 @@ t_args	args_append(
 		return (NULL);
 	}
 	ft_memcpy(nargs + 1, args, k * sizeof(*nargs));
-	nargs[0] = ft_strdup(str);
+	nargs[0] = str;
 	if (nargs[0] == NULL)
 	{
 		_strs_free(args);
@@ -105,7 +105,7 @@ void	args_destroy(
 
 t_io_info	*io_info_create(
 				t_io_type type,
-				const char *str
+				char *str
 				)
 {
 	t_io_info	*io_info;
@@ -114,7 +114,7 @@ t_io_info	*io_info_create(
 	if (io_info == NULL)
 		return (NULL);
 	io_info->type = type;
-	io_info->file = ft_strdup(str);
+	io_info->file = str;
 	if (io_info->file == NULL)
 	{
 		free(io_info);

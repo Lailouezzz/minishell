@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 02:53:20 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/29 14:23:35 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/01 23:06:40 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void	*_prod_args__1_cb(
 			void *usrptr
 			)
 {
-	return (args_create(item[0].data.token.data));
+	return (args_create(item[0].data.token.data.word));
 }
 
 void	_prod_args__1_free_cb(
@@ -145,7 +145,7 @@ void	*_prod_args__2_cb(
 			)
 {
 	return (args_append(item[1].data.derived.data,
-			item[0].data.token.data));
+			item[0].data.token.data.word));
 }
 
 void	_prod_args__2_free_cb(
@@ -161,7 +161,7 @@ void	*_prod_progname_cb(
 			void *usrptr
 			)
 {
-	return (ft_strdup(item[0].data.token.data));
+	return (item[0].data.token.data.word);
 }
 
 void	_prod_progname_free_cb(
@@ -212,8 +212,8 @@ void	*_prod_io_info_cb(
 			void *usrptr
 			)
 {
-	return (io_info_create(*(t_io_type *)(item[0].data.token.data),
-		item[1].data.token.data));
+	return (io_info_create(item[0].data.token.data.io_type,
+			item[1].data.token.data.word));
 }
 
 void	_prod_io_info_free_cb(

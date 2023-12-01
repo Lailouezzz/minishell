@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 15:22:16 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/30 17:40:18 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/01 20:09:37 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,13 +106,12 @@ static int	_state_out(
 {
 	const char	current = int_token->start[int_token->len];
 
-	if (ft_isspace(current)
-		|| current == '\0')
+	if (current != '>')
 		return (g_tok_gen_cbs[TOKEN_IO](lrtok, int_token));
 	++int_token->len;
 	if (current == '>')
 		return (g_tok_gen_cbs[TOKEN_IO](lrtok, int_token));
-	return (_state_word(lrtok, int_token));
+	return (0xDEADBEEF);
 }
 
 static int	_state_in(
@@ -122,13 +121,12 @@ static int	_state_in(
 {
 	const char	current = int_token->start[int_token->len];
 
-	if (ft_isspace(current)
-		|| current == '\0')
+	if (current != '<')
 		return (g_tok_gen_cbs[TOKEN_IO](lrtok, int_token));
 	++int_token->len;
 	if (current == '<')
 		return (g_tok_gen_cbs[TOKEN_IO](lrtok, int_token));
-	return (_state_word(lrtok, int_token));
+	return (0xDEADBEEF);
 }
 
 static int	_state_word(

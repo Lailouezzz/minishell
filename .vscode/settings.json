@@ -8,10 +8,13 @@
 		"cstdlib": "c"
 	},
 	"cSpell.words": [
+		"destoy",
 		"lrparser",
 		"lrprod",
 		"lrrule",
 		"lrstack",
+		"lrtok",
+		"lrtoks",
 		"popn"
 	]
 }

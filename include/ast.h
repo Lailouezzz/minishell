@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ast.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 08:02:47 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/30 14:13:40 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/01 21:50:32 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,12 +65,12 @@ typedef struct s_command {
 // ************************************************************************** //
 
 t_args			args_create(
-					const char *str
+					char *str
 					);
 
 t_args			args_append(
 					t_args args,
-					const char *str
+					char *str
 					);
 
 void			args_destroy(
@@ -79,7 +79,7 @@ void			args_destroy(
 
 t_io_info		*io_info_create(
 					t_io_type type,
-					const char *str
+					char *str
 					);
 
 void			io_info_destroy(
