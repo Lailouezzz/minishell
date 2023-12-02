@@ -81,17 +81,13 @@ foreground pipeline
 ---
 # Authors
 
-<div>
-	<div style="float: left; padding:10px; text-align: center;">
-		<img style="border-radius: 50%; width:80px; 
-	height: 80px; margin-left: auto;
-  margin-right: auto; display: block;" src="https://avatars.githubusercontent.com/u/25978607?v=4">
-		<br><a href="https://github.com/lailouezzz">ale-boud</a>
-	</div>
-	<div style="float: left; padding:10px; text-align: center;">
-		<img style="border-radius: 50%; width:80px; 
-	height: 80px; margin-left: auto;
-  margin-right: auto; display: block;" src="https://avatars.githubusercontent.com/u/37182076?v=4">
-		<br><a href="https://github.com/Dyamen1411">amassias</a>
-	</div>
-</div>
+<table>
+	<tr>
+		<td> <img style="width:80px;height:80px;" src="https://avatars.githubusercontent.com/u/25978607?v=4"> </td>
+		<td> <img style="width:80px;height:80px;" src="https://avatars.githubusercontent.com/u/37182076?v=4"> </td>
+	</tr>
+	<tr>
+		<td style="text-align:center"> <a href="https://github.com/lailouezzz">ale-boud</a> </td>
+		<td style="text-align:center"> <a href="https://github.com/Dyamen1411">ale-boud</a> </td>
+	</tr>
+</table>
