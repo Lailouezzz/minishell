@@ -8,6 +8,8 @@ To build our minishell :
 
 ```sh
 git clone --recurse-submodules https://github.com/Lailouezzz/minishell
+cd minishell
+./configure.sh && make
 ```
 
 ## Microparser
