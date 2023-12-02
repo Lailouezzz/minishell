@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_gen_cb.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 14:27:31 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/01 23:38:03 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/02 15:25:01 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,6 @@ int	_token_gen_end_cb(
 		)
 {
 	(void)(int_token);
-
 	lrtok->id = TOKEN_END;
 	return (0);
 }
