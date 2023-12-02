@@ -36,5 +36,4 @@ This project use [microparser](https://github.com/Lailouezzz/microparser). An ho
 
 # The team
 
-amassias : [github](https://github.com/Dyamen1411)
-ale-boud : [github](https://github.com/lailouezzz)
+`amassias` : [github](https://github.com/Dyamen1411) | `ale-boud` : [github](https://github.com/lailouezzz)
