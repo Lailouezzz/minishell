@@ -88,6 +88,6 @@ foreground pipeline
 	</tr>
 	<tr>
 		<td style="text-align:center"> <a href="https://github.com/lailouezzz">ale-boud</a> </td>
-		<td style="text-align:center"> <a href="https://github.com/Dyamen1411">ale-boud</a> </td>
+		<td style="text-align:center"> <a href="https://github.com/Dyamen1411">amassias</a> </td>
 	</tr>
 </table>
