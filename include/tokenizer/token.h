@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 00:11:00 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/29 14:20:39 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/08 16:13:42 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@
  * @enum e_io_type
  * @brief The redirection io type.
  */
-typedef enum e_io_type {
+typedef enum e_io_type
+{
 	/** @brief Redirect input "<" */
 	IO_IN,
 
@@ -51,7 +52,8 @@ typedef enum e_io_type {
  * @enum e_token_type
  * @brief The token (lexeme type).
  */
-typedef enum e_token_type {
+typedef enum e_token_type
+{
 	/** @brief Describe a word. (this is literally a sting) */
 	TOKEN_WORD,
 
@@ -68,7 +70,8 @@ typedef enum e_token_type {
  * @union u_token_data
  * @brief The data of token.
  */
-typedef union u_token_data {
+typedef union u_token_data
+{
 	/** @brief TOKEN_WORD */
 	char		*word;
 

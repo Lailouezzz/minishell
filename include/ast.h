@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 08:02:47 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/01 21:50:32 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/08 16:36:40 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,24 +37,74 @@
 // *                                                                        * //
 // ************************************************************************** //
 
+/**
+ * @brief The program name (or path).
+ */
 typedef char	*t_progname;
 
+/**
+ * @brief The args.
+ */
 typedef char	**t_args;
 
-typedef struct s_io_info {
+/**
+ * @struct s_io_info
+ * @brief The representation of an IO information (IO mode, and file path).
+ */
+typedef struct s_io_info
+{
+	/**
+	 * @brief The IO type.
+	 */
 	t_io_type	type;
+
+	/**
+	 * @brief The file path.
+	 */
 	char		*file;
 }	t_io_info;
 
-typedef struct s_command_io {
+/**
+ * @struct s_command_io
+ * @brief The list of redirection.
+ */
+typedef struct s_command_io
+{
+	/**
+	 * @brief A table of pointers to #s_io_info.
+	 */
 	t_io_info	**io_infos;
+
+	/**
+	 * @brief The alloced space of #io_infos.
+	 */
 	size_t		alloced;
+
+	/**
+	 * @brief The space of #io_infos used.
+	 */
 	size_t		used;
 }	t_command_io;
 
-typedef struct s_command {
+/**
+ * @struct s_command
+ * @brief The representation of a command.
+ */
+typedef struct s_command
+{
+	/**
+	 * @brief The #t_progname.
+	 */
 	t_progname		pn;
+
+	/**
+	 * @brief The #t_args.
+	 */
 	t_args			args;
+
+	/**
+	 * @brief The #s_command_io.
+	 */
 	t_command_io	*cio;
 }	t_command;
 
@@ -64,19 +114,40 @@ typedef struct s_command {
 // *                                                                        * //
 // ************************************************************************** //
 
+/**
+ * @brief Create an args list (#t_args).
+ * @param str The argument.
+ * @return t_args The #t_args.
+ */
 t_args			args_create(
 					char *str
 					);
 
+/**
+ * @brief Append an argument to an args list (#t_args).
+ * @param args The #t_args.
+ * @param str The argument to append.
+ * @return t_args The #t_args.
+ */
 t_args			args_append(
 					t_args args,
 					char *str
 					);
 
+/**
+ * @brief Free #t_args.
+ * @param args #t_args to free.
+ */
 void			args_destroy(
 					t_args args
 					);
 
+/**
+ * @brief Create an #s_io_info.
+ * @param type The #e_io_type of the io redirection.
+ * @param str The filename (or path).
+ * @return t_io_info* 
+ */
 t_io_info		*io_info_create(
 					t_io_type type,
 					char *str
