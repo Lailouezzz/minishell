@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 00:11:00 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/08 16:13:42 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/09 16:53:11 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,18 +65,5 @@ typedef enum e_token_type
 
 	TOKEN__COUNT,
 }	t_token_type;
-
-/**
- * @union u_token_data
- * @brief The data of token.
- */
-typedef union u_token_data
-{
-	/** @brief TOKEN_WORD */
-	char		*word;
-
-	/** @brief TOKEN_IO */
-	t_io_type	io_type;
-}	t_token_data;
 
 #endif

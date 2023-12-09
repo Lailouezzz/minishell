@@ -4,12 +4,13 @@ and_or ::= pipeline | and_or OR pipeline | and_or AND pipeline
 
 pipeline ::= command | pipeline '|' command
 
-command ::= simple_command | subshell redirect_list
+command ::= simple_command | subshell redirect_list | subshell
 
 subshell ::= '(' and_or ')'
 
 simple_command ::= redirect_list pn args_red_list
 				| pn args_red_list
+				| redirect_list pn
 				| pn
 
 redirect_list ::= io_info | redirect_list io_info
