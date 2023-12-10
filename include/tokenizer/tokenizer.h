@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 14:12:05 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/10 17:03:05 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/10 21:10:39 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 
 # include <lr_token.h>
 
+# include "utils/dyn_str.h"
 # include "token.h"
 
 // ************************************************************************** //
@@ -43,16 +44,17 @@
  * @struct s_int_token
  * @brief Define the intermediate token.
  */
-typedef struct s_int_token {
+typedef struct s_int_token
+{
 	/**
-	 * @brief Where we start ?
+	 * @brief Where we are ?
 	 */
-	const char		*start;
+	const char		*cur;
 
 	/**
-	 * @brief The length of the token (number of chars).
+	 * @brief The current word read.
 	 */
-	size_t			len;
+	t_dyn_str		word_read;
 }	t_int_token;
 
 /**
@@ -63,14 +65,9 @@ typedef int						(*t_token_gen_cb)(t_lr_token *lrtok,
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Token generator callback table definition.                             * //
+// * Token free callback table definition.                                  * //
 // *                                                                        * //
 // ************************************************************************** //
-
-/**
- * @brief Token generator callback table.
- */
-extern const t_token_gen_cb		g_tok_gen_cbs[TOKEN__COUNT];
 
 /**
  * @brief Token free callback table.
@@ -79,41 +76,89 @@ extern const t_lr_token_free_cb	g_tok_free_cbs[TOKEN__COUNT];
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Token generator callbacks prototypes.                                  * //
+// * Token generator prototypes.                                            * //
 // *                                                                        * //
 // ************************************************************************** //
 
 /**
- * @brief Generator a TOKEN_WORD
+ * @brief Generate a TOKEN_WORD
  * @param lrtok Store the @s_lr_token generated.
- * @param int_token The @s_int_token.
+ * @param str The word string.
  * @return int 0 on success. non-null value on error.
  */
-int		_token_gen_word_cb(
+int		_token_gen_word(
 			t_lr_token *lrtok,
-			const t_int_token *int_token
+			char *str
 			);
 
 /**
- * @brief Generator a TOKEN_IO
+ * @brief Generate a TOKEN_IO
  * @param lrtok Store the @s_lr_token generated.
- * @param int_token The @s_int_token.
+ * @param type The @s_io_type.
  * @return int 0 on success. non-null value on error.
  */
-int		_token_gen_io_cb(
+int		_token_gen_io(
 			t_lr_token *lrtok,
-			const t_int_token *int_token
+			t_io_type type
 			);
 
 /**
- * @brief Generator a TOKEN_END
+ * @brief Generate a TOKEN_AND_OR
+ * @param lrtok Store the @s_lr_token generated.
+ * @param int_token The @s_logic_type.
+ * @return int 0 on success. non-null value on error.
+ */
+int		_token_gen_and_or(
+			t_lr_token *lrtok,
+			t_logic_type type
+			);
+
+/**
+ * @brief Generate a TOKEN_PIPE
  * @param lrtok Store the @s_lr_token generated.
  * @param int_token The @s_int_token.
  * @return int 0 on success. non-null value on error.
  */
-int		_token_gen_end_cb(
-			t_lr_token *lrtok,
-			const t_int_token *int_token
+int		_token_gen_pipe(
+			t_lr_token *lrtok
+			);
+
+/**
+ * @brief Generate a TOKEN_OBRACKET
+ * @param lrtok Store the @s_lr_token generated.
+ * @param int_token The @s_int_token.
+ * @return int 0 on success. non-null value on error.
+ */
+int		_token_gen_obracket(
+			t_lr_token *lrtok
+			);
+
+/**
+ * @brief Generate a TOKEN_CBRACKET
+ * @param lrtok Store the @s_lr_token generated.
+ * @param int_token The @s_int_token.
+ * @return int 0 on success. non-null value on error.
+ */
+int		_token_gen_cbracket(
+			t_lr_token *lrtok
+			);
+
+/**
+ * @brief Generate a TOKEN_END
+ * @param lrtok Store the @s_lr_token generated.
+ * @return int 0 on success. non-null value on error.
+ */
+int		_token_gen_end(
+			t_lr_token *lrtok
+			);
+
+/**
+ * @brief Generate a TOKEN__WILDCARD
+ * @param lrtok Store the @s_lr_token generated.
+ * @return int 0 on success. non-null value on error.
+ */
+int		_token_gen_wildcard(
+			t_lr_token *lrtok
 			);
 
 // ************************************************************************** //

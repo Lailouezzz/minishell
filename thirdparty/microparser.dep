@@ -20,7 +20,7 @@ define bite-$(TFILENAME)
 MAKE_RULE_$(TFILENAME): $(THIRDPARTY)/$(LIBDIR)/$(LIBA_$(TFILENAME))
 $(THIRDPARTY)/$(LIBDIR)/$(LIBA_$(TFILENAME)): $(THIRDPARTY)/$(LIBDIR)/Makefile
 	@$(THIRDPARTY)/$(LIBDIR)/configure.sh --optimize-disable --debug \
-		"--cflags=-DMP_TOKEN_TYPE=\"union __u {char *word; int io_type;}\""
+		"--cflags=-DMP_TOKEN_TYPE=\"union __u {char *word; int io_type; int logic_type;}\""
 	@$(MAKE) -C $(THIRDPARTY)/$(LIBDIR)
 
 CLEAN_RULE_$(TFILENAME):

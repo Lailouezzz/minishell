@@ -9,7 +9,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/bin/minishell",
-			"args": ["<a >b test -l > c ffdsfsd >fdsfds"],
+			"args": ["'test'truc"],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",
 			"environment": [],

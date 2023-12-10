@@ -5,16 +5,21 @@
 		"*.d": "makefile",
 		"Makefile.*": "makefile",
 		"cmath": "c",
-		"cstdlib": "c"
+		"cstdlib": "c",
+		"sstream": "c"
 	},
 	"cSpell.words": [
+		"boud",
+		"CBRACKET",
 		"destoy",
+		"doublequote",
 		"lrparser",
 		"lrprod",
 		"lrrule",
 		"lrstack",
 		"lrtok",
 		"lrtoks",
+		"OBRACKET",
 		"popn"
 	]
 }

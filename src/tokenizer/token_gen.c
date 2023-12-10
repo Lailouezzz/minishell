@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   token_gen_cb.c                                     :+:      :+:    :+:   */
+/*   token_gen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 14:27:31 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/02 15:25:01 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/10 23:15:53 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file token_gen_cb.c
+ * @file token_gen.c
  * @author ale-boud (ale-boud@student.42lehavre.fr)
  * @brief The token generator callbacks implementation.
  * @date 2023-11-30
@@ -31,81 +31,93 @@
 
 // ************************************************************************** //
 // *                                                                        * //
-// * The production callbacks.                                              * //
+// * The token free callbacks.                                              * //
 // *                                                                        * //
 // ************************************************************************** //
-
-const t_token_gen_cb		g_tok_gen_cbs[TOKEN__COUNT] = {
-[TOKEN_WORD] = _token_gen_word_cb,
-[TOKEN_IO] = _token_gen_io_cb,
-[TOKEN_END] = _token_gen_end_cb,
-};
 
 const t_lr_token_free_cb	g_tok_free_cbs[TOKEN__COUNT] = {
 [TOKEN_WORD] = _token_free_word_cb,
 [TOKEN_IO] = NULL,
+[TOKEN_AND_OR] = NULL,
+[TOKEN_PIPE] = NULL,
+[TOKEN_OBRACKET] = NULL,
+[TOKEN_CBRACKET] = NULL,
 [TOKEN_END] = NULL,
 };
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Token generator callback functions.                                    * //
+// * Token generator functions.                                             * //
 // *                                                                        * //
 // ************************************************************************** //
 
-int	_token_gen_word_cb(
+int	_token_gen_word(
 		t_lr_token *lrtok,
-		const t_int_token *int_token
+		char *str
 		)
 {
-	char	*pstr;
-
 	lrtok->id = TOKEN_WORD;
-	pstr = malloc(int_token->len + 1);
-	if (pstr == NULL)
-		return (1);
-	ft_memcpy(pstr, int_token->start, int_token->len);
-	pstr[int_token->len] = '\0';
-	lrtok->data.word = pstr;
+	lrtok->data.word = str;
 	return (0);
 }
 
-int	_token_gen_io_cb(
+int	_token_gen_io(
 		t_lr_token *lrtok,
-		const t_int_token *int_token
+		t_io_type type
 		)
 {
-	const char *const	start = int_token->start;
-
 	lrtok->id = TOKEN_IO;
-	if (int_token->len == 1)
-	{
-		if (*start == '>')
-			lrtok->data.io_type = IO_OUT;
-		else if (*start == '<')
-			lrtok->data.io_type = IO_IN;
-		else
-			return (1);
-	}
-	else if (int_token->len == 2)
-	{
-		if (start[0] == '>' && start[1] == '>')
-			lrtok->data.io_type = IO_APPEND;
-		else if (start[0] == '<' && start[1] == '<')
-			lrtok->data.io_type = IO_HEREDOC;
-		else
-			return (1);
-	}
+	lrtok->data.io_type = type;
 	return (0);
 }
 
-int	_token_gen_end_cb(
+int	_token_gen_and_or(
 		t_lr_token *lrtok,
-		const t_int_token *int_token
+		t_logic_type type
 		)
 {
-	(void)(int_token);
+	lrtok->id = TOKEN_AND_OR;
+	lrtok->data.logic_type = type;
+	return (0);
+}
+
+int	_token_gen_pipe(
+		t_lr_token *lrtok
+		)
+{
+	lrtok->id = TOKEN_PIPE;
+	return (0);
+}
+
+int	_token_gen_obracket(
+		t_lr_token *lrtok
+		)
+{
+	lrtok->id = TOKEN_OBRACKET;
+	return (0);
+}
+
+int	_token_gen_cbracket(
+		t_lr_token *lrtok
+		)
+{
+	lrtok->id = TOKEN_CBRACKET;
+	return (0);
+}
+
+int	_token_gen_end(
+		t_lr_token *lrtok
+		)
+{
 	lrtok->id = TOKEN_END;
+	return (0);
+}
+
+int	_token_gen_wildcard(
+			t_lr_token *lrtok
+			)
+{
+	lrtok->id = TOKEN__WILDCARD;
 	return (0);
 }
 

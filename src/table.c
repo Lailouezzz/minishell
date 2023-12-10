@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   table.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 02:56:39 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/10 16:57:12 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/10 23:47:56 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,6 +280,15 @@ const t_lr_action	g_lr_table[STATE__COUNT][TOKEN__COUNT] = {
 [27] = {
 [TOKEN_WORD] = {ACTION_ERROR, {}},
 [TOKEN_IO] = {ACTION_ERROR, {}},
+[TOKEN_AND_OR] = {ACTION_REDUCE, .data.reduce_id = PROD_AND_OR__3},
+[TOKEN_PIPE] = {ACTION_SHIFT, .data.shift_id = 15},
+[TOKEN_OBRACKET] = {ACTION_ERROR, {}},
+[TOKEN_CBRACKET] = {ACTION_REDUCE, .data.reduce_id = PROD_AND_OR__3},
+[TOKEN_END] = {ACTION_REDUCE, .data.reduce_id = PROD_AND_OR__3},
+},
+[28] = {
+[TOKEN_WORD] = {ACTION_ERROR, {}},
+[TOKEN_IO] = {ACTION_ERROR, {}},
 [TOKEN_AND_OR] = {ACTION_ERROR, {}},
 [TOKEN_PIPE] = {ACTION_ERROR, {}},
 [TOKEN_OBRACKET] = {ACTION_ERROR, {}},
@@ -290,7 +299,7 @@ const t_lr_action	g_lr_table[STATE__COUNT][TOKEN__COUNT] = {
 
 const t_lr_state_id	g_lr_goto_table[STATE__COUNT][PROD__COUNT] = {
 [0] = {
-[PROD_COMMAND_LINE] = 27,
+[PROD_COMMAND_LINE] = 28,
 [PROD_AND_OR__1] = 13,
 [PROD_AND_OR__3] = 13,
 [PROD_PIPELINE__1] = 14,
@@ -569,8 +578,8 @@ const t_lr_state_id	g_lr_goto_table[STATE__COUNT][PROD__COUNT] = {
 [PROD_COMMAND_LINE] = -1,
 [PROD_AND_OR__1] = -1,
 [PROD_AND_OR__3] = -1,
-[PROD_PIPELINE__1] = 14,
-[PROD_PIPELINE__3] = 14,
+[PROD_PIPELINE__1] = 27,
+[PROD_PIPELINE__3] = 27,
 [PROD_COMMAND__SS1] = 26,
 [PROD_COMMAND__SS2] = 26,
 [PROD_COMMAND__SC] = 26,

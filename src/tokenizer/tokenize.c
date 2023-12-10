@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 15:22:16 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/01 20:09:37 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/11 00:09:32 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,29 +29,68 @@
 
 // ************************************************************************** //
 // *                                                                        * //
+// * Helper function definition.                                            * //
+// *                                                                        * //
+// ************************************************************************** //
+
+static int			ft_ismeta(
+						char c
+						);
+
+static const char	*_expand_dollar(
+						const char **start
+						);
+
+// ************************************************************************** //
+// *                                                                        * //
 // * States function prototypes.                                            * //
 // *                                                                        * //
 // ************************************************************************** //
 
-static int	_state_initial(
-				t_lr_token *lrtok,
-				t_int_token *int_token
-				);
+static int			_state_dollar(
+						t_lr_token *lrtok,
+						t_int_token *int_token
+						);
 
-static int	_state_out(
-				t_lr_token *lrtok,
-				t_int_token *int_token
-				);
+static int			_state_initial(
+						t_lr_token *lrtok,
+						t_int_token *int_token
+						);
 
-static int	_state_in(
-				t_lr_token *lrtok,
-				t_int_token *int_token
-				);
+static int			_state_out(
+						t_lr_token *lrtok,
+						t_int_token *int_token
+						);
 
-static int	_state_word(
-				t_lr_token *lrtok,
-				t_int_token *int_token
-				);
+static int			_state_in(
+						t_lr_token *lrtok,
+						t_int_token *int_token
+						);
+
+static int			_state_pipe_or(
+						t_lr_token *lrtok,
+						t_int_token *int_token
+						);
+
+static int			_state_and(
+						t_lr_token *lrtok,
+						t_int_token *int_token
+						);
+
+static int			_state_word(
+						t_lr_token *lrtok,
+						t_int_token *int_token
+						);
+
+static int			_state_quote(
+						t_lr_token *lrtok,
+						t_int_token *int_token
+						);
+
+static int			_state_doublequote(
+						t_lr_token *lrtok,
+						t_int_token *int_token
+						);
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -67,13 +106,26 @@ int	tokenize(
 	t_int_token	int_token;
 	int			r;
 
-	int_token.start = *start;
-	while (ft_isspace(*int_token.start) && *int_token.start != '\0')
-		++int_token.start;
-	int_token.len = 0;
+	int_token.cur = *start;
+	while (ft_isspace(*int_token.cur) && *int_token.cur != '\0')
+		++int_token.cur;
 	r = _state_initial(lrtok, &int_token);
-	*start = int_token.start + int_token.len;
+	*start = int_token.cur;
 	return (r);
+}
+
+// ************************************************************************** //
+// *                                                                        * //
+// * Helper function implementation.                                        * //
+// *                                                                        * //
+// ************************************************************************** //
+
+static int	ft_ismeta(
+				char c
+				)
+{
+	return (c == '|' || c == '&' || c == '>' || c == '<' || c == '('
+		|| c == ')');
 }
 
 // ************************************************************************** //
@@ -82,60 +134,225 @@ int	tokenize(
 // *                                                                        * //
 // ************************************************************************** //
 
-static int	_state_initial(
-		t_lr_token *lrtok,
-		t_int_token *int_token
-		)
+static const char	*_expand_dollar(
+				const char **start
+				)
 {
-	if (*int_token->start == '\0')
-		return (g_tok_gen_cbs[TOKEN_END](lrtok, int_token));
-	++int_token->len;
-	if (*int_token->start == '\n')
-		return (g_tok_gen_cbs[TOKEN_END](lrtok, int_token));
-	else if (*int_token->start == '>')
-		return (_state_out(lrtok, int_token));
-	else if (*int_token->start == '<')
+	static const char	*dollar = "$";
+	static const char	*truc = "EXPANDED VALUE";
+	static const char	*void_str = "";
+	t_dyn_str			dyn_str;
+
+	if (ft_ismeta(**start) || ft_isspace(**start) || **start == '\0')
+		return (dollar);
+	if (**start == '\'' || **start == '"')
+		return (void_str);
+	if (dyn_str_init(&dyn_str))
+		return (NULL);
+	while (!ft_ismeta(**start) && !ft_isspace(**start) && **start != '\0'
+		&& **start != '"' && **start != '\'')
+	{
+		if (dyn_str_pushback(&dyn_str, **start))
+			return (NULL);
+		++(*start);
+	}
+	dyn_str_destroy(&dyn_str);
+	return (truc);
+}
+
+static int	_state_dollar(
+				t_lr_token *lrtok,
+				t_int_token *int_token
+				)
+{
+	const char	*expended;
+
+	(void)(lrtok);
+	expended = _expand_dollar(&int_token->cur);
+	if (expended == NULL)
+		return (1);
+	if (dyn_str_cat(&int_token->word_read, expended))
+		return (1);
+	return (0);
+}
+
+static int	_state_initial(
+				t_lr_token *lrtok,
+				t_int_token *int_token
+				)
+{
+	const char	current = *int_token->cur;
+
+	if (current == '\0')
+		return (_token_gen_end(lrtok));
+	++int_token->cur;
+	if (current == '|')
+		return (_state_pipe_or(lrtok, int_token));
+	if (current == '&')
+		return (_state_and(lrtok, int_token));
+	if (current == '<')
 		return (_state_in(lrtok, int_token));
-	return (_state_word(lrtok, int_token));
+	if (current == '>')
+		return (_state_out(lrtok, int_token));
+	if (current == '(')
+		return (_token_gen_obracket(lrtok));
+	if (current == ')')
+		return (_token_gen_cbracket(lrtok));
+	if (current == '*' && (ft_ismeta(*int_token->cur)
+			|| ft_isspace(*int_token->cur) || *int_token->cur == '\0'))
+		return (_token_gen_wildcard(lrtok));
+	if (dyn_str_init(&int_token->word_read))
+		return (1);
+	if (current == '"')
+		return (_state_doublequote(lrtok, int_token));
+	if (current == '\'')
+		return (_state_quote(lrtok, int_token));
+	if (current == '$' && _state_dollar(lrtok, int_token))
+		return (1);
+	return ((current != '$' && dyn_str_pushback(&int_token->word_read, current))
+		|| _state_word(lrtok, int_token));
 }
 
 static int	_state_out(
-		t_lr_token *lrtok,
-		t_int_token *int_token
-		)
+				t_lr_token *lrtok,
+				t_int_token *int_token
+				)
 {
-	const char	current = int_token->start[int_token->len];
+	const char	current = *int_token->cur;
 
-	if (current != '>')
-		return (g_tok_gen_cbs[TOKEN_IO](lrtok, int_token));
-	++int_token->len;
 	if (current == '>')
-		return (g_tok_gen_cbs[TOKEN_IO](lrtok, int_token));
-	return (0xDEADBEEF);
+	{
+		++int_token->cur;
+		return (_token_gen_io(lrtok, IO_APPEND));
+	}
+	return (_token_gen_io(lrtok, IO_OUT));
 }
 
 static int	_state_in(
-		t_lr_token *lrtok,
-		t_int_token *int_token
-		)
+				t_lr_token *lrtok,
+				t_int_token *int_token
+				)
 {
-	const char	current = int_token->start[int_token->len];
+	const char	current = *int_token->cur;
 
-	if (current != '<')
-		return (g_tok_gen_cbs[TOKEN_IO](lrtok, int_token));
-	++int_token->len;
 	if (current == '<')
-		return (g_tok_gen_cbs[TOKEN_IO](lrtok, int_token));
-	return (0xDEADBEEF);
+	{
+		++int_token->cur;
+		return (_token_gen_io(lrtok, IO_HEREDOC));
+	}
+	return (_token_gen_io(lrtok, IO_IN));
+}
+
+static int	_state_pipe_or(
+				t_lr_token *lrtok,
+				t_int_token *int_token
+				)
+{
+	const char	current = *int_token->cur;
+
+	if (current == '|')
+	{
+		++int_token->cur;
+		return (_token_gen_and_or(lrtok, LOGIC_OR));
+	}
+	return (_token_gen_pipe(lrtok));
+}
+
+static int	_state_and(
+				t_lr_token *lrtok,
+				t_int_token *int_token
+				)
+{
+	const char	current = *int_token->cur;
+
+	if (current != '&')
+		return (1);
+	++int_token->cur;
+	return (_token_gen_and_or(lrtok, LOGIC_AND));
 }
 
 static int	_state_word(
-		t_lr_token *lrtok,
-		t_int_token *int_token
-		)
+				t_lr_token *lrtok,
+				t_int_token *int_token
+				)
 {
-	while (!ft_isspace(int_token->start[int_token->len])
-		&& int_token->start[int_token->len] != '\0')
-		++int_token->len;
-	return (g_tok_gen_cbs[TOKEN_WORD](lrtok, int_token));
+	char	current;
+
+	current = *int_token->cur;
+	while (current != '\0' && !ft_ismeta(current) && !ft_isspace(current))
+	{
+		++int_token->cur;
+		if (current == '"')
+			return (_state_doublequote(lrtok, int_token));
+		if (current == '\'')
+			return (_state_quote(lrtok, int_token));
+		if (current == '$')
+		{
+			if (_state_dollar(lrtok, int_token))
+			{
+				dyn_str_destroy(&int_token->word_read);
+				return (1);
+			}
+		}
+		else if (dyn_str_pushback(&int_token->word_read, current))
+			return (1);
+		current = *int_token->cur;
+	}
+	return (_token_gen_word(lrtok, int_token->word_read.str));
+}
+
+static int	_state_quote(
+				t_lr_token *lrtok,
+				t_int_token *int_token
+				)
+{
+	char	current;
+
+	current = *int_token->cur;
+	while (current != '\'')
+	{
+		++int_token->cur;
+		if (current == '\0')
+		{
+			dyn_str_destroy(&int_token->word_read);
+			return (1);
+		}
+		if (dyn_str_pushback(&int_token->word_read, current))
+			return (1);
+		current = *int_token->cur;
+	}
+	++int_token->cur;
+	return (_state_word(lrtok, int_token));
+}
+
+static int	_state_doublequote(
+				t_lr_token *lrtok,
+				t_int_token *int_token
+				)
+{
+	char	current;
+
+	current = *int_token->cur;
+	while (current != '\"')
+	{
+		++int_token->cur;
+		if (current == '\0')
+		{
+			dyn_str_destroy(&int_token->word_read);
+			return (1);
+		}
+		if (current == '$')
+		{
+			if (_state_dollar(lrtok, int_token))
+			{
+				dyn_str_destroy(&int_token->word_read);
+				return (1);
+			}
+		}
+		else if (dyn_str_pushback(&int_token->word_read, current))
+			return (1);
+		current = *int_token->cur;
+	}
+	++int_token->cur;
+	return (_state_word(lrtok, int_token));
 }
