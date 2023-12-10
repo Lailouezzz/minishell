@@ -9,7 +9,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/bin/minishell",
-			"args": ["wc -l > bddd c"],
+			"args": ["<a >b test -l > c ffdsfsd >fdsfds"],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",
 			"environment": [],

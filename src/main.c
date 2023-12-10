@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/01 23:08:17 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/10 13:41:40 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,42 +34,11 @@
 #include "table.h"
 #include "ast.h"
 
-static void	command_print(t_command *command)
-{
-	char	**pstr;
-	size_t	k;
-
-	printf("Programme name: %s\nargs: ", command->pn);
-	pstr = command->args;
-	while (*pstr != NULL)
-	{
-		printf("\"%s\" ", *pstr);
-		++pstr;
-	}
-	printf("NULL\n");
-	k = 0;
-	if (command->cio == NULL)
-		return ;
-	while (k < command->cio->used)
-	{
-		if (command->cio->io_infos[k]->type == IO_IN)
-			printf("IN file: ");
-		if (command->cio->io_infos[k]->type == IO_APPEND)
-			printf("APPEND file: ");
-		if (command->cio->io_infos[k]->type == IO_OUT)
-			printf("OUT file: ");
-		if (command->cio->io_infos[k]->type == IO_HEREDOC)
-			printf("HEREDOC: ");
-		printf("\"%s\"\n", command->cio->io_infos[k]->file);
-		++k;
-	}
-}
-
 int	main(int argc, char **argv)
 {
 	t_lr_parser_ctx	ctx;
 	t_lr_token		lrtok;
-	t_command		*data;
+	void			*data;
 	const char		*pstr;
 	int				r;
 
@@ -102,8 +71,6 @@ int	main(int argc, char **argv)
 			return (EXIT_FAILURE);
 		}
 	}
-	command_print(data);
 	lr_parser_destroy(&ctx);
-	command_destroy(data);
 	return (EXIT_SUCCESS);
 }

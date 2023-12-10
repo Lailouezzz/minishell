@@ -1,6 +1,6 @@
 command_line ::= and_or
 
-and_or ::= pipeline | and_or OR pipeline | and_or AND pipeline
+and_or ::= pipeline | and_or AND_OR pipeline
 
 pipeline ::= command | pipeline '|' command
 

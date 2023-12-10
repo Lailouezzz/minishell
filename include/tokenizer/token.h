@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 00:11:00 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/09 16:53:11 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/10 13:39:45 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,21 @@ typedef enum e_io_type
 }	t_io_type;
 
 /**
+ * @enum e_logic_type
+ * @brief The logic type.
+ */
+typedef enum e_logic_type
+{
+	/** @brief Logic AND "&&" */
+	LOGIC_AND,
+
+	/** @brief Logic OR "||" */
+	LOGIC_OR,
+
+	LOGIC__COUNT,
+}	t_logic_type;
+
+/**
  * @enum e_token_type
  * @brief The token (lexeme type).
  */
@@ -59,6 +74,18 @@ typedef enum e_token_type
 
 	/** @brief Describe a redirection mode. {"<", "<<", ">>", ">"} */
 	TOKEN_IO,
+
+	/** @brief Describe a logic operation. {"&&", "||"} */
+	TOKEN_AND_OR,
+
+	/** @brief Describe a pipe '|' */
+	TOKEN_PIPE,
+
+	/** @brief Open bracket '(' */
+	TOKEN_OBRACKET,
+
+	/** @brief Close bracket ')' */
+	TOKEN_CBRACKET,
 
 	/** @brief Describe the end */
 	TOKEN_END,
