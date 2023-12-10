@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 02:56:39 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/10 14:56:18 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/10 16:57:12 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,8 @@ const t_lr_action	g_lr_table[STATE__COUNT][TOKEN__COUNT] = {
 [TOKEN_AND_OR] = {ACTION_REDUCE, .data.reduce_id = PROD_SIMPLE_COMMAND__PNARL},
 [TOKEN_PIPE] = {ACTION_REDUCE, .data.reduce_id = PROD_SIMPLE_COMMAND__PNARL},
 [TOKEN_OBRACKET] = {ACTION_ERROR, {}},
-[TOKEN_CBRACKET] = {ACTION_REDUCE, .data.reduce_id = PROD_SIMPLE_COMMAND__PNARL},
+[TOKEN_CBRACKET] = {ACTION_REDUCE,
+	.data.reduce_id = PROD_SIMPLE_COMMAND__PNARL},
 [TOKEN_END] = {ACTION_REDUCE, .data.reduce_id = PROD_SIMPLE_COMMAND__PNARL},
 },
 [5] = {
