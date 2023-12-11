@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 15:22:16 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 00:09:32 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/11 12:41:00 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ static const char	*_expand_dollar(
 	if (dyn_str_init(&dyn_str))
 		return (NULL);
 	while (!ft_ismeta(**start) && !ft_isspace(**start) && **start != '\0'
-		&& **start != '"' && **start != '\'')
+		&& **start != '"' && **start != '\'' && **start != '$')
 	{
 		if (dyn_str_pushback(&dyn_str, **start))
 			return (NULL);
@@ -171,8 +171,14 @@ static int	_state_dollar(
 	expended = _expand_dollar(&int_token->cur);
 	if (expended == NULL)
 		return (1);
-	if (dyn_str_cat(&int_token->word_read, expended))
-		return (1);
+	if (*expended != '\0')
+	{
+		if (int_token->word_read.str != NULL)
+			return (dyn_str_cat(&int_token->word_read, expended));
+		else
+			return (dyn_str_init(&int_token->word_read)
+				|| dyn_str_cat(&int_token->word_read, expended));
+	}
 	return (0);
 }
 
