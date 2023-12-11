@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lr_token_list.c                                    :+:      :+:    :+:   */
+/*   io_info.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/11 13:52:39 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 18:47:25 by ale-boud         ###   ########.fr       */
+/*   Created: 2023/12/11 20:11:32 by ale-boud          #+#    #+#             */
+/*   Updated: 2023/12/11 22:55:18 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file lr_token_list.c
+ * @file io_info.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief Implementation of lr_token dynamic list.
+ * @brief AST io info function implementation.
  * @date 2023-12-11
  * @copyright Copyright (c) 2023
  */
@@ -24,10 +24,7 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-#include "tokenizer/lr_token_list.h"
-#include "tokenizer/tokenizer.h"
-
-#include "utils.h"
+#include "parser/ast.h"
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -35,71 +32,39 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-int	lrtoks_init(
-		t_lr_token_list *lrtoks
-		)
-{
-	lrtoks->used = 0;
-	lrtoks->alloced = 1;
-	lrtoks->lrtoks = malloc(sizeof(*lrtoks->lrtoks) * lrtoks->alloced);
-	if (lrtoks->lrtoks == NULL)
-		return (1);
-	return (0);
-}
-
-int	lrtoks_pushback(
-		t_lr_token_list *lrtoks,
-		const t_lr_token *lrtok
-		)
-{
-	void	*tmp;
-
-	if (lrtoks->used >= lrtoks->alloced)
-	{
-		tmp = lrtoks->lrtoks;
-		lrtoks->lrtoks = ft_realloc(lrtoks->lrtoks,
-				lrtoks->alloced * sizeof(*lrtoks->lrtoks),
-				lrtoks->alloced * sizeof(*lrtoks->lrtoks) * 2);
-		if (lrtoks->lrtoks == NULL)
-		{
-			free(tmp);
-			return (1);
-		}
-		lrtoks->alloced *= 2;
-	}
-	lrtoks->lrtoks[lrtoks->used++] = *lrtok;
-	return (0);
-}
-
-void	lrtoks_destroy(
-			t_lr_token_list *lrtoks
-			)
-{
-	size_t	k;
-
-	k = 0;
-	while (k < lrtoks->used)
-	{
-		if (g_tok_free_cbs[lrtoks->lrtoks[k].id] != NULL)
-			g_tok_free_cbs[lrtoks->lrtoks[k].id](&lrtoks->lrtoks[k].data);
-		++k;
-	}
-	if (lrtoks->lrtoks != NULL)
-		free(lrtoks->lrtoks);
-}
-
-t_lr_token	*lrtoks_end(
-				t_lr_token_list *lrtoks
+t_io_info	*io_info_create(
+				t_io_type type,
+				char *file
 				)
 {
-	if (lrtoks->lrtoks == NULL)
+	t_io_info	*io_info;
+
+	io_info = malloc(sizeof(*io_info));
+	if (io_info == NULL)
 		return (NULL);
-	return (lrtoks->lrtoks + lrtoks->used - 1);
+	io_info->io_type = type;
+	io_info->file = file;
+	return (io_info);
 }
 
-size_t	lrtoks_size(
-			t_lr_token_list *lrtoks
+void	io_info_destroy(
+			t_io_info *io_info
 			)
 {
-	return (lrtoks->used);
+	if (io_info != NULL)
+	{
+		io_info_free(io_info);
+		free(io_info);
+	}
+}
+
+void	io_info_free(
+			t_io_info *io_info
+			)
+{
+	if (io_info != NULL)
+	{
+		if (io_info->file != NULL)
+			free(io_info->file);
+	}
 }

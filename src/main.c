@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 17:48:40 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/11 23:42:55 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,16 @@
 #include <readline/readline.h>
 #include <lr_parser.h>
 
-#include "prod.h"
-
+#include "parser/prod.h"
 #include "tokenizer/tokenizer.h"
-#include "table.h"
-#include "ast.h"
+#include "parser/table.h"
+#include "parser/ast.h"
 
 int	main(void)
 {
 	t_lr_parser_ctx	ctx;
 	t_lr_token_list	lrtoks;
-	void			*data;
+	t_command_line	*data;
 	char			*pstr;
 	int				r;
 
@@ -90,7 +89,7 @@ int	main(void)
 					{printf("TOKEN_WORD: %s\n", lrtok->data.word);}
 				else
 					printf("%s\n", convtable[lrtok->id]);
-				r = lr_parser_exec(&ctx, lrtok, &data);
+				r = lr_parser_exec(&ctx, lrtok, (void **)&data);
 				if (r == MP_ERROR)
 				{
 					fprintf(stderr, "Syntax error!\n");
@@ -104,7 +103,7 @@ int	main(void)
 				}
 				++k;
 			}
-			lrtoks_destroy(&lrtoks);
+			free(lrtoks.lrtoks);
 			if (brk)
 				break ;
 			// if (lrtok.id == TOKEN_WORD)
@@ -131,6 +130,8 @@ int	main(void)
 			// }
 		}
 		free(tmp);
+		if (r == MP_ACCEPT)
+			command_line_destroy(data);
 		pstr = readline("minishell> ");
 		tmp = pstr;
 	}

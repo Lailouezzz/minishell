@@ -1,22 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ast.c                                              :+:      :+:    :+:   */
+/*   table.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/29 08:25:01 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/10 13:41:18 by ale-boud         ###   ########.fr       */
+/*   Created: 2023/11/29 02:31:34 by ale-boud          #+#    #+#             */
+/*   Updated: 2023/12/11 18:47:47 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file ast.c
+ * @file table.h
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief The AST helpers.
+ * @brief The LR tables definition.
+ * @see	https://dpt-info-sciences.univ-rouen.fr/~bedonnic/ :3
  * @date 2023-11-29
  * @copyright Copyright (c) 2023
  */
+
+#ifndef TABLE_H
+# define TABLE_H
+
+// ************************************************************************** //
+// *                                                                        * //
+// * Defines.                                                              * //
+// *                                                                        * //
+// ************************************************************************** //
+
+# define STATE__COUNT 29
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -24,40 +36,16 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-#include <stdlib.h>
-
-#include "ast.h"
-
-#include "utils.h"
+# include "tokenizer/token.h"
+# include "parser/prod.h"
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Helper function definition.                                            * //
+// * LR tables definition.                                                  * //
 // *                                                                        * //
 // ************************************************************************** //
 
-static void	_strs_free(
-				char **str
-				);
+extern const t_lr_action	g_lr_table[STATE__COUNT][TOKEN__COUNT];
+extern const t_lr_state_id	g_lr_goto_table[STATE__COUNT][PROD__COUNT];
 
-// ************************************************************************** //
-// *                                                                        * //
-// * Header functions.                                                      * //
-// *                                                                        * //
-// ************************************************************************** //
-
-
-
-// ************************************************************************** //
-// *                                                                        * //
-// * Helper function implementation.                                        * //
-// *                                                                        * //
-// ************************************************************************** //
-
-static void	_strs_free(
-				char **str
-				)
-{
-	while (*str != NULL)
-		free(*(str++));
-}
+#endif

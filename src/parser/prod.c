@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/29 02:53:20 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/10 19:44:03 by ale-boud         ###   ########.fr       */
+/*   Created: 2023/12/11 22:32:35 by ale-boud          #+#    #+#             */
+/*   Updated: 2023/12/11 23:04:31 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-#include "ast.h"
-#include "prod.h"
+#include "parser/ast.h"
+#include "parser/prod.h"
 
 #include "utils.h"
 
@@ -74,9 +74,17 @@ void	*_prod_simple_command__rlpn(
 			void *usrptr
 			)
 {
+	t_redirect_list *const	rl = item[0].data.derived.data;
+	t_progname const		pn = item[1].data.derived.data;
+	t_simple_command		*sc;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	sc = simple_command_create(pn);
+	if (sc == NULL)
+		return (redirect_list_destroy(rl), NULL);
+	if (simple_command_add_rl(sc, rl))
+		return (NULL);
+	return (sc);
 }
 
 void	_free_simple_command__rlpn(
@@ -84,8 +92,8 @@ void	_free_simple_command__rlpn(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	simple_command_destroy(to_free);
 }
 
 void	*_prod_simple_command__1(
@@ -93,9 +101,10 @@ void	*_prod_simple_command__1(
 			void *usrptr
 			)
 {
+	t_progname const	pn = item[0].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (simple_command_create(pn));
 }
 
 void	_free_simple_command__1(
@@ -103,8 +112,8 @@ void	_free_simple_command__1(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	simple_command_destroy(to_free);
 }
 
 void	*_prod_simple_command__pnarl(
@@ -112,9 +121,17 @@ void	*_prod_simple_command__pnarl(
 			void *usrptr
 			)
 {
+	t_progname const			pn = item[0].data.derived.data;
+	t_args_redirect_list *const	arl = item[1].data.derived.data;
+	t_simple_command		*sc;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	sc = simple_command_create(pn);
+	if (sc == NULL)
+		return (args_redirect_list_destroy(arl), NULL);
+	if (simple_command_add_arl(sc, arl))
+		return (NULL);
+	return (sc);
 }
 
 void	_free_simple_command__pnarl(
@@ -122,8 +139,8 @@ void	_free_simple_command__pnarl(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	simple_command_destroy(to_free);
 }
 
 void	*_prod_simple_command__3(
@@ -131,9 +148,21 @@ void	*_prod_simple_command__3(
 			void *usrptr
 			)
 {
+	t_redirect_list *const		rl = item[0].data.derived.data;
+	t_progname const			pn = item[1].data.derived.data;
+	t_args_redirect_list *const	arl = item[2].data.derived.data;
+	t_simple_command		*sc;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	sc = simple_command_create(pn);
+	if (sc == NULL)
+		return (args_redirect_list_destroy(arl),
+			redirect_list_destroy(rl), NULL);
+	if (simple_command_add_rl(sc, rl))
+		return (args_redirect_list_destroy(arl), NULL);
+	if (simple_command_add_arl(sc, arl))
+		return (NULL);
+	return (sc);
 }
 
 void	_free_simple_command__3(
@@ -141,8 +170,8 @@ void	_free_simple_command__3(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	simple_command_destroy(to_free);
 }
 
 void	*_prod_command_line(
@@ -150,9 +179,10 @@ void	*_prod_command_line(
 			void *usrptr
 			)
 {
+	t_and_or *const	and_or = item[0].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (command_line_create(and_or));
 }
 
 void	_free_command_line(
@@ -160,8 +190,8 @@ void	_free_command_line(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	command_line_destroy(to_free);
 }
 
 void	*_prod_command__ss1(
@@ -169,9 +199,10 @@ void	*_prod_command__ss1(
 			void *usrptr
 			)
 {
+	t_subshell *const	ss = item[0].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (command_create(ss, COMMAND_SUBSHELL));
 }
 
 void	_free_command__ss1(
@@ -179,8 +210,8 @@ void	_free_command__ss1(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	command_destroy(to_free);
 }
 
 void	*_prod_command__ss2(
@@ -188,9 +219,13 @@ void	*_prod_command__ss2(
 			void *usrptr
 			)
 {
+	t_subshell *const		ss = item[0].data.derived.data;
+	t_redirect_list *const	rl = item[1].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	if (subshell_add_rl(ss, rl))
+		return (NULL);
+	return (command_create(ss, COMMAND_SUBSHELL));
 }
 
 void	_free_command__ss2(
@@ -198,8 +233,8 @@ void	_free_command__ss2(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	command_destroy(to_free);
 }
 
 void	*_prod_command__sc(
@@ -207,9 +242,10 @@ void	*_prod_command__sc(
 			void *usrptr
 			)
 {
+	t_simple_command *const	sc = item[0].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (command_create(sc, COMMAND_SIMPLE_COMMAND));
 }
 
 void	_free_command__sc(
@@ -217,8 +253,8 @@ void	_free_command__sc(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	command_destroy(to_free);
 }
 
 void	*_prod_subshell(
@@ -226,9 +262,10 @@ void	*_prod_subshell(
 			void *usrptr
 			)
 {
+	t_and_or *const	and_or = item[1].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (subshell_create(and_or));
 }
 
 void	_free_subshell(
@@ -236,8 +273,8 @@ void	_free_subshell(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	subshell_destroy(to_free);
 }
 
 void	*_prod_and_or__1(
@@ -245,9 +282,10 @@ void	*_prod_and_or__1(
 			void *usrptr
 			)
 {
+	t_pipeline *const	pl = item[0].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (and_or_leaf(pl));
 }
 
 void	_free_and_or__1(
@@ -255,8 +293,8 @@ void	_free_and_or__1(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	and_or_destroy(to_free);
 }
 
 void	*_prod_and_or__3(
@@ -264,9 +302,12 @@ void	*_prod_and_or__3(
 			void *usrptr
 			)
 {
+	t_and_or *const		left = item[0].data.derived.data;
+	t_logic_type const	type = item[1].data.token.data.logic_type;
+	t_pipeline *const	pl = item[2].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (and_or_node(left, type, pl));
 }
 
 void	_free_and_or__3(
@@ -274,8 +315,8 @@ void	_free_and_or__3(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	and_or_destroy(to_free);
 }
 
 void	*_prod_pipeline__1(
@@ -283,9 +324,10 @@ void	*_prod_pipeline__1(
 			void *usrptr
 			)
 {
+	t_command *const	command = item[0].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (pipeline_create(command));
 }
 
 void	_free_pipeline__1(
@@ -293,8 +335,8 @@ void	_free_pipeline__1(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	pipeline_destroy(to_free);
 }
 
 void	*_prod_pipeline__3(
@@ -302,9 +344,13 @@ void	*_prod_pipeline__3(
 			void *usrptr
 			)
 {
+	t_pipeline *const	pl = item[0].data.derived.data;
+	t_command *const	command = item[2].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	if (pipeline_pushback(pl, command))
+		return (NULL);
+	return (pl);
 }
 
 void	_free_pipeline__3(
@@ -312,8 +358,8 @@ void	_free_pipeline__3(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	pipeline_destroy(to_free);
 }
 
 void	*_prod_io_info(
@@ -321,9 +367,11 @@ void	*_prod_io_info(
 			void *usrptr
 			)
 {
+	t_io_type const	type = item[0].data.token.data.io_type;
+	char *const		file = item[1].data.token.data.word;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (io_info_create(type, file));
 }
 
 void	_free_io_info(
@@ -331,8 +379,8 @@ void	_free_io_info(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	io_info_destroy(to_free);
 }
 
 void	*_prod_progname(
@@ -340,9 +388,10 @@ void	*_prod_progname(
 			void *usrptr
 			)
 {
+	char *const	word = item[0].data.token.data.word;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return ((t_progname)word);
 }
 
 void	_free_progname(
@@ -350,8 +399,8 @@ void	_free_progname(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	free(to_free);
 }
 
 void	*_prod_arg_red__arg(
@@ -359,9 +408,10 @@ void	*_prod_arg_red__arg(
 			void *usrptr
 			)
 {
+	char *const	arg = item[0].data.token.data.word;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (arg_red_create_arg(arg));
 }
 
 void	_free_arg_red__arg(
@@ -369,8 +419,8 @@ void	_free_arg_red__arg(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	arg_red_destroy(to_free);
 }
 
 void	*_prod_arg_red__io(
@@ -378,9 +428,10 @@ void	*_prod_arg_red__io(
 			void *usrptr
 			)
 {
+	t_io_info *const	io_info = item[0].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (arg_red_create_redirect(io_info));
 }
 
 void	_free_arg_red__io(
@@ -388,8 +439,8 @@ void	_free_arg_red__io(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	arg_red_destroy(to_free);
 }
 
 void	*_prod_arg_red_list__1(
@@ -397,9 +448,10 @@ void	*_prod_arg_red_list__1(
 			void *usrptr
 			)
 {
+	t_arg_red *const	ar = item[0].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (args_redirect_list_create(ar));
 }
 
 void	_free_arg_red_list__1(
@@ -407,8 +459,8 @@ void	_free_arg_red_list__1(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	args_redirect_list_destroy(to_free);
 }
 
 void	*_prod_arg_red_list__2(
@@ -416,9 +468,13 @@ void	*_prod_arg_red_list__2(
 			void *usrptr
 			)
 {
+	t_args_redirect_list *const	arl = item[0].data.derived.data;
+	t_arg_red *const			ar = item[1].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	if (args_redirect_list_pusback(arl, ar))
+		return (NULL);
+	return (arl);
 }
 
 void	_free_arg_red_list__2(
@@ -426,8 +482,8 @@ void	_free_arg_red_list__2(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	args_redirect_list_destroy(to_free);
 }
 
 void	*_prod_redirect_list__1(
@@ -435,9 +491,10 @@ void	*_prod_redirect_list__1(
 			void *usrptr
 			)
 {
+	t_io_info *const	io_info = item[0].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	return (redirect_list_create(io_info));
 }
 
 void	_free_redirect_list__1(
@@ -445,8 +502,8 @@ void	_free_redirect_list__1(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	redirect_list_destroy(to_free);
 }
 
 void	*_prod_redirect_list__2(
@@ -454,9 +511,13 @@ void	*_prod_redirect_list__2(
 			void *usrptr
 			)
 {
+	t_redirect_list *const	rl = item[0].data.derived.data;
+	t_io_info *const		io_info = item[1].data.derived.data;
+
 	(void)(usrptr);
-	(void)(item);
-	return (NULL);
+	if (redirect_list_pushback(rl, io_info))
+		return (NULL);
+	return (rl);
 }
 
 void	_free_redirect_list__2(
@@ -464,6 +525,6 @@ void	_free_redirect_list__2(
 			void *usrptr
 			)
 {
-	(void)(to_free);
 	(void)(usrptr);
+	redirect_list_destroy(to_free);
 }

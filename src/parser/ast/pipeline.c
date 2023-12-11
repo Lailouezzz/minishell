@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lr_token_list.c                                    :+:      :+:    :+:   */
+/*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/11 13:52:39 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 18:47:25 by ale-boud         ###   ########.fr       */
+/*   Created: 2023/12/11 21:53:56 by ale-boud          #+#    #+#             */
+/*   Updated: 2023/12/11 23:49:55 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file lr_token_list.c
+ * @file pipeline.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief Implementation of lr_token dynamic list.
+ * @brief AST pipeline implementation.
  * @date 2023-12-11
  * @copyright Copyright (c) 2023
  */
@@ -24,8 +24,7 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-#include "tokenizer/lr_token_list.h"
-#include "tokenizer/tokenizer.h"
+#include "parser/ast.h"
 
 #include "utils.h"
 
@@ -35,71 +34,65 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-int	lrtoks_init(
-		t_lr_token_list *lrtoks
-		)
+t_pipeline	*pipeline_create(
+				t_command *command
+				)
 {
-	lrtoks->used = 0;
-	lrtoks->alloced = 1;
-	lrtoks->lrtoks = malloc(sizeof(*lrtoks->lrtoks) * lrtoks->alloced);
-	if (lrtoks->lrtoks == NULL)
-		return (1);
-	return (0);
+	t_pipeline	*pl;
+
+	pl = malloc(sizeof(*pl));
+	if (pl == NULL)
+		return (command_destroy(command), NULL);
+	pl->alloced = 1;
+	pl->used = 1;
+	pl->commands = malloc(sizeof(*pl->commands) * pl->alloced);
+	if (pl->commands == NULL)
+		return (free(pl), command_destroy(command), NULL);
+	pl->commands[0] = *command;
+	free(command);
+	return (pl);
 }
 
-int	lrtoks_pushback(
-		t_lr_token_list *lrtoks,
-		const t_lr_token *lrtok
+int	pipeline_pushback(
+		t_pipeline *pl,
+		t_command *command
 		)
 {
-	void	*tmp;
+	t_command	*tmp;
 
-	if (lrtoks->used >= lrtoks->alloced)
+	if (pl->used >= pl->alloced)
 	{
-		tmp = lrtoks->lrtoks;
-		lrtoks->lrtoks = ft_realloc(lrtoks->lrtoks,
-				lrtoks->alloced * sizeof(*lrtoks->lrtoks),
-				lrtoks->alloced * sizeof(*lrtoks->lrtoks) * 2);
-		if (lrtoks->lrtoks == NULL)
-		{
-			free(tmp);
-			return (1);
-		}
-		lrtoks->alloced *= 2;
+		tmp = ft_realloc(pl->commands,
+				pl->alloced * sizeof(*pl->commands),
+				pl->alloced * 2 * sizeof(*pl->commands));
+		if (tmp == NULL)
+			return (pipeline_destroy(pl), command_destroy(command), 1);
+		pl->alloced *= 2;
+		pl->commands = tmp;
 	}
-	lrtoks->lrtoks[lrtoks->used++] = *lrtok;
+	pl->commands[pl->used++] = *command;
+	free(command);
 	return (0);
 }
 
-void	lrtoks_destroy(
-			t_lr_token_list *lrtoks
+void	pipeline_destroy(
+			t_pipeline *pl
 			)
 {
 	size_t	k;
 
-	k = 0;
-	while (k < lrtoks->used)
+	if (pl != NULL)
 	{
-		if (g_tok_free_cbs[lrtoks->lrtoks[k].id] != NULL)
-			g_tok_free_cbs[lrtoks->lrtoks[k].id](&lrtoks->lrtoks[k].data);
-		++k;
+		if (pl->commands != NULL)
+		{
+			k = 0;
+			while (k < pl->used)
+			{
+				command_free(&pl->commands[k]);
+				++k;
+			}
+			free(pl->commands);
+		}
+		free(pl);
 	}
-	if (lrtoks->lrtoks != NULL)
-		free(lrtoks->lrtoks);
-}
-
-t_lr_token	*lrtoks_end(
-				t_lr_token_list *lrtoks
-				)
-{
-	if (lrtoks->lrtoks == NULL)
-		return (NULL);
-	return (lrtoks->lrtoks + lrtoks->used - 1);
-}
-
-size_t	lrtoks_size(
-			t_lr_token_list *lrtoks
-			)
-{
-	return (lrtoks->used);
 }

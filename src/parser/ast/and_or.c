@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lr_token_list.c                                    :+:      :+:    :+:   */
+/*   and_or.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/11 13:52:39 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 18:47:25 by ale-boud         ###   ########.fr       */
+/*   Created: 2023/12/11 21:34:22 by ale-boud          #+#    #+#             */
+/*   Updated: 2023/12/11 21:45:34 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file lr_token_list.c
+ * @file and_or.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief Implementation of lr_token dynamic list.
+ * @brief AST and or implementation.
  * @date 2023-12-11
  * @copyright Copyright (c) 2023
  */
@@ -24,10 +24,7 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-#include "tokenizer/lr_token_list.h"
-#include "tokenizer/tokenizer.h"
-
-#include "utils.h"
+#include "parser/ast.h"
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -35,71 +32,48 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-int	lrtoks_init(
-		t_lr_token_list *lrtoks
-		)
-{
-	lrtoks->used = 0;
-	lrtoks->alloced = 1;
-	lrtoks->lrtoks = malloc(sizeof(*lrtoks->lrtoks) * lrtoks->alloced);
-	if (lrtoks->lrtoks == NULL)
-		return (1);
-	return (0);
-}
-
-int	lrtoks_pushback(
-		t_lr_token_list *lrtoks,
-		const t_lr_token *lrtok
-		)
-{
-	void	*tmp;
-
-	if (lrtoks->used >= lrtoks->alloced)
-	{
-		tmp = lrtoks->lrtoks;
-		lrtoks->lrtoks = ft_realloc(lrtoks->lrtoks,
-				lrtoks->alloced * sizeof(*lrtoks->lrtoks),
-				lrtoks->alloced * sizeof(*lrtoks->lrtoks) * 2);
-		if (lrtoks->lrtoks == NULL)
-		{
-			free(tmp);
-			return (1);
-		}
-		lrtoks->alloced *= 2;
-	}
-	lrtoks->lrtoks[lrtoks->used++] = *lrtok;
-	return (0);
-}
-
-void	lrtoks_destroy(
-			t_lr_token_list *lrtoks
-			)
-{
-	size_t	k;
-
-	k = 0;
-	while (k < lrtoks->used)
-	{
-		if (g_tok_free_cbs[lrtoks->lrtoks[k].id] != NULL)
-			g_tok_free_cbs[lrtoks->lrtoks[k].id](&lrtoks->lrtoks[k].data);
-		++k;
-	}
-	if (lrtoks->lrtoks != NULL)
-		free(lrtoks->lrtoks);
-}
-
-t_lr_token	*lrtoks_end(
-				t_lr_token_list *lrtoks
+t_and_or	*and_or_leaf(
+				t_pipeline *pl
 				)
 {
-	if (lrtoks->lrtoks == NULL)
-		return (NULL);
-	return (lrtoks->lrtoks + lrtoks->used - 1);
+	t_and_or	*and_or;
+
+	and_or = malloc(sizeof(*and_or));
+	if (and_or == NULL)
+		return (pipeline_destroy(pl), NULL);
+	and_or->right_pipeline = pl;
+	and_or->logic_type = LOGIC_NONE;
+	and_or->left = NULL;
+	return (and_or);
 }
 
-size_t	lrtoks_size(
-			t_lr_token_list *lrtoks
+t_and_or	*and_or_node(
+				t_and_or *left,
+				t_logic_type type,
+				t_pipeline *pl
+				)
+{
+	t_and_or	*and_or;
+
+	and_or = malloc(sizeof(*and_or));
+	if (and_or == NULL)
+		return (pipeline_destroy(pl), and_or_destroy(left), NULL);
+	and_or->right_pipeline = pl;
+	and_or->logic_type = type;
+	and_or->left = left;
+	return (and_or);
+}
+
+void	and_or_destroy(
+			t_and_or *and_or
 			)
 {
-	return (lrtoks->used);
+	if (and_or != NULL)
+	{
+		if (and_or->right_pipeline != NULL)
+			pipeline_destroy(and_or->right_pipeline);
+		if (and_or->left != NULL)
+			and_or_destroy(and_or->left);
+		free(and_or);
+	}
 }

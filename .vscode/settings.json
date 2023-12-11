@@ -11,6 +11,7 @@
 	"cSpell.words": [
 		"boud",
 		"CBRACKET",
+		"commandp",
 		"destoy",
 		"doublequote",
 		"lrparser",
@@ -20,6 +21,7 @@
 		"lrtok",
 		"lrtoks",
 		"OBRACKET",
-		"popn"
+		"popn",
+		"subshell"
 	]
 }

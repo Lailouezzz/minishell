@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 00:11:00 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/10 19:25:23 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/11 18:54:10 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,9 @@ typedef enum e_logic_type
 
 	/** @brief Logic OR "||" */
 	LOGIC_OR,
+
+	/** @brief No logic operator */
+	LOGIC_NONE,
 
 	LOGIC__COUNT,
 }	t_logic_type;

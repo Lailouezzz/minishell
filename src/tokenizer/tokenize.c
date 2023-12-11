@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 15:22:16 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 17:56:09 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/11 18:48:54 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 // ************************************************************************** //
 
 #include "tokenizer/tokenizer.h"
+
 #include "utils.h"
 
 // ************************************************************************** //
@@ -151,7 +152,6 @@ static const char	*_expand_dollar(
 						)
 {
 	static const char	*dollar = "$";
-	static const char	*truc = "  EXPANDED VALUE ";
 	static const char	*void_str = "";
 	t_dyn_str			dyn_str;
 
