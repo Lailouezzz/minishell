@@ -1,20 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   dyn_str.c                                          :+:      :+:    :+:   */
+/*   lr_token_list.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/10 17:05:37 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 17:14:56 by ale-boud         ###   ########.fr       */
+/*   Created: 2023/12/11 13:52:39 by ale-boud          #+#    #+#             */
+/*   Updated: 2023/12/11 16:53:51 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file dyn_str.c
- * @author ale-boud (ale-boud@student.42lehavre.fr)
- * @brief The implementation of a dynamic stirng.
- * @date 2023-12-10
+ * @file lr_token_list.c
+ * @author ale-boud (ale-boud@student.42.fr)
+ * @brief Implementation of lr_token dynamic list.
+ * @date 2023-12-11
  * @copyright Copyright (c) 2023
  */
 
@@ -24,9 +24,9 @@
 // *                                                                        * //
 // ************************************************************************** //
 
+#include "tokenizer/lr_token_list.h"
+#include "tokenizer/tokenizer.h"
 #include "utils.h"
-
-#include "utils/dyn_str.h"
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -34,79 +34,71 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-int	dyn_str_init(
-			t_dyn_str *dstr
-			)
+int	lrtoks_init(
+		t_lr_token_list *lrtoks
+		)
 {
-	dstr->alloced = 1;
-	dstr->len = 0;
-	dstr->str = malloc(dstr->alloced + 1);
-	if (dstr->str == NULL)
+	lrtoks->used = 0;
+	lrtoks->alloced = 1;
+	lrtoks->lrtoks = malloc(sizeof(*lrtoks->lrtoks) * lrtoks->alloced);
+	if (lrtoks->lrtoks == NULL)
 		return (1);
-	dstr->str[dstr->len] = '\0';
 	return (0);
 }
 
-int	dyn_str_pushback(
-			t_dyn_str *dstr,
-			char c
-			)
+int	lrtoks_pushback(
+		t_lr_token_list *lrtoks,
+		const t_lr_token *lrtok
+		)
 {
 	void	*tmp;
 
-	if (dstr->str == NULL)
-		if (dyn_str_init(dstr))
-			return (1);
-	if (dstr->len >= dstr->alloced)
+	if (lrtoks->used >= lrtoks->alloced)
 	{
-		tmp = dstr->str;
-		dstr->str = ft_realloc(dstr->str, dstr->alloced + 1,
-				dstr->alloced * 2 + 1);
-		if (dstr->str == NULL)
+		tmp = lrtoks->lrtoks;
+		lrtoks->lrtoks = ft_realloc(lrtoks->lrtoks,
+				lrtoks->alloced * sizeof(*lrtoks->lrtoks),
+				lrtoks->alloced * sizeof(*lrtoks->lrtoks) * 2);
+		if (lrtoks->lrtoks == NULL)
 		{
 			free(tmp);
 			return (1);
 		}
-		dstr->alloced *= 2;
+		lrtoks->alloced *= 2;
 	}
-	dstr->str[dstr->len++] = c;
-	dstr->str[dstr->len] = '\0';
+	lrtoks->lrtoks[lrtoks->used++] = *lrtok;
 	return (0);
 }
 
-int	dyn_str_cat(
-			t_dyn_str *dstr,
-			const char *str
+void	lrtoks_destroy(
+			t_lr_token_list *lrtoks
 			)
 {
-	void	*tmp;
-	size_t	total_size;
+	size_t	k;
 
-	if (dstr->str == NULL)
-		if (dyn_str_init(dstr))
-			return (1);
-	total_size = ft_strlen(str) + dstr->len;
-	if (total_size >= dstr->alloced)
+	k = 0;
+	while (k < lrtoks->used)
 	{
-		tmp = dstr->str;
-		dstr->str = ft_realloc(dstr->str, dstr->alloced + 1,
-				total_size + 1);
-		if (dstr->str == NULL)
-		{
-			free(tmp);
-			return (1);
-		}
-		dstr->alloced = total_size;
+		if (g_tok_free_cbs[lrtoks->lrtoks[k].id] != NULL)
+			g_tok_free_cbs[lrtoks->lrtoks[k].id](&lrtoks->lrtoks[k].data);
+		++k;
 	}
-	ft_memcpy(dstr->str + dstr->len, str, ft_strlen(str) + 1);
-	dstr->len = total_size;
-	return (0);
+	if (lrtoks->lrtoks != NULL)
+		free(lrtoks->lrtoks);
 }
 
-void	dyn_str_destroy(
-			t_dyn_str *dstr
+t_lr_token	*lrtoks_end(
+				t_lr_token_list *lrtoks
+				)
+{
+	if (lrtoks->lrtoks == NULL)
+		return (NULL);
+	return (lrtoks->lrtoks + lrtoks->used - 1);
+}
+
+size_t	lrtoks_size(
+			t_lr_token_list *lrtoks
 			)
 {
-	if (dstr->str != NULL)
-		free(dstr->str);
+	return (lrtoks->used);
 }

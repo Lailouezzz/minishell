@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 00:05:06 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/11 17:48:40 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,12 @@
 #include "table.h"
 #include "ast.h"
 
-int	main(int argc, char **argv)
+int	main(void)
 {
 	t_lr_parser_ctx	ctx;
-	t_lr_token		lrtok;
+	t_lr_token_list	lrtoks;
 	void			*data;
-	const char		*pstr;
+	char			*pstr;
 	int				r;
 
 	ctx.prod_count = PROD__COUNT;
@@ -74,34 +74,61 @@ int	main(int argc, char **argv)
 	{
 		while (42)
 		{
-			if (tokenize(&lrtok, &pstr))
+			if (tokenize(&lrtoks, (const char **)&pstr))
 			{
 				printf("TOKENIZE ERROR\n");
 				lr_parser_destroy(&ctx);
+				free(tmp);
 				return (EXIT_FAILURE);
 			}
-			if (lrtok.id == TOKEN_WORD)
+			size_t k = 0;
+			int brk = 0;
+			while (k < lrtoks.used)
 			{
-				printf("TOKEN_WORD: %s\n", lrtok.data.word);
+				t_lr_token *const lrtok = lrtoks.lrtoks + k;
+				if (lrtok->id == TOKEN_WORD)
+					{printf("TOKEN_WORD: %s\n", lrtok->data.word);}
+				else
+					printf("%s\n", convtable[lrtok->id]);
+				r = lr_parser_exec(&ctx, lrtok, &data);
+				if (r == MP_ERROR)
+				{
+					fprintf(stderr, "Syntax error!\n");
+					lr_parser_init(&ctx, NULL);
+					brk = 1;
+				}
+				if (r == MP_ACCEPT)
+				{
+					printf("CONGRATULATION YOU KNOW SHELL\n");
+					brk = 1;
+				}
+				++k;
 			}
-			else
-			{
-				printf("%s\n", convtable[lrtok.id]);
-			}
-			r = lr_parser_exec(&ctx, &lrtok, (void **)&data);
-			if (r == MP_ERROR)
-			{
-				if (g_tok_free_cbs[lrtok.id] != NULL)
-					g_tok_free_cbs[lrtok.id](&lrtok.data);
-				fprintf(stderr, "Syntax error!\n");
-				lr_parser_init(&ctx, NULL);
+			lrtoks_destroy(&lrtoks);
+			if (brk)
 				break ;
-			}
-			if (r == MP_ACCEPT)
-			{
-				printf("Expression accepted.\n");
-				break ;
-			}
+			// if (lrtok.id == TOKEN_WORD)
+			// {
+			// 	printf("TOKEN_WORD: %s\n", lrtok.data.word);
+			// }
+			// else
+			// {
+			// 	printf("%s\n", convtable[lrtok.id]);
+			// }
+			// r = lr_parser_exec(&ctx, &lrtok, (void **)&data);
+			// if (r == MP_ERROR)
+			// {
+			// 	if (g_tok_free_cbs[lrtok.id] != NULL)
+			// 		g_tok_free_cbs[lrtok.id](&lrtok.data);
+			// 	fprintf(stderr, "Syntax error!\n");
+			// 	lr_parser_init(&ctx, NULL);
+			// 	break ;
+			// }
+			// if (r == MP_ACCEPT)
+			// {
+			// 	printf("Expression accepted.\n");
+			// 	break ;
+			// }
 		}
 		free(tmp);
 		pstr = readline("minishell> ");

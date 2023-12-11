@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 14:12:05 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/10 21:10:39 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/11 14:07:04 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 
 # include <lr_token.h>
 
+# include "tokenizer/lr_token_list.h"
 # include "utils/dyn_str.h"
 # include "token.h"
 
@@ -56,12 +57,6 @@ typedef struct s_int_token
 	 */
 	t_dyn_str		word_read;
 }	t_int_token;
-
-/**
- * @brief Token generation callback.
- */
-typedef int						(*t_token_gen_cb)(t_lr_token *lrtok,
-	const t_int_token *int_token);
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -183,13 +178,13 @@ void	_token_free_word_cb(
 
 /**
  * @brief 
- * @param lrtok Store the @s_lr_token read.
+ * @param lrtoks Store the @s_lr_token_list read.
  * @param start Pointer to a char in a null-terminated string.
  * 		After the call this pointer is placed at the end of the read token.
  * @return int 0 on success. non-null value on error.
  */
 int		tokenize(
-			t_lr_token *lrtok,
+			t_lr_token_list *lrtoks,
 			const char **start
 			);
 
