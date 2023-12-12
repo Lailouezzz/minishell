@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 23:42:55 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/12 00:03:00 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,8 @@ int	main(void)
 				if (r == MP_ERROR)
 				{
 					fprintf(stderr, "Syntax error!\n");
+					if (g_tok_free_cbs[lrtok->id] != NULL)
+						g_tok_free_cbs[lrtok->id](&lrtok->data);
 					lr_parser_init(&ctx, NULL);
 					brk = 1;
 				}
