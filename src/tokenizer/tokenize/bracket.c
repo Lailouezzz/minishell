@@ -1,25 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.h                                            :+:      :+:    :+:   */
+/*   bracket.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/12 01:39:12 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/14 03:03:02 by ale-boud         ###   ########.fr       */
+/*   Created: 2023/12/14 03:13:18 by ale-boud          #+#    #+#             */
+/*   Updated: 2023/12/14 03:13:54 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file error.h
+ * @file bracket.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief Definition of minishell error.
- * @date 2023-12-12
+ * @brief The bracket token generator.
+ * @date 2023-12-14
  * @copyright Copyright (c) 2023
  */
-
-#ifndef ERROR_H
-# define ERROR_H
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -27,13 +24,26 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-# include "core/env.h"
-# include "core/error_code.h"
+#include "tokenizer/tokenizer.h"
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Function definition.                                                   * //
+// * Token generator.                                                       * //
 // *                                                                        * //
 // ************************************************************************** //
 
-#endif
+int	_token_gen_obracket(
+		t_lr_token *lrtok
+		)
+{
+	lrtok->id = TOKEN_OBRACKET;
+	return (0);
+}
+
+int	_token_gen_cbracket(
+		t_lr_token *lrtok
+		)
+{
+	lrtok->id = TOKEN_CBRACKET;
+	return (0);
+}

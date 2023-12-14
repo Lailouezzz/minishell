@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 19:40:38 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 23:41:16 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/14 03:03:53 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,9 +71,9 @@ t_args_redirect_list	*args_redirect_list_create(
 }
 
 int	args_redirect_list_pusback(
-							t_args_redirect_list *arl,
-							t_arg_red *ar
-							)
+		t_args_redirect_list *arl,
+		t_arg_red *ar
+		)
 {
 	if (ar->type == AR_ARG)
 	{

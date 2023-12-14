@@ -35,7 +35,7 @@ mclean: clean
 
 # Clean everything
 
-fclean: clean 
+fclean: clean cleandoc
 	$(call rmsg,Removing the output binary folder ($(OUTDIR)))
 	$(call qcmd,$(RM) -rf $(OUTDIR))
 

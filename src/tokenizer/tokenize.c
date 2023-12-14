@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 15:22:16 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 18:48:54 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/14 03:21:41 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,7 +264,7 @@ static int	_state_initial(
 		return (_token_gen_cbracket(&lrtok) || lrtoks_pushback(lrtoks, &lrtok));
 	if (current == '*' && (ft_ismeta(*int_token->cur)
 			|| ft_isspace(*int_token->cur) || *int_token->cur == '\0'))
-		return (_token_gen_wildcard(&lrtok) || lrtoks_pushback(lrtoks, &lrtok));
+		return (_token_gen_end(&lrtok) || lrtoks_pushback(lrtoks, &lrtok));
 	if (current == '$')
 		if (_state_dollar(lrtoks, int_token))
 			return (1);

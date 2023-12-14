@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 14:12:05 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 18:47:58 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/14 03:12:33 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,24 @@ typedef struct s_int_token
 	 */
 	t_dyn_str		word_read;
 }	t_int_token;
+
+// ************************************************************************** //
+// *                                                                        * //
+// * Function prototypes.                                                   * //
+// *                                                                        * //
+// ************************************************************************** //
+
+/**
+ * @brief 
+ * @param lrtoks Store the @s_lr_token_list read.
+ * @param start Pointer to a char in a null-terminated string.
+ * 		After the call this pointer is placed at the end of the read token.
+ * @return int 0 on success. non-null value on error.
+ */
+int		tokenize(
+			t_lr_token_list *lrtoks,
+			const char **start
+			);
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -147,15 +165,6 @@ int		_token_gen_end(
 			t_lr_token *lrtok
 			);
 
-/**
- * @brief Generate a TOKEN__WILDCARD
- * @param lrtok Store the @s_lr_token generated.
- * @return int 0 on success. non-null value on error.
- */
-int		_token_gen_wildcard(
-			t_lr_token *lrtok
-			);
-
 // ************************************************************************** //
 // *                                                                        * //
 // * Token free callbacks prototypes.                                       * //
@@ -168,24 +177,6 @@ int		_token_gen_wildcard(
  */
 void	_token_free_word_cb(
 			t_lr_token_type *data
-			);
-
-// ************************************************************************** //
-// *                                                                        * //
-// * Function prototypes.                                                   * //
-// *                                                                        * //
-// ************************************************************************** //
-
-/**
- * @brief 
- * @param lrtoks Store the @s_lr_token_list read.
- * @param start Pointer to a char in a null-terminated string.
- * 		After the call this pointer is placed at the end of the read token.
- * @return int 0 on success. non-null value on error.
- */
-int		tokenize(
-			t_lr_token_list *lrtoks,
-			const char **start
 			);
 
 #endif

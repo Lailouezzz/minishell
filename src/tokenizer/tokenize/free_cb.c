@@ -1,25 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.h                                            :+:      :+:    :+:   */
+/*   free_cb.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/12 01:39:12 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/14 03:03:02 by ale-boud         ###   ########.fr       */
+/*   Created: 2023/12/14 03:15:42 by ale-boud          #+#    #+#             */
+/*   Updated: 2023/12/14 03:16:19 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file error.h
+ * @file free_cb.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief Definition of minishell error.
- * @date 2023-12-12
+ * @brief The token free callback.
+ * @date 2023-12-14
  * @copyright Copyright (c) 2023
  */
-
-#ifndef ERROR_H
-# define ERROR_H
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -27,13 +24,17 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-# include "core/env.h"
-# include "core/error_code.h"
+#include "tokenizer/tokenizer.h"
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Function definition.                                                   * //
+// * Free callback.                                                         * //
 // *                                                                        * //
 // ************************************************************************** //
 
-#endif
+void	_token_free_word_cb(
+			t_lr_token_type *data
+			)
+{
+	free(data->word);
+}

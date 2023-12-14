@@ -1,25 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.h                                            :+:      :+:    :+:   */
+/*   token_gen_table.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/12 01:39:12 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/14 03:03:02 by ale-boud         ###   ########.fr       */
+/*   Created: 2023/11/30 14:27:31 by ale-boud          #+#    #+#             */
+/*   Updated: 2023/12/14 03:21:12 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file error.h
- * @author ale-boud (ale-boud@student.42.fr)
- * @brief Definition of minishell error.
- * @date 2023-12-12
+ * @file token_gen_table.c
+ * @author ale-boud (ale-boud@student.42lehavre.fr)
+ * @brief The token generator table.
+ * @date 2023-11-30
  * @copyright Copyright (c) 2023
  */
-
-#ifndef ERROR_H
-# define ERROR_H
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -27,13 +24,24 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-# include "core/env.h"
-# include "core/error_code.h"
+#include <stdlib.h>
+
+#include "tokenizer/tokenizer.h"
+
+#include "utils.h"
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Function definition.                                                   * //
+// * The token free callbacks.                                              * //
 // *                                                                        * //
 // ************************************************************************** //
 
-#endif
+const t_lr_token_free_cb	g_tok_free_cbs[TOKEN__COUNT] = {
+[TOKEN_WORD] = _token_free_word_cb,
+[TOKEN_IO] = NULL,
+[TOKEN_AND_OR] = NULL,
+[TOKEN_PIPE] = NULL,
+[TOKEN_OBRACKET] = NULL,
+[TOKEN_CBRACKET] = NULL,
+[TOKEN_END] = NULL,
+};
