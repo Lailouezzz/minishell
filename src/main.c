@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/12 00:03:00 by ale-boud         ###   ########.fr       */
+/*   Updated: 2023/12/14 02:38:53 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	main(void)
 	ctx.token_free_cbs = (t_lr_token_free_cb *)g_tok_free_cbs;
 	if (lr_parser_init(&ctx, NULL))
 		return (EXIT_FAILURE);
-	r = MP_OK;
+	r = LR_OK;
 	pstr = readline("minishell> ");
 	void *tmp = pstr;
 	const char *convtable[TOKEN__COUNT] = {
@@ -90,7 +90,7 @@ int	main(void)
 				else
 					printf("%s\n", convtable[lrtok->id]);
 				r = lr_parser_exec(&ctx, lrtok, (void **)&data);
-				if (r == MP_ERROR)
+				if (r == LR_SYNTAX_ERROR)
 				{
 					fprintf(stderr, "Syntax error!\n");
 					if (g_tok_free_cbs[lrtok->id] != NULL)
@@ -98,10 +98,15 @@ int	main(void)
 					lr_parser_init(&ctx, NULL);
 					brk = 1;
 				}
-				if (r == MP_ACCEPT)
+				else if (r == LR_ACCEPT)
 				{
 					printf("CONGRATULATION YOU KNOW SHELL\n");
 					brk = 1;
+				}
+				else if (r != LR_OK)
+				{
+					printf("Unknown error.\n");
+					exit(EXIT_FAILURE);
 				}
 				++k;
 			}
@@ -132,7 +137,7 @@ int	main(void)
 			// }
 		}
 		free(tmp);
-		if (r == MP_ACCEPT)
+		if (r == LR_ACCEPT)
 			command_line_destroy(data);
 		pstr = readline("minishell> ");
 		tmp = pstr;
