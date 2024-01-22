@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:08:41 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/14 03:03:07 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 06:56:44 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,15 @@
 
 # include <stdlib.h>
 
+# include "core/status_code.h"
+
 // ************************************************************************** //
 // *                                                                        * //
 // * Structure definition.                                                  * //
 // *                                                                        * //
 // ************************************************************************** //
+
+# define MS_PROMPT "Bite> "
 
 typedef char *	t_env_var;
 
@@ -47,7 +51,7 @@ typedef struct s_env
 typedef struct s_env_ctx
 {
 	char		*pn;
-	int			current_code;
+	t_ms_status	current_code;
 	t_env		env;
 }	t_env_ctx;
 

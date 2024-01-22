@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dyn_str.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/10 16:59:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/10 17:05:11 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 05:11:38 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,22 +48,22 @@ typedef struct s_dyn_str
 // *                                                                        * //
 // ************************************************************************** //
 
-int		dyn_str_init(
-			t_dyn_str *dstr
-			);
+t_ms_error	dyn_str_init(
+				t_dyn_str *dstr
+				);
 
-int		dyn_str_pushback(
-			t_dyn_str *dstr,
-			char c
-			);
+t_ms_error	dyn_str_pushback(
+				t_dyn_str *dstr,
+				char c
+				);
 
-int		dyn_str_cat(
-			t_dyn_str *dstr,
-			const char *str
-			);
+t_ms_error	dyn_str_cat(
+				t_dyn_str *dstr,
+				const char *str
+				);
 
-void	dyn_str_destroy(
-			t_dyn_str *dstr
-			);
+void		dyn_str_destroy(
+				t_dyn_str *dstr
+				);
 
 #endif

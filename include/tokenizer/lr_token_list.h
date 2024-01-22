@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 13:45:37 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 13:54:35 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 05:04:21 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@
 
 # include <lr_token.h>
 
+# include "core/error_code.h"
+
 // ************************************************************************** //
 // *                                                                        * //
 // * Structure definition                                                   * //
@@ -52,11 +54,11 @@ typedef struct s_lr_token_list
 // *                                                                        * //
 // ************************************************************************** //
 
-int			lrtoks_init(
+t_ms_error	lrtoks_init(
 				t_lr_token_list *lrtoks
 				);
 
-int			lrtoks_pushback(
+t_ms_error	lrtoks_pushback(
 				t_lr_token_list *lrtoks,
 				const t_lr_token *lrtok
 				);

@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 13:52:39 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 18:47:25 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 05:46:36 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@
 #include "tokenizer/lr_token_list.h"
 #include "tokenizer/tokenizer.h"
 
+#include "core/error_code.h"
+
 #include "utils.h"
 
 // ************************************************************************** //
@@ -35,22 +37,22 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-int	lrtoks_init(
-		t_lr_token_list *lrtoks
-		)
+t_ms_error	lrtoks_init(
+				t_lr_token_list *lrtoks
+				)
 {
 	lrtoks->used = 0;
 	lrtoks->alloced = 1;
 	lrtoks->lrtoks = malloc(sizeof(*lrtoks->lrtoks) * lrtoks->alloced);
 	if (lrtoks->lrtoks == NULL)
-		return (1);
-	return (0);
+		return (MS_BAD_ALLOC);
+	return (MS_OK);
 }
 
-int	lrtoks_pushback(
-		t_lr_token_list *lrtoks,
-		const t_lr_token *lrtok
-		)
+t_ms_error	lrtoks_pushback(
+				t_lr_token_list *lrtoks,
+				const t_lr_token *lrtok
+				)
 {
 	void	*tmp;
 
@@ -63,12 +65,12 @@ int	lrtoks_pushback(
 		if (lrtoks->lrtoks == NULL)
 		{
 			free(tmp);
-			return (1);
+			return (MS_BAD_ALLOC);
 		}
 		lrtoks->alloced *= 2;
 	}
 	lrtoks->lrtoks[lrtoks->used++] = *lrtok;
-	return (0);
+	return (MS_OK);
 }
 
 void	lrtoks_destroy(

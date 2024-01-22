@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:15:15 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/12 01:55:25 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 06:55:58 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,11 @@
 // *                                                                        * //
 // ************************************************************************** //
 
+# include <lr_parser.h>
+
 # include "core/env.h"
 # include "parser/ast.h"
+# include "tokenizer/lr_token_list.h"
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -44,5 +47,32 @@ typedef struct s_exec_unit
 	char	*path;
 	int		is_builtin;
 }	t_exec_unit;
+
+typedef struct s_exec_ctx
+{
+	t_env_ctx		*env_ctx;
+	t_lr_parser_ctx	*parser_ctx;
+}	t_exec_ctx;
+
+// ************************************************************************** //
+// *                                                                        * //
+// * Function definition.                                                   * //
+// *                                                                        * //
+// ************************************************************************** //
+
+void		exec_init(
+				t_exec_ctx *ctx,
+				t_env_ctx *env_ctx,
+				t_lr_parser_ctx *parser_ctx
+				);
+
+t_ms_error	exec_exec(
+				t_exec_ctx *ctx,
+				const t_command_line *cl
+				);
+
+void		exec_loop(
+				t_exec_ctx *ctx
+				);
 
 #endif

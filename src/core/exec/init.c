@@ -1,25 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.h                                            :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/12 01:39:12 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/14 03:03:02 by ale-boud         ###   ########.fr       */
+/*   Created: 2024/01/22 03:27:27 by ale-boud          #+#    #+#             */
+/*   Updated: 2024/01/22 03:29:11 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file error.h
+ * @file init.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief Definition of minishell error.
- * @date 2023-12-12
- * @copyright Copyright (c) 2023
+ * @brief The exec init function.
+ * @date 2024-01-22
+ * @copyright Copyright (c) 2024
  */
-
-#ifndef ERROR_H
-# define ERROR_H
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -27,13 +24,20 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-# include "core/env.h"
-# include "core/error_code.h"
+#include "core/exec.h"
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Function definition.                                                   * //
+// * Header functions.                                                      * //
 // *                                                                        * //
 // ************************************************************************** //
 
-#endif
+void	exec_init(
+			t_exec_ctx *ctx,
+			t_env_ctx *env_ctx,
+			t_lr_parser_ctx *parser_ctx
+			)
+{
+	ctx->env_ctx = env_ctx;
+	ctx->parser_ctx = parser_ctx;
+}

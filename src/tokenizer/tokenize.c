@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 15:22:16 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/14 03:21:41 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 05:43:40 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static const char	*_expand_dollar(
 						const char **start
 						);
 
-static int			_flush_word_read(
+static t_ms_error	_flush_word_read(
 						t_lr_token_list *lrtoks,
 						t_int_token *int_token
 						);
@@ -53,52 +53,52 @@ static int			_flush_word_read(
 // *                                                                        * //
 // ************************************************************************** //
 
-static int			_state_dollar(
+static t_ms_error	_state_dollar(
 						t_lr_token_list *lrtoks,
 						t_int_token *int_token
 						);
 
-static int			_state_dollar_quoted(
+static t_ms_error	_state_dollar_quoted(
 						t_lr_token_list *lrtoks,
 						t_int_token *int_token
 						);
 
-static int			_state_initial(
+static t_ms_error	_state_initial(
 						t_lr_token_list *lrtoks,
 						t_int_token *int_token
 						);
 
-static int			_state_out(
+static t_ms_error	_state_out(
 						t_lr_token_list *lrtoks,
 						t_int_token *int_token
 						);
 
-static int			_state_in(
+static t_ms_error	_state_in(
 						t_lr_token_list *lrtoks,
 						t_int_token *int_token
 						);
 
-static int			_state_pipe_or(
+static t_ms_error	_state_pipe_or(
 						t_lr_token_list *lrtoks,
 						t_int_token *int_token
 						);
 
-static int			_state_and(
+static t_ms_error	_state_and(
 						t_lr_token_list *lrtoks,
 						t_int_token *int_token
 						);
 
-static int			_state_word(
+static t_ms_error	_state_word(
 						t_lr_token_list *lrtoks,
 						t_int_token *int_token
 						);
 
-static int			_state_quote(
+static t_ms_error	_state_quote(
 						t_lr_token_list *lrtoks,
 						t_int_token *int_token
 						);
 
-static int			_state_doublequote(
+static t_ms_error	_state_doublequote(
 						t_lr_token_list *lrtoks,
 						t_int_token *int_token
 						);
@@ -109,16 +109,17 @@ static int			_state_doublequote(
 // *                                                                        * //
 // ************************************************************************** //
 
-int	tokenize(
-		t_lr_token_list *lrtoks,
-		const char **start
-		)
+t_ms_error	tokenize(
+				t_lr_token_list *lrtoks,
+				const char **start
+				)
 {
 	t_int_token	int_token;
 	int			r;
 
-	if (lrtoks_init(lrtoks))
-		return (1);
+	r = lrtoks_init(lrtoks);
+	if (r != MS_OK)
+		return (r);
 	int_token.cur = *start;
 	int_token.word_read.str = NULL;
 	while (ft_isspace(*int_token.cur) && *int_token.cur != '\0')
@@ -159,12 +160,12 @@ static const char	*_expand_dollar(
 		return (dollar);
 	if (**start == '\'' || **start == '"')
 		return (void_str);
-	if (dyn_str_init(&dyn_str))
+	if (dyn_str_init(&dyn_str) != MS_OK)
 		return (NULL);
 	while (!ft_ismeta(**start) && !ft_isspace(**start) && **start != '\0'
 		&& **start != '"' && **start != '\'' && **start != '$')
 	{
-		if (dyn_str_pushback(&dyn_str, **start))
+		if (dyn_str_pushback(&dyn_str, **start) != MS_OK)
 			return (NULL);
 		++(*start);
 	}
@@ -172,18 +173,21 @@ static const char	*_expand_dollar(
 	return (void_str);
 }
 
-static int	_flush_word_read(
-				t_lr_token_list *lrtoks,
-				t_int_token *int_token
-				)
+static t_ms_error	_flush_word_read(
+						t_lr_token_list *lrtoks,
+						t_int_token *int_token
+						)
 {
 	t_lr_token	lrtok;
 	int			r;
 
-	r = (_token_gen_word(&lrtok, int_token->word_read.str)
-			|| lrtoks_pushback(lrtoks, &lrtok));
+	if (_token_gen_word(&lrtok, int_token->word_read.str))
+		return (MS_FATAL);
+	r = lrtoks_pushback(lrtoks, &lrtok);
+	if (r != MS_OK)
+		return (r);
 	int_token->word_read.str = NULL;
-	return (r);
+	return (MS_OK);
 }
 
 // ************************************************************************** //
@@ -192,18 +196,24 @@ static int	_flush_word_read(
 // *                                                                        * //
 // ************************************************************************** //
 
-static int	_state_dollar(
-				t_lr_token_list *lrtoks,
-				t_int_token *int_token
-				)
+static t_ms_error	_state_dollar(
+						t_lr_token_list *lrtoks,
+						t_int_token *int_token
+						)
 {
 	const char	*expended;
+	int			r;
 
 	expended = _expand_dollar(&int_token->cur);
 	if (ft_isspace(*expended))
-		if (int_token->word_read.str != NULL
-			&& _flush_word_read(lrtoks, int_token))
-			return (1);
+	{
+		if (int_token->word_read.str != NULL)
+		{
+			r = _flush_word_read(lrtoks, int_token);
+			if (r != MS_OK)
+				return (r);
+		}
+	}
 	while (*expended != '\0')
 	{
 		while (ft_isspace(*expended))
@@ -218,17 +228,17 @@ static int	_state_dollar(
 	return (0);
 }
 
-static int	_state_dollar_quoted(
-				t_lr_token_list *lrtoks,
-				t_int_token *int_token
-				)
+static t_ms_error	_state_dollar_quoted(
+						t_lr_token_list *lrtoks,
+						t_int_token *int_token
+						)
 {
 	const char	*expended;
 
 	(void)(lrtoks);
 	expended = _expand_dollar(&int_token->cur);
 	if (expended == NULL)
-		return (1);
+		return (MS_FATAL);
 	if (*expended != '\0')
 	{
 		if (int_token->word_read.str != NULL)
@@ -236,13 +246,13 @@ static int	_state_dollar_quoted(
 		else
 			return (dyn_str_cat(&int_token->word_read, expended));
 	}
-	return (0);
+	return (MS_OK);
 }
 
-static int	_state_initial(
-				t_lr_token_list *lrtoks,
-				t_int_token *int_token
-				)
+static t_ms_error	_state_initial(
+						t_lr_token_list *lrtoks,
+						t_int_token *int_token
+						)
 {
 	const char	current = *int_token->cur;
 	t_lr_token	lrtok;
@@ -276,10 +286,10 @@ static int	_state_initial(
 		|| _state_word(lrtoks, int_token));
 }
 
-static int	_state_out(
-				t_lr_token_list *lrtoks,
-				t_int_token *int_token
-				)
+static t_ms_error	_state_out(
+						t_lr_token_list *lrtoks,
+						t_int_token *int_token
+						)
 {
 	const char	current = *int_token->cur;
 	t_lr_token	lrtok;
@@ -287,16 +297,19 @@ static int	_state_out(
 	if (current == '>')
 	{
 		++int_token->cur;
-		return (_token_gen_io(&lrtok, IO_APPEND)
-			|| lrtoks_pushback(lrtoks, &lrtok));
+		if (_token_gen_io(&lrtok, IO_APPEND))
+			return (MS_FATAL);
+		return (lrtoks_pushback(lrtoks, &lrtok));
 	}
-	return (_token_gen_io(&lrtok, IO_OUT) || lrtoks_pushback(lrtoks, &lrtok));
+	if (_token_gen_io(&lrtok, IO_OUT))
+		return (MS_FATAL);
+	return (lrtoks_pushback(lrtoks, &lrtok));
 }
 
-static int	_state_in(
-				t_lr_token_list *lrtoks,
-				t_int_token *int_token
-				)
+static t_ms_error	_state_in(
+						t_lr_token_list *lrtoks,
+						t_int_token *int_token
+						)
 {
 	const char	current = *int_token->cur;
 	t_lr_token	lrtok;
@@ -304,16 +317,19 @@ static int	_state_in(
 	if (current == '<')
 	{
 		++int_token->cur;
-		return (_token_gen_io(&lrtok, IO_HEREDOC)
-			|| lrtoks_pushback(lrtoks, &lrtok));
+		if (_token_gen_io(&lrtok, IO_HEREDOC))
+			return (MS_FATAL);
+		return (lrtoks_pushback(lrtoks, &lrtok));
 	}
-	return (_token_gen_io(&lrtok, IO_IN) || lrtoks_pushback(lrtoks, &lrtok));
+	if (_token_gen_io(&lrtok, IO_IN))
+		return (MS_FATAL);
+	return (lrtoks_pushback(lrtoks, &lrtok));
 }
 
-static int	_state_pipe_or(
-				t_lr_token_list *lrtoks,
-				t_int_token *int_token
-				)
+static t_ms_error	_state_pipe_or(
+						t_lr_token_list *lrtoks,
+						t_int_token *int_token
+						)
 {
 	const char	current = *int_token->cur;
 	t_lr_token	lrtok;
@@ -321,34 +337,39 @@ static int	_state_pipe_or(
 	if (current == '|')
 	{
 		++int_token->cur;
-		return (_token_gen_and_or(&lrtok, LOGIC_OR)
-			|| lrtoks_pushback(lrtoks, &lrtok));
+		if (_token_gen_and_or(&lrtok, LOGIC_OR))
+			return (MS_FATAL);
+		return (lrtoks_pushback(lrtoks, &lrtok));
 	}
-	return (_token_gen_pipe(&lrtok) || lrtoks_pushback(lrtoks, &lrtok));
+	if (_token_gen_pipe(&lrtok))
+		return (MS_FATAL);
+	return (lrtoks_pushback(lrtoks, &lrtok));
 }
 
-static int	_state_and(
-				t_lr_token_list *lrtoks,
-				t_int_token *int_token
-				)
+static t_ms_error	_state_and(
+						t_lr_token_list *lrtoks,
+						t_int_token *int_token
+						)
 {
 	const char	current = *int_token->cur;
 	t_lr_token	lrtok;
 
 	if (current != '&')
-		return (1);
+		return (MS_SYNTAX_ERROR);
 	++int_token->cur;
-	return (_token_gen_and_or(&lrtok, LOGIC_AND)
-		|| lrtoks_pushback(lrtoks, &lrtok));
+	if (_token_gen_and_or(&lrtok, LOGIC_AND))
+		return (MS_FATAL);
+	return (lrtoks_pushback(lrtoks, &lrtok));
 }
 
-static int	_state_word(
-				t_lr_token_list *lrtoks,
-				t_int_token *int_token
-				)
+static t_ms_error	_state_word(
+						t_lr_token_list *lrtoks,
+						t_int_token *int_token
+						)
 {
 	char		current;
 	t_lr_token	lrtok;
+	int			r;
 
 	current = *int_token->cur;
 	while (current != '\0' && !ft_ismeta(current) && !ft_isspace(current))
@@ -360,62 +381,97 @@ static int	_state_word(
 			return (_state_quote(lrtoks, int_token));
 		if (current == '$')
 		{
-			if (_state_dollar(lrtoks, int_token))
-				return (1);
+			r = _state_dollar(lrtoks, int_token);
+			if (r != MS_OK)
+				return (r);
 		}
-		else if (dyn_str_pushback(&int_token->word_read, current))
-			return (1);
+		else
+		{
+			r = dyn_str_pushback(&int_token->word_read, current);
+			if (r != MS_OK)
+				return (r);
+		}
 		current = *int_token->cur;
 	}
-	return (int_token->word_read.str != NULL
-		&& (_token_gen_word(&lrtok, int_token->word_read.str)
-			|| lrtoks_pushback(lrtoks, &lrtok)));
+	if (int_token->word_read.str != NULL)
+	{
+		if (_token_gen_word(&lrtok, int_token->word_read.str))
+			return (MS_FATAL);
+		return (lrtoks_pushback(lrtoks, &lrtok));
+	}
+	return (MS_OK);
 }
 
-static int	_state_quote(
-				t_lr_token_list *lrtoks,
-				t_int_token *int_token
-				)
+static t_ms_error	_init_dyn_str_if_null(
+						t_int_token *int_token
+						)
+{
+	int		r;
+
+	if (int_token->word_read.str == NULL)
+	{
+		r = dyn_str_init(&int_token->word_read);
+		if (r != MS_OK)
+			return (r);
+	}
+	return (MS_OK);
+}
+
+static t_ms_error	_state_quote(
+						t_lr_token_list *lrtoks,
+						t_int_token *int_token
+						)
 {
 	char	current;
+	int		r;
 
 	current = *int_token->cur;
-	if (int_token->word_read.str == NULL
-		&& dyn_str_init(&int_token->word_read))
-		return (1);
+	r = _init_dyn_str_if_null(int_token);
+	if (r != MS_OK)
+		return (r);
 	while (current != '\'')
 	{
 		++int_token->cur;
 		if (current == '\0')
-			return (1);
-		if (dyn_str_pushback(&int_token->word_read, current))
-			return (1);
+			return (MS_SYNTAX_ERROR);
+		r = dyn_str_pushback(&int_token->word_read, current);
+		if (r != MS_OK)
+			return (r);
 		current = *int_token->cur;
 	}
 	++int_token->cur;
 	return (_state_word(lrtoks, int_token));
 }
 
-static int	_state_doublequote(
-				t_lr_token_list *lrtoks,
-				t_int_token *int_token
-				)
+static t_ms_error	_state_doublequote(
+						t_lr_token_list *lrtoks,
+						t_int_token *int_token
+						)
 {
 	char	current;
+	int		r;
 
 	current = *int_token->cur;
-	if (int_token->word_read.str == NULL
-		&& dyn_str_init(&int_token->word_read))
-		return (1);
+	r = _init_dyn_str_if_null(int_token);
+	if (r != MS_OK)
+		return (r);
 	while (current != '\"')
 	{
 		++int_token->cur;
 		if (current == '\0')
-			return (1);
-		if (current == '$' && _state_dollar_quoted(lrtoks, int_token))
-			return (1);
-		else if (dyn_str_pushback(&int_token->word_read, current))
-			return (1);
+			return (MS_SYNTAX_ERROR);
+		if (current == '$')
+		{
+			r = _state_dollar_quoted(lrtoks, int_token);
+			if (r != MS_OK)
+				return (r);
+		}
+		else
+		{
+			r = dyn_str_pushback(&int_token->word_read, current);
+			if (r != MS_OK)
+				return (r);
+		}
 		current = *int_token->cur;
 	}
 	++int_token->cur;

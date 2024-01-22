@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/14 02:38:53 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 06:58:20 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,12 @@
 #include "parser/table.h"
 #include "parser/ast.h"
 
+#include "core/exec.h"
+
 int	main(void)
 {
 	t_lr_parser_ctx	ctx;
-	t_lr_token_list	lrtoks;
-	t_command_line	*data;
-	char			*pstr;
-	int				r;
+	t_exec_ctx		exctx;
 
 	ctx.prod_count = PROD__COUNT;
 	ctx.state_count = STATE__COUNT;
@@ -49,101 +48,7 @@ int	main(void)
 	ctx.goto_table = (t_lr_state_id *)g_lr_goto_table;
 	ctx.prod_cb = (t_lr_prod_cb *)g_prod_cbs;
 	ctx.token_free_cbs = (t_lr_token_free_cb *)g_tok_free_cbs;
-	if (lr_parser_init(&ctx, NULL))
-		return (EXIT_FAILURE);
-	r = LR_OK;
-	pstr = readline("minishell> ");
-	void *tmp = pstr;
-	const char *convtable[TOKEN__COUNT] = {
-	[TOKEN_WORD] = "TOKEN_WORD",
-
-	[TOKEN_IO] = "TOKEN_IO",
-
-	[TOKEN_AND_OR] = "TOKEN_AND_OR",
-
-	[TOKEN_PIPE] = "TOKEN_PIPE",
-
-	[TOKEN_OBRACKET] = "TOKEN_OBRACKET",
-
-	[TOKEN_CBRACKET] = "TOKEN_CBRACKET",
-
-	[TOKEN_END] = "TOKEN_END",
-	};
-	while (*pstr != '\0')
-	{
-		while (42)
-		{
-			if (tokenize(&lrtoks, (const char **)&pstr))
-			{
-				printf("TOKENIZE ERROR\n");
-				lr_parser_destroy(&ctx);
-				free(tmp);
-				return (EXIT_FAILURE);
-			}
-			size_t k = 0;
-			int brk = 0;
-			while (k < lrtoks.used)
-			{
-				t_lr_token *const lrtok = lrtoks.lrtoks + k;
-				if (lrtok->id == TOKEN_WORD)
-					{printf("TOKEN_WORD: %s\n", lrtok->data.word);}
-				else
-					printf("%s\n", convtable[lrtok->id]);
-				r = lr_parser_exec(&ctx, lrtok, (void **)&data);
-				if (r == LR_SYNTAX_ERROR)
-				{
-					fprintf(stderr, "Syntax error!\n");
-					if (g_tok_free_cbs[lrtok->id] != NULL)
-						g_tok_free_cbs[lrtok->id](&lrtok->data);
-					lr_parser_init(&ctx, NULL);
-					brk = 1;
-				}
-				else if (r == LR_ACCEPT)
-				{
-					printf("CONGRATULATION YOU KNOW SHELL\n");
-					brk = 1;
-				}
-				else if (r != LR_OK)
-				{
-					printf("Unknown error.\n");
-					exit(EXIT_FAILURE);
-				}
-				++k;
-			}
-			free(lrtoks.lrtoks);
-			if (brk)
-				break ;
-			// if (lrtok.id == TOKEN_WORD)
-			// {
-			// 	printf("TOKEN_WORD: %s\n", lrtok.data.word);
-			// }
-			// else
-			// {
-			// 	printf("%s\n", convtable[lrtok.id]);
-			// }
-			// r = lr_parser_exec(&ctx, &lrtok, (void **)&data);
-			// if (r == MP_ERROR)
-			// {
-			// 	if (g_tok_free_cbs[lrtok.id] != NULL)
-			// 		g_tok_free_cbs[lrtok.id](&lrtok.data);
-			// 	fprintf(stderr, "Syntax error!\n");
-			// 	lr_parser_init(&ctx, NULL);
-			// 	break ;
-			// }
-			// if (r == MP_ACCEPT)
-			// {
-			// 	printf("Expression accepted.\n");
-			// 	break ;
-			// }
-		}
-		free(tmp);
-		if (r == LR_ACCEPT)
-			command_line_destroy(data);
-		pstr = readline("minishell> ");
-		tmp = pstr;
-	}
-	free(tmp);
-	rl_clear_history();
-	lr_parser_destroy(&ctx);
-	return (EXIT_SUCCESS);
+	exec_init(&exctx, NULL, &ctx);
+	exec_loop(&exctx);
+	return (0xdeadbeef);
 }

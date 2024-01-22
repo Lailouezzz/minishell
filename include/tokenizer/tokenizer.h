@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 14:12:05 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/14 03:12:33 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 05:47:49 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,12 +69,12 @@ typedef struct s_int_token
  * @param lrtoks Store the @s_lr_token_list read.
  * @param start Pointer to a char in a null-terminated string.
  * 		After the call this pointer is placed at the end of the read token.
- * @return int 0 on success. non-null value on error.
+ * @return s_ms_error @MS_OK on success. Error code on error.
  */
-int		tokenize(
-			t_lr_token_list *lrtoks,
-			const char **start
-			);
+t_ms_error	tokenize(
+				t_lr_token_list *lrtoks,
+				const char **start
+				);
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -99,10 +99,10 @@ extern const t_lr_token_free_cb	g_tok_free_cbs[TOKEN__COUNT];
  * @param str The word string.
  * @return int 0 on success. non-null value on error.
  */
-int		_token_gen_word(
-			t_lr_token *lrtok,
-			char *str
-			);
+int			_token_gen_word(
+				t_lr_token *lrtok,
+				char *str
+				);
 
 /**
  * @brief Generate a TOKEN_IO
@@ -110,10 +110,10 @@ int		_token_gen_word(
  * @param type The @s_io_type.
  * @return int 0 on success. non-null value on error.
  */
-int		_token_gen_io(
-			t_lr_token *lrtok,
-			t_io_type type
-			);
+int			_token_gen_io(
+				t_lr_token *lrtok,
+				t_io_type type
+				);
 
 /**
  * @brief Generate a TOKEN_AND_OR
@@ -121,10 +121,10 @@ int		_token_gen_io(
  * @param int_token The @s_logic_type.
  * @return int 0 on success. non-null value on error.
  */
-int		_token_gen_and_or(
-			t_lr_token *lrtok,
-			t_logic_type type
-			);
+int			_token_gen_and_or(
+				t_lr_token *lrtok,
+				t_logic_type type
+				);
 
 /**
  * @brief Generate a TOKEN_PIPE
@@ -132,9 +132,9 @@ int		_token_gen_and_or(
  * @param int_token The @s_int_token.
  * @return int 0 on success. non-null value on error.
  */
-int		_token_gen_pipe(
-			t_lr_token *lrtok
-			);
+int			_token_gen_pipe(
+				t_lr_token *lrtok
+				);
 
 /**
  * @brief Generate a TOKEN_OBRACKET
@@ -142,9 +142,9 @@ int		_token_gen_pipe(
  * @param int_token The @s_int_token.
  * @return int 0 on success. non-null value on error.
  */
-int		_token_gen_obracket(
-			t_lr_token *lrtok
-			);
+int			_token_gen_obracket(
+				t_lr_token *lrtok
+				);
 
 /**
  * @brief Generate a TOKEN_CBRACKET
@@ -152,18 +152,18 @@ int		_token_gen_obracket(
  * @param int_token The @s_int_token.
  * @return int 0 on success. non-null value on error.
  */
-int		_token_gen_cbracket(
-			t_lr_token *lrtok
-			);
+int			_token_gen_cbracket(
+				t_lr_token *lrtok
+				);
 
 /**
  * @brief Generate a TOKEN_END
  * @param lrtok Store the @s_lr_token generated.
  * @return int 0 on success. non-null value on error.
  */
-int		_token_gen_end(
-			t_lr_token *lrtok
-			);
+int			_token_gen_end(
+				t_lr_token *lrtok
+				);
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -175,8 +175,8 @@ int		_token_gen_end(
  * @brief Word free callback.
  * @param data The data to free.
  */
-void	_token_free_word_cb(
-			t_lr_token_type *data
-			);
+void		_token_free_word_cb(
+				t_lr_token_type *data
+				);
 
 #endif

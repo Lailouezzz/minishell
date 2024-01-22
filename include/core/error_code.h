@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:59:57 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/14 03:17:48 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 05:33:37 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,14 @@
 
 typedef enum s_ms_error
 {
-	ERR_OK,
-	ERR_NOT_VALID_IDENTIFIER,
-	ERR_BAD_ALLOC,
-	ERR_COMMAND_NOT_FOUND,
-	ERR_PERM_DENIED,
-	ERR_FATAL,
-	ERR_UNCLOSED_QUOTE,
+	MS_OK,
+	MS_NOT_VALID_IDENTIFIER,
+	MS_SYNTAX_ERROR,
+	MS_BAD_ALLOC,
+	MS_COMMAND_NOT_FOUND,
+	MS_PERM_DENIED,
+	MS_FATAL,
+	MS_UNCLOSED_QUOTE,
 }	t_ms_error;
 
 #endif
