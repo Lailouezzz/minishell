@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 21:11:45 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/22 21:20:24 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 21:37:08 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@
 
 #include "parser/ast.h"
 
+#include "utils.h"
+
 // ************************************************************************** //
 // *                                                                        * //
 // * Header function.                                                       * //
@@ -37,13 +39,17 @@ t_simple_command	*simple_command_create(
 						)
 {
 	t_simple_command	*sc;
+	char				*pncpy;
 
 	sc = malloc(sizeof(*sc));
 	if (sc == NULL)
 		return (free(pn), NULL);
-	sc->args = args_create(pn);
+	pncpy = ft_strdup(pn);
+	if (pncpy == NULL)
+		return (free(pn), free(sc), NULL);
+	sc->args = args_create(pncpy);
 	if (sc->args == NULL)
-		return (free(sc), NULL);
+		return (free(pn), free(sc), free(pncpy), NULL);
 	sc->redirect_list = NULL;
 	sc->pn = pn;
 	return (sc);
