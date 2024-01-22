@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   prod.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 01:40:36 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/10 14:07:07 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 03:10:50 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-typedef enum e_prod_id {
+typedef enum e_prod_id
+{
 	PROD_SIMPLE_COMMAND__1,
 	PROD_SIMPLE_COMMAND__RLPN,
 	PROD_SIMPLE_COMMAND__PNARL,
