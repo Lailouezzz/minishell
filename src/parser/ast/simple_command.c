@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 21:11:45 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 23:41:48 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 21:20:24 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,9 @@ t_simple_command	*simple_command_create(
 	sc = malloc(sizeof(*sc));
 	if (sc == NULL)
 		return (free(pn), NULL);
-	sc->args = NULL;
+	sc->args = args_create(pn);
+	if (sc->args == NULL)
+		return (free(sc), NULL);
 	sc->redirect_list = NULL;
 	sc->pn = pn;
 	return (sc);
