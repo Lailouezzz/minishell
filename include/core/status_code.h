@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:39:12 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/22 05:14:44 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/22 21:58:06 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ typedef enum s_ms_status
 	MS_STATUS_BUILTIN_BAD_USAGE=2,
 	MS_STATUS_PERM_DENIED=126,
 	MS_STATUS_COMMAND_NOT_FOUND=127,
+	MS_STATUS_SIGINT=130,
+	MS_STATUS_SIGQUIT=131,
 }	t_ms_status;
 
 #endif

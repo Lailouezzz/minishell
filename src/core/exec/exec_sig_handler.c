@@ -1,25 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec.h                                             :+:      :+:    :+:   */
+/*   exec_sig_handler.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/12 01:15:15 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/22 22:37:26 by ale-boud         ###   ########.fr       */
+/*   Created: 2024/01/22 21:46:46 by ale-boud          #+#    #+#             */
+/*   Updated: 2024/01/22 22:19:07 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file exec.h
+ * @file exec_sig_handler.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief The executor definiton.
- * @date 2023-12-12
- * @copyright Copyright (c) 2023
+ * @brief The signal handlers of minishell.
+ * @date 2024-01-22
+ * @copyright Copyright (c) 2024
  */
-
-#ifndef EXEC_H
-# define EXEC_H
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -27,72 +24,65 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-# include <stdnoreturn.h>
+#include <readline/readline.h>
+#include <signal.h>
 
-# include <lr_parser.h>
+#include "core/exec.h"
 
-# include "core/env.h"
-# include "parser/ast.h"
-# include "tokenizer/lr_token_list.h"
+#include "utils.h"
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Structure definition.                                                  * //
+// * Signal handlers definition.                                            * //
 // *                                                                        * //
 // ************************************************************************** //
 
-typedef struct s_exec_unit
+static void	_exec_sig_handler_interactive(
+				int signo
+				);
+
+static void	_exec_sig_handler_in_execution(
+				int signo
+				);
+
+// ************************************************************************** //
+// *                                                                        * //
+// * Header function.                                                       * //
+// *                                                                        * //
+// ************************************************************************** //
+
+void	exec_set_interactive(void)
 {
-	int		out_fd;
-	int		in_fd;
-	char	**args;
-	char	*path;
-	int		is_builtin;
-}	t_exec_unit;
+	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, _exec_sig_handler_interactive);
+}
 
-typedef struct s_exec_ctx
+void	exec_set_in_execution(void)
 {
-	t_env_ctx		*env_ctx;
-	t_lr_parser_ctx	*parser_ctx;
-}	t_exec_ctx;
+	signal(SIGQUIT, _exec_sig_handler_in_execution);
+	signal(SIGINT, _exec_sig_handler_in_execution);
+}
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Minishell global var.                                                  * //
+// * Signal handlers.                                                       * //
 // *                                                                        * //
 // ************************************************************************** //
 
-extern volatile t_exec_ctx	*g_ctx;
+static void	_exec_sig_handler_interactive(
+				int signo
+				)
+{
+	ft_putstr_fd("\n", STDOUT_FILENO);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+	//g_ctx->env_ctx->current_code = signo;
+}
 
-// ************************************************************************** //
-// *                                                                        * //
-// * Function definition.                                                   * //
-// *                                                                        * //
-// ************************************************************************** //
-
-void			exec_init(
-					t_exec_ctx *ctx,
-					t_env_ctx *env_ctx,
-					t_lr_parser_ctx *parser_ctx
-					);
-
-t_ms_error		exec_exec(
-					t_exec_ctx *ctx,
-					const t_command_line *cl
-					);
-
-noreturn void	exec_loop(
-					t_exec_ctx *ctx
-					);
-
-// ************************************************************************** //
-// *                                                                        * //
-// * Signal handler.                                                        * //
-// *                                                                        * //
-// ************************************************************************** //
-
-void			exec_set_interactive(void);
-
-void			exec_set_in_execution(void);
-
-#endif
+static void	_exec_sig_handler_in_execution(
+				int signo
+				)
+{
+	// g_ctx->env_ctx->current_code = signo;
+}
