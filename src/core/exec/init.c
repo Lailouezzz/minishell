@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:27 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/08 14:44:39 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/08 15:36:51 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@
 
 #include "core/exec.h"
 
+int	g_current_code;
+
 // ************************************************************************** //
 // *                                                                        * //
 // * Header functions.                                                      * //
@@ -42,4 +44,5 @@ void	exec_init(
 {
 	ctx->env_ctx = env_ctx;
 	ctx->parser_ctx = parser_ctx;
+	g_current_code = MS_STATUS_OK;
 }
