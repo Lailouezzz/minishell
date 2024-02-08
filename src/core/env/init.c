@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 03:06:06 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/23 06:16:00 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/08 15:35:31 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,5 @@ int	env_ctx_init(
 		char **envp
 		)
 {
-	env_ctx->current_code = 0;
 	env_ctx->pn = pn;
 }
