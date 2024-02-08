@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 21:46:46 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/23 02:23:33 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/08 15:55:47 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,10 @@
 #include "core/exec.h"
 
 #include "utils.h"
+
+
+volatile int	g_signo;
+
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -84,6 +88,7 @@ static void	_exec_sig_handler_in_execution(
 				int signo
 				)
 {
+	g_signo = signo;
 	if (signo == SIGQUIT)
 		ft_putstr_fd("Quit (core dumped)\n", STDOUT_FILENO);
 	else if (signo == SIGINT)
