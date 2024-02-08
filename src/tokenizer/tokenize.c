@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 15:22:16 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/22 05:43:40 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/23 06:24:55 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -369,7 +369,7 @@ static t_ms_error	_state_word(
 {
 	char		current;
 	t_lr_token	lrtok;
-	int			r;
+	t_ms_error	r;
 
 	current = *int_token->cur;
 	while (current != '\0' && !ft_ismeta(current) && !ft_isspace(current))

@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/22 22:06:16 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/23 06:22:57 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,19 +36,24 @@
 
 #include "core/exec.h"
 
-int	main(void)
+int	main(int argc, char **argv, char **envp)
 {
-	t_lr_parser_ctx	ctx;
-	t_exec_ctx		exctx;
+	t_lr_parser_ctx	parser_ctx;
+	t_exec_ctx		ex_ctx;
+	t_env_ctx		env_ctx;
 
-	ctx.prod_count = PROD__COUNT;
-	ctx.state_count = STATE__COUNT;
-	ctx.token_count = TOKEN__COUNT;
-	ctx.action_table = (t_lr_action *)g_lr_table;
-	ctx.goto_table = (t_lr_state_id *)g_lr_goto_table;
-	ctx.prod_cb = (t_lr_prod_cb *)g_prod_cbs;
-	ctx.token_free_cbs = (t_lr_token_free_cb *)g_tok_free_cbs;
-	exec_init(&exctx, NULL, &ctx);
-	exec_loop(&exctx);
-	return (0xdeadbeef);
+	(void)(argc);
+	(void)(argv);
+	parser_ctx.prod_count = PROD__COUNT;
+	parser_ctx.state_count = STATE__COUNT;
+	parser_ctx.token_count = TOKEN__COUNT;
+	parser_ctx.action_table = (t_lr_action *)g_lr_table;
+	parser_ctx.goto_table = (t_lr_state_id *)g_lr_goto_table;
+	parser_ctx.prod_cb = (t_lr_prod_cb *)g_prod_cbs;
+	parser_ctx.token_free_cbs = (t_lr_token_free_cb *)g_tok_free_cbs;
+	env_ctx_init(&env_ctx, argv[0], envp);
+	exec_init(&ex_ctx, &env_ctx, &parser_ctx);
+	exec_loop(&ex_ctx);
+	rl_clear_history();
+	return (env_ctx.current_code);
 }

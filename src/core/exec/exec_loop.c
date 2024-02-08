@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/22 22:36:54 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/23 06:22:51 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,18 +64,22 @@ static	t_lr_error	__exec_loop_parse_exec(
 // *                                                                        * //
 // ************************************************************************** //
 
-noreturn void	exec_loop(
-					t_exec_ctx *ctx
-					)
+void	exec_loop(
+			t_exec_ctx *ctx
+			)
 {
 	char			*pstr;
 	t_ms_error		r;
+	void			*to_free;
 
 	exec_set_interactive();
 	pstr = readline(MS_PROMPT);
+	to_free = pstr;
 	while (pstr != NULL)
 	{
-		add_history(pstr);
+		to_free = pstr;
+		if (*pstr != '\0')
+			add_history(pstr);
 		while (ft_isspace(*pstr))
 			++pstr;
 		if (*pstr != '\0')
@@ -84,12 +88,11 @@ noreturn void	exec_loop(
 			if (r != MS_OK && r != MS_SYNTAX_ERROR)
 				break ;
 		}
-		free(pstr);
-		exec_set_interactive();
+		free(to_free);
 		pstr = readline(MS_PROMPT);
+		to_free = pstr;
 	}
-	free(pstr);
-	exit(EXIT_SUCCESS);
+	free(to_free);
 }
 
 // ************************************************************************** //
@@ -111,12 +114,19 @@ static	t_ms_error	_exec_loop_exec(
 	{
 		if (r == MS_SYNTAX_ERROR)
 		{
-			printf(": parse error near unexpected token `%c`\n", *(pstr - 1));
+			printf("%s: parse error near unexpected token `%c`\n",
+				ctx->env_ctx->pn, *(pstr - 1)); // remove printf
 			return (r);
 		}
 		return (MS_FATAL);
 	}
+	ctx->cur_signo = 0;
+	exec_set_in_execution();
+	// r = exec_exec(ctx, cl);
+	exec_set_interactive();
 	command_line_destroy(cl);
+	if (r != MS_OK && r != MS_COMMAND_NOT_FOUND && r != MS_PERM_DENIED)
+		return (MS_FATAL);
 	return (MS_OK);
 }
 

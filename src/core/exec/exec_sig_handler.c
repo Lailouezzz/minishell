@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 21:46:46 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/22 22:19:07 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/01/23 02:23:33 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,16 +73,19 @@ static void	_exec_sig_handler_interactive(
 				int signo
 				)
 {
+	(void)(signo);
 	ft_putstr_fd("\n", STDOUT_FILENO);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-	//g_ctx->env_ctx->current_code = signo;
 }
 
 static void	_exec_sig_handler_in_execution(
 				int signo
 				)
 {
-	// g_ctx->env_ctx->current_code = signo;
+	if (signo == SIGQUIT)
+		ft_putstr_fd("Quit (core dumped)\n", STDOUT_FILENO);
+	else if (signo == SIGINT)
+		ft_putstr_fd("\n", STDOUT_FILENO);
 }
