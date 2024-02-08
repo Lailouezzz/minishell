@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/23 06:22:51 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/08 15:06:15 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,15 +73,15 @@ void	exec_loop(
 	void			*to_free;
 
 	exec_set_interactive();
+	to_free = NULL;
 	pstr = readline(MS_PROMPT);
-	to_free = pstr;
 	while (pstr != NULL)
 	{
 		to_free = pstr;
-		if (*pstr != '\0')
-			add_history(pstr);
 		while (ft_isspace(*pstr))
 			++pstr;
+		if (*pstr != '\0')
+			add_history(pstr);
 		if (*pstr != '\0')
 		{
 			r = _exec_loop_exec(ctx, pstr);
@@ -89,8 +89,8 @@ void	exec_loop(
 				break ;
 		}
 		free(to_free);
+		to_free = NULL;
 		pstr = readline(MS_PROMPT);
-		to_free = pstr;
 	}
 	free(to_free);
 }
