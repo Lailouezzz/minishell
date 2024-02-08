@@ -31,5 +31,5 @@ void	ft_putstr_fd(
 {
 	if (s != NULL)
 		while (*s != '\0')
-			write(fd, s++, 1);
+			(void)(write(fd, s++, 1) == 0);
 }
