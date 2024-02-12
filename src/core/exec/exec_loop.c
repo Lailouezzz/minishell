@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_loop.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/08 15:06:15 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/12 10:46:51 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ static	t_ms_error	_exec_loop_exec(
 	}
 	ctx->cur_signo = 0;
 	exec_set_in_execution();
-	// r = exec_exec(ctx, cl);
+	r = exec_exec(ctx, cl);
 	exec_set_interactive();
 	command_line_destroy(cl);
 	if (r != MS_OK && r != MS_COMMAND_NOT_FOUND && r != MS_PERM_DENIED)

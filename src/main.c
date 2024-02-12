@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/08 16:43:49 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/12 16:00:46 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@
 
 #include "core/exec.h"
 
+#include "utils.h"
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_lr_parser_ctx	parser_ctx;
@@ -55,5 +57,6 @@ int	main(int argc, char **argv, char **envp)
 	exec_init(&ex_ctx, &env_ctx, &parser_ctx);
 	exec_loop(&ex_ctx);
 	rl_clear_history();
+	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	return (env_ctx.current_code);
 }

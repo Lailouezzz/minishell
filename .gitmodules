@@ -1,3 +1,6 @@
 [submodule "thirdparty/microparser"]
 	path = thirdparty/microparser
 	url = git@github.com:Lailouezzz/microparser.git
+[submodule "thirdparty/libft-full"]
+	path = thirdparty/libft-full
+	url = git@github.com:Dyamen1411/42-libft-full.git

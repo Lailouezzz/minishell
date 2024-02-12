@@ -8,11 +8,12 @@
             ],
             "defines": [
                 "DEBUG",
-                "MP_TOKEN_TYPE=union __u {char *word; int io_type; int logic_type;}",
+                "MP_TOKEN_TYPE=union __u {char *word; int io_type; int logic_type;}"
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c99",
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4
