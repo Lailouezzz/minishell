@@ -1,20 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   destroy.c                                          :+:      :+:    :+:   */
+/*   get.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/23 03:06:06 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 18:39:07 by ale-boud         ###   ########.fr       */
+/*   Created: 2024/02/13 19:15:38 by ale-boud          #+#    #+#             */
+/*   Updated: 2024/02/13 19:32:44 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file destroy.c
+ * @file get.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief Environnement destroy.
- * @date 2024-01-23
+ * @brief Environment get function.
+ * @date 2024-02-13
  * @copyright Copyright (c) 2024
  */
 
@@ -24,25 +24,24 @@
 // *                                                                        * //
 // ************************************************************************** //
 
+#include <libft.h>
+
 #include "core/env.h"
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Header functions.                                                      * //
+// * Header function.                                                       * //
 // *                                                                        * //
 // ************************************************************************** //
 
-void	env_destroy(
-			t_env *env
-			)
+const char	*env_ctx_get_variable(
+				t_env_ctx *env_ctx,
+				const char *name
+				)
 {
-	t_env_var	*envp;
+	t_env_var *const	exist = _env_exist(&env_ctx->env, name);
 
-	envp = env->env_vars;
-	while (*envp != NULL)
-	{
-		free(*envp);
-		++envp;
-	}
-	free(env->env_vars);
+	if (exist == NULL)
+		return (NULL);
+	return ((*exist) + ft_strlen(name) + 1);
 }

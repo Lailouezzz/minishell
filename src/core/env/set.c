@@ -1,25 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.h                                              :+:      :+:    :+:   */
+/*   set.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/12 01:08:41 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 18:57:19 by ale-boud         ###   ########.fr       */
+/*   Created: 2024/02/13 18:39:25 by ale-boud          #+#    #+#             */
+/*   Updated: 2024/02/13 19:11:14 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file env.h
+ * @file set.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief Definition of the environment of the shell.
- * @date 2023-12-12
- * @copyright Copyright (c) 2023
+ * @brief Environment set function.
+ * @date 2024-02-13
+ * @copyright Copyright (c) 2024
  */
-
-#ifndef ENV_H
-# define ENV_H
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -27,106 +24,83 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-# include <stdlib.h>
+#include "core/env.h"
 
-# include "core/status_code.h"
-# include "core/error_code.h"
-
-// ************************************************************************** //
-// *                                                                        * //
-// * Current signo global var.                                              * //
-// *                                                                        * //
-// ************************************************************************** //
-
-extern volatile int	g_signo;
+#include "utils.h"
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Structure definition.                                                  * //
+// * Helper function declaration.                                           * //
 // *                                                                        * //
 // ************************************************************************** //
 
-# define MS_PROMPT "\e[31;42mGrosS3x&N1B4RD\e[m> "
-
-typedef char *		t_env_var;
-
-typedef struct s_env
-{
-	t_env_var	*env_vars;
-	size_t		alloced;
-	size_t		used;
-}					t_env;
-
-typedef struct s_env_ctx
-{
-	char		*pn;
-	t_env		env;
-	int			current_code;
-}					t_env_ctx;
+static t_ms_error	_env_pushback_var(
+						t_env *env,
+						t_env_var var
+						);
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Function definition.                                                   * //
+// * Function header.                                                       * //
 // *                                                                        * //
 // ************************************************************************** //
-
-t_ms_error	env_ctx_init(
-				t_env_ctx *env_ctx,
-				char *pn,
-				char **envp
-				);
-
-void		env_ctx_destroy(
-				t_env_ctx *env_ctx
-				);
-
-void		env_destroy(
-				t_env *env
-				);
-
-const char	*env_ctx_get_variable(
-				t_env_ctx *env_ctx,
-				const char *name
-				);
-
-t_ms_error	env_init(
-				t_env *env,
-				char **envp
-				);
 
 t_ms_error	env_set_var(
 				t_env *env,
 				const char *name,
 				const char *value
-				);
+				)
+{
+	t_env_var *const	exist = _env_exist(env, name);
+	t_env_var			var;
+	t_ms_error			r;
+
+	var = _env_format_var(name, value);
+	if (var == NULL)
+		return (MS_BAD_ALLOC);
+	if (exist != NULL)
+	{
+		free(*exist);
+		*exist = var;
+	}
+	else
+	{
+		r = _env_pushback_var(env, var);
+		if (r != MS_OK)
+			return (free(var), r);
+	}
+	return (MS_OK);
+}
 
 t_ms_error	env_unset_var(
 				t_env *env,
 				const char *name
-				);
+				)
+{
+	
+}
+
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Global helper definition.                                              * //
+// * Helper function.                                                       * //
 // *                                                                        * //
 // ************************************************************************** //
 
-char		*_env_take_varname(
-				const t_env_var env_var
-				);
-
-char		*_env_take_varvalue(
-				const t_env_var env_var
-				);
-
-t_env_var	*_env_exist(
-				t_env *env,
-				const char *name
-				);
-
-t_env_var	_env_format_var(
-				const char *name,
-				const char *value
-				);
-
-#endif
+static t_ms_error	_env_pushback_var(
+						t_env *env,
+						t_env_var var
+						)
+{
+	if (env->used >= env->alloced)
+	{
+		env->env_vars = _realloc(env->env_vars,
+				(env->used + 1) * sizeof(*env->env_vars),
+				(env->used + 1) * 2 * sizeof(*env->env_vars));
+		if (env->env_vars == NULL)
+			return (MS_BAD_ALLOC);
+	}
+	env->env_vars[env->used++] = var;
+	env->env_vars[env->used] = NULL;
+	return (MS_OK);
+}

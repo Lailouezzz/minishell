@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 17:01:31 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 17:23:46 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 19:32:19 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,42 @@ char	*_env_take_varvalue(
 	if (value == NULL)
 		return (NULL);
 	return (ft_strdup(value + 1));
+}
+
+t_env_var	*_env_exist(
+				t_env *env,
+				const char *name
+				)
+{
+	t_env_var	*envp;
+	const int	namelen = ft_strlen(name);
+
+	envp = env->env_vars;
+	while (*envp != NULL)
+	{
+		if (ft_strncmp(*envp, name, namelen) == 0
+			&& ft_strlen(*envp) >= namelen + 1
+			&& (*envp)[namelen] == '=')
+			return (envp);
+		++envp;
+	}
+	return (NULL);
+}
+
+t_env_var	_env_format_var(
+				const char *name,
+				const char *value
+				)
+{
+	t_env_var	var;
+	const int	namelen = ft_strlen(name);
+	const int	valuelen = ft_strlen(value);
+
+	var = malloc(namelen + valuelen + 1);
+	if (var == NULL)
+		return (NULL);
+	ft_memcpy(var, name, namelen);
+	var[namelen] = '=';
+	ft_memcpy(var + namelen + 1, value, valuelen);
+	return (var);
 }
