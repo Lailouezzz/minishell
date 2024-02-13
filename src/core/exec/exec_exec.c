@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/13 13:20:26 by amassias         ###   ########.fr       */
+/*   Updated: 2024/02/13 16:44:58 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,6 +208,21 @@ char	*_get_pwd(
 	return ("/home/amassias/Documents/minishell");
 }
 
+void	_free_list(
+			void **list
+			)
+{
+	void	**itr;
+
+	if (list == NULL)
+		return ;
+	itr = list;
+	while (*itr)
+		free(*itr++);
+	free(list);
+	*list = NULL;
+}
+
 t_ms_error	_run_command(
 				const char *program_name,
 				const char **args,
@@ -225,6 +240,7 @@ t_ms_error	_run_command(
 		if (access(path, X_OK) != 0)
 			return (MS_PERM_DENIED);
 		execve(path, (char **)args, (char **)env->env_vars);
+		free(path);
 		return (MS_FATAL);
 	}
 	itr = paths;
@@ -236,12 +252,13 @@ t_ms_error	_run_command(
 			if (access(path, X_OK) != 0)
 				return (MS_PERM_DENIED);
 			execve(path, (char **)args, (char **)env->env_vars);
+			free(path);
 			return (MS_FATAL);
 		}
 		free(path);
 		++itr;
 	}
-	// free paths
+	// _free_list(paths);
 	return (MS_COMMAND_NOT_FOUND);
 }
 
@@ -257,9 +274,9 @@ t_ms_error	__exec_pipeline(
 	int			stat;
 	int			pipe_fd[2];
 
-	if (index == 0)
+	if (index-- == 0)
 		return (MS_OK);
-	if (index > 1)
+	if (index > 0)
 		pipe(pipe_fd);
 	pid = fork();
 	if (pid == -1)
@@ -267,15 +284,15 @@ t_ms_error	__exec_pipeline(
 	if (pid != 0)
 	{
 		close(out_fd);
-		if (index > 1)
+		if (index > 0)
 		{
 			close(pipe_fd[0]);
-			__exec_pipeline(ctx, commands, index - 1, pipe_fd[1]);
+			__exec_pipeline(ctx, commands, index, pipe_fd[1]);
 		}
 		waitpid(pid, &stat, 0);
 		return (false);
 	}
-	if (index > 1)
+	if (index > 0)
 	{
 		dup2(pipe_fd[0], STDIN_FILENO);
 		close(pipe_fd[1]);
@@ -283,15 +300,15 @@ t_ms_error	__exec_pipeline(
 	}
 	dup2(out_fd, STDOUT_FILENO);
 	close(out_fd);
-	if (commands[index - 1].type == COMMAND_SUBSHELL)
+	if (commands[index].type == COMMAND_SUBSHELL)
 	{
-		_handle_redirect_list(((t_subshell *)commands[index - 1].command)->redirect_list);
-		_exec_exec(ctx, ((t_subshell *)commands)[index - 1].and_or, &error);
+		_handle_redirect_list(((t_subshell *)commands[index].command)->redirect_list);
+		_exec_exec(ctx, ((t_subshell *)commands)[index].and_or, &error);
 		exit(ctx->env_ctx->current_code); // WARNING: Will leak parser ctx...
 	}
-	_handle_redirect_list(((t_simple_command *)commands[index - 1].command)->redirect_list);
-	if (_run_command(((t_simple_command *)commands[index - 1].command)->pn,
-		(const char **)((t_simple_command *)commands[index - 1].command)->args->args,
+	_handle_redirect_list(((t_simple_command *)commands[index].command)->redirect_list);
+	if (_run_command(((t_simple_command *)commands[index].command)->pn,
+		(const char **)((t_simple_command *)commands[index].command)->args->args,
 		&ctx->env_ctx->env) == MS_PERM_DENIED)
 		exit(MS_PERM_DENIED);
 	// Test for builtins
