@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/12 10:46:51 by amassias         ###   ########.fr       */
+/*   Updated: 2024/02/13 12:06:48 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,6 @@ static	t_ms_error	_exec_loop_exec(
 		return (MS_FATAL);
 	}
 	ctx->cur_signo = 0;
-	exec_set_in_execution();
 	r = exec_exec(ctx, cl);
 	exec_set_interactive();
 	command_line_destroy(cl);

@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/12 17:07:32 by amassias         ###   ########.fr       */
+/*   Updated: 2024/02/13 13:20:26 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,17 +135,17 @@ void	_handle_redirect_list(
 	i = 0;
 	while (i < list->used)
 	{
-		if (info->io_type == IO_IN)
-			fd = open(info->file, O_IN);
-		else if (info->io_type == IO_OUT)
-			fd = open(info->file, O_OT, 0666);
-		else if (info->io_type == IO_APPEND)
-			fd = open(info->file, O_AP, 0666);
-		else // if (info->io_type == IO_HEREDOC)
-			fd = _create_heredoc(info->file);
+		if (info[i].io_type == IO_IN)
+			fd = open(info[i].file, O_IN);
+		else if (info[i].io_type == IO_OUT)
+			fd = open(info[i].file, O_OT, 0666);
+		else if (info[i].io_type == IO_APPEND)
+			fd = open(info[i].file, O_AP, 0666);
+		else // if (info[i].io_type == IO_HEREDOC)
+			fd = _create_heredoc(info[i].file);
 		if (fd == -1)
 			exit(-1); // TODO: Handle case where `fd == -1`
-		if (info->io_type == IO_IN || info->io_type == IO_HEREDOC)
+		if (info[i].io_type == IO_IN || info[i].io_type == IO_HEREDOC)
 			dup2(fd, STDIN_FILENO);
 		else
 			dup2(fd, STDOUT_FILENO);
