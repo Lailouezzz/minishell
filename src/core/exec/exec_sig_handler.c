@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 21:46:46 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/08 15:55:47 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 17:24:27 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,9 @@
 #include <readline/readline.h>
 #include <signal.h>
 
+#include <libft.h>
+
 #include "core/exec.h"
-
-#include "utils.h"
-
 
 volatile int	g_signo;
 

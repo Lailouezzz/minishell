@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/thirdparty/microparser/include"
+                "${workspaceFolder}/thirdparty/microparser/include",
+                "${workspaceFolder}/thirdparty/libft-full"
             ],
             "defines": [
                 "DEBUG",

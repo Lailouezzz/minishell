@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/10 17:05:37 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/22 05:11:00 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 17:44:54 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,10 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-#include "utils.h"
+#include <libft.h>
+
 #include "core/error_code.h"
+#include "utils.h"
 
 #include "utils/dyn_str.h"
 
@@ -65,7 +67,7 @@ t_ms_error	dyn_str_pushback(
 	if (dstr->len >= dstr->alloced)
 	{
 		tmp = dstr->str;
-		dstr->str = ft_realloc(dstr->str, dstr->alloced + 1,
+		dstr->str = _realloc(dstr->str, dstr->alloced + 1,
 				dstr->alloced * 2 + 1);
 		if (dstr->str == NULL)
 		{
@@ -98,7 +100,7 @@ t_ms_error	dyn_str_cat(
 	if (total_size >= dstr->alloced)
 	{
 		tmp = dstr->str;
-		dstr->str = ft_realloc(dstr->str, dstr->alloced + 1,
+		dstr->str = _realloc(dstr->str, dstr->alloced + 1,
 				total_size + 1);
 		if (dstr->str == NULL)
 			return (free(tmp), MS_BAD_ALLOC);

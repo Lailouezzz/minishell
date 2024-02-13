@@ -23,6 +23,7 @@
 		"minishell",
 		"OBRACKET",
 		"popn",
-		"subshell"
+		"subshell",
+		"varvalue"
 	]
 }

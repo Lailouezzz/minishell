@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 13:52:39 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/22 05:46:36 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 17:44:54 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ t_ms_error	lrtoks_pushback(
 	if (lrtoks->used >= lrtoks->alloced)
 	{
 		tmp = lrtoks->lrtoks;
-		lrtoks->lrtoks = ft_realloc(lrtoks->lrtoks,
+		lrtoks->lrtoks = _realloc(lrtoks->lrtoks,
 				lrtoks->alloced * sizeof(*lrtoks->lrtoks),
 				lrtoks->alloced * sizeof(*lrtoks->lrtoks) * 2);
 		if (lrtoks->lrtoks == NULL)

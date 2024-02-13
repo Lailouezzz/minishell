@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:08:41 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/08 16:44:41 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 17:54:42 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ extern volatile int	g_signo;
 // *                                                                        * //
 // ************************************************************************** //
 
-# define MS_PROMPT "Bite> "
+# define MS_PROMPT "\e[31;42mGrosS3x&N1B4RD\e[m> "
 
 typedef char *		t_env_var;
 
@@ -76,6 +76,18 @@ t_ms_error	env_ctx_init(
 				char **envp
 				);
 
+t_ms_error	env_ctx_destroy(
+				t_env_ctx *env_ctx,
+				char *pn,
+				char **envp
+				);
+
+t_ms_error	env_destroy(
+				t_env_ctx *env_ctx,
+				char *pn,
+				char **envp
+				);
+
 const char	*env_ctx_get_variable(
 				t_env_ctx *env_ctx,
 				char *var_name
@@ -94,6 +106,20 @@ t_ms_error	env_set_var(
 t_ms_error	env_unset_var(
 				t_env *env,
 				t_env_var var
+				);
+
+// ************************************************************************** //
+// *                                                                        * //
+// * Global helper definition.                                              * //
+// *                                                                        * //
+// ************************************************************************** //
+
+char		*_env_take_varname(
+				const t_env_var env_var
+				);
+
+char		*_env_take_varvalue(
+				const t_env_var env_var
 				);
 
 #endif

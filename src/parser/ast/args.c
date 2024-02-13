@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 20:26:45 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 23:34:15 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 17:44:54 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 // * Includes.                                                              * //
 // *                                                                        * //
 // ************************************************************************** //
+
+#include <libft.h>
 
 #include "parser/ast.h"
 
@@ -78,7 +80,7 @@ int	args_pushback(
 
 	if (args->used >= args->alloced)
 	{
-		tmp = ft_realloc(args->args,
+		tmp = _realloc(args->args,
 				(args->alloced + 1) * sizeof(*args->args),
 				(args->alloced * 2 + 1) * sizeof(*args->args));
 		if (tmp == NULL)
@@ -102,7 +104,7 @@ int	args_cat(
 	total_size = args1->used + args2->used;
 	if (total_size > args1->alloced)
 	{
-		tmp = ft_realloc(args1->args,
+		tmp = _realloc(args1->args,
 				(args1->alloced + 1) * sizeof(*args1->args),
 				(total_size + 1) * sizeof(*args1->args));
 		if (tmp == NULL)

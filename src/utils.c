@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 12:31:37 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/11/30 15:43:07 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 17:44:54 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-#include "utils.h"
+#include <libft.h>
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -32,7 +32,7 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-void	*ft_realloc(
+void	*_realloc(
 			void *p,
 			size_t oldsize,
 			size_t newsize
@@ -49,56 +49,4 @@ void	*ft_realloc(
 	ft_memcpy(newp, p, oldsize);
 	free(p);
 	return (newp);
-}
-
-void	*ft_memcpy(
-			void *dst,
-			const void *src,
-			size_t n
-			)
-{
-	char	*pdst;
-	char	*psrc;
-
-	if (n == 0)
-		return (dst);
-	pdst = (char *)dst;
-	psrc = (char *)src;
-	while (n-- != 0)
-	{
-		pdst[n] = psrc[n];
-	}
-	return (dst);
-}
-
-int	ft_strlen(
-		const char *str
-		)
-{
-	int	k;
-
-	k = 0;
-	while (str[k] != '\0')
-		++k;
-	return (k);
-}
-
-int	ft_isspace(
-		char c
-		)
-{
-	return (c == ' '
-		|| c == '\t');
-}
-
-char	*ft_strdup(
-			const char *str
-			)
-{
-	char	*s;
-
-	s = malloc(ft_strlen(str) + 1);
-	if (s == NULL)
-		return (NULL);
-	return (ft_memcpy(s, str, ft_strlen(str) + 1));
 }
