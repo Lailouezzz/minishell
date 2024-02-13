@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 03:06:06 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 18:39:07 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 21:35:30 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,14 @@
 // * Header functions.                                                      * //
 // *                                                                        * //
 // ************************************************************************** //
+
+void	env_ctx_destroy(
+			t_env_ctx *env_ctx
+			)
+{
+	env_destroy(&env_ctx->env);
+	free(env_ctx->current_code_str);
+}
 
 void	env_destroy(
 			t_env *env

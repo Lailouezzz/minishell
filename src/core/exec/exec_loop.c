@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 17:24:06 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 22:11:53 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,7 @@ static	t_ms_error	_exec_loop_exec(
 		return (MS_FATAL);
 	}
 	ctx->cur_signo = 0;
+	exec_set_in_execution();
 	r = exec_exec(ctx, cl);
 	exec_set_interactive();
 	command_line_destroy(cl);
@@ -143,7 +144,7 @@ static	t_ms_error	_exec_loop_parse(
 	lr_parser_init(ctx->parser_ctx, NULL);
 	while (42)
 	{
-		r = tokenize(&lrtoks, (const char **)pstr);
+		r = tokenize(&lrtoks, ctx->env_ctx, (const char **)pstr);
 		if (r != MS_OK)
 		{
 			lr_parser_destroy(ctx->parser_ctx);

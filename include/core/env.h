@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:08:41 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 18:57:19 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 21:37:00 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ typedef struct s_env_ctx
 	char		*pn;
 	t_env		env;
 	int			current_code;
+	char		*current_code_str;
 }					t_env_ctx;
 
 // ************************************************************************** //
@@ -98,6 +99,11 @@ t_ms_error	env_set_var(
 				t_env *env,
 				const char *name,
 				const char *value
+				);
+
+t_ms_error	env_set_code(
+				t_env_ctx *env_ctx,
+				t_ms_status code
 				);
 
 t_ms_error	env_unset_var(

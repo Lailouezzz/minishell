@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 17:01:31 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 19:32:19 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 21:42:42 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,11 +96,12 @@ t_env_var	_env_format_var(
 	const int	namelen = ft_strlen(name);
 	const int	valuelen = ft_strlen(value);
 
-	var = malloc(namelen + valuelen + 1);
+	var = malloc(namelen + valuelen + 2);
 	if (var == NULL)
 		return (NULL);
 	ft_memcpy(var, name, namelen);
 	var[namelen] = '=';
 	ft_memcpy(var + namelen + 1, value, valuelen);
+	var[namelen + valuelen + 1] = '\0';
 	return (var);
 }

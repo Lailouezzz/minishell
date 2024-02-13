@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 18:39:25 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 19:11:14 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 21:41:33 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 // * Includes.                                                              * //
 // *                                                                        * //
 // ************************************************************************** //
+
+#include <libft.h>
 
 #include "core/env.h"
 
@@ -72,6 +74,18 @@ t_ms_error	env_set_var(
 	return (MS_OK);
 }
 
+t_ms_error	env_set_code(
+				t_env_ctx *env_ctx,
+				t_ms_status code
+				)
+{
+	env_ctx->current_code = code;
+	env_ctx->current_code_str = ft_itoa(code);
+	if (env_ctx->current_code_str == NULL)
+		return (env_ctx_destroy(env_ctx), MS_BAD_ALLOC);
+	return (MS_OK);
+}
+
 t_ms_error	env_unset_var(
 				t_env *env,
 				const char *name
@@ -79,7 +93,6 @@ t_ms_error	env_unset_var(
 {
 	
 }
-
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -95,8 +108,9 @@ static t_ms_error	_env_pushback_var(
 	if (env->used >= env->alloced)
 	{
 		env->env_vars = _realloc(env->env_vars,
-				(env->used + 1) * sizeof(*env->env_vars),
-				(env->used + 1) * 2 * sizeof(*env->env_vars));
+				(env->alloced + 1) * sizeof(*env->env_vars),
+				((env->alloced * 2) + 1) * sizeof(*env->env_vars));
+		env->alloced *= 2;
 		if (env->env_vars == NULL)
 			return (MS_BAD_ALLOC);
 	}

@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 15:22:16 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 17:21:36 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 21:56:08 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ static int			ft_ismeta(
 						);
 
 static const char	*_expand_dollar(
-						const char **start
+						const char **start,
+						t_env_ctx *env_ctx
 						);
 
 static t_ms_error	_flush_word_read(
@@ -111,6 +112,7 @@ static t_ms_error	_state_doublequote(
 
 t_ms_error	tokenize(
 				t_lr_token_list *lrtoks,
+				t_env_ctx *env_ctx,
 				const char **start
 				)
 {
@@ -121,6 +123,7 @@ t_ms_error	tokenize(
 	if (r != MS_OK)
 		return (r);
 	int_token.cur = *start;
+	int_token.env_ctx = env_ctx;
 	int_token.word_read.str = NULL;
 	while (ft_isspace(*int_token.cur) && *int_token.cur != '\0')
 		++int_token.cur;
@@ -149,11 +152,13 @@ static int	ft_ismeta(
 }
 
 static const char	*_expand_dollar(
-						const char **start
+						const char **start,
+						t_env_ctx *env_ctx
 						)
 {
 	static const char	*dollar = "$";
 	static const char	*void_str = "";
+	const char			*var;
 	t_dyn_str			dyn_str;
 
 	if (ft_ismeta(**start) || ft_isspace(**start) || **start == '\0')
@@ -169,8 +174,13 @@ static const char	*_expand_dollar(
 			return (NULL);
 		++(*start);
 	}
+	if (dyn_str.len == 1 && *dyn_str.str == '?')
+		return (dyn_str_destroy(&dyn_str), env_ctx->current_code_str);
+	var = env_ctx_get_variable(env_ctx, dyn_str.str);
 	dyn_str_destroy(&dyn_str);
-	return (void_str);
+	if (var == NULL)
+		return (void_str);
+	return (var);
 }
 
 static t_ms_error	_flush_word_read(
@@ -201,10 +211,9 @@ static t_ms_error	_state_dollar(
 						t_int_token *int_token
 						)
 {
-	const char	*expended;
+	const char	*expended = _expand_dollar(&int_token->cur, int_token->env_ctx);
 	int			r;
 
-	expended = _expand_dollar(&int_token->cur);
 	if (ft_isspace(*expended))
 	{
 		if (int_token->word_read.str != NULL)
@@ -236,7 +245,7 @@ static t_ms_error	_state_dollar_quoted(
 	const char	*expended;
 
 	(void)(lrtoks);
-	expended = _expand_dollar(&int_token->cur);
+	expended = _expand_dollar(&int_token->cur, int_token->env_ctx);
 	if (expended == NULL)
 		return (MS_FATAL);
 	if (*expended != '\0')

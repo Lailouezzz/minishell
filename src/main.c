@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 17:21:04 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 21:39:17 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ int	main(int argc, char **argv, char **envp)
 	env_ctx_init(&env_ctx, argv[0], envp);
 	exec_init(&ex_ctx, &env_ctx, &parser_ctx);
 	exec_loop(&ex_ctx);
+	env_ctx_destroy(&env_ctx);
 	rl_clear_history();
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	return (env_ctx.current_code);

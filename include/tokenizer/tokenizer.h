@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 14:12:05 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/01/22 05:47:49 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 21:48:55 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 
 # include <lr_token.h>
 
+# include "core/env.h"
 # include "tokenizer/lr_token_list.h"
 # include "utils/dyn_str.h"
 # include "token.h"
@@ -56,6 +57,11 @@ typedef struct s_int_token
 	 * @brief The current word read.
 	 */
 	t_dyn_str		word_read;
+
+	/**
+	 * @brief The environment context.
+	 */
+	t_env_ctx		*env_ctx;
 }	t_int_token;
 
 // ************************************************************************** //
@@ -67,12 +73,14 @@ typedef struct s_int_token
 /**
  * @brief 
  * @param lrtoks Store the @s_lr_token_list read.
+ * @param env_ctx The environment context.
  * @param start Pointer to a char in a null-terminated string.
  * 		After the call this pointer is placed at the end of the read token.
  * @return s_ms_error @MS_OK on success. Error code on error.
  */
 t_ms_error	tokenize(
 				t_lr_token_list *lrtoks,
+				t_env_ctx *env_ctx,
 				const char **start
 				);
 
