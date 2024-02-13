@@ -8,3 +8,6 @@ doc/man
 
 # Buildsystem
 Makefile.cfg
+
+# AMASSIAS
+a.out
