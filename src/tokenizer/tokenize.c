@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 15:22:16 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 21:56:08 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/14 16:17:18 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,8 +167,7 @@ static const char	*_expand_dollar(
 		return (void_str);
 	if (dyn_str_init(&dyn_str) != MS_OK)
 		return (NULL);
-	while (!ft_ismeta(**start) && !ft_isspace(**start) && **start != '\0'
-		&& **start != '"' && **start != '\'' && **start != '$')
+	while (ft_isalnum(**start) && **start != '\0')
 	{
 		if (dyn_str_pushback(&dyn_str, **start) != MS_OK)
 			return (NULL);
