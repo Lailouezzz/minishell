@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 15:22:16 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/14 16:17:18 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/14 16:25:31 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,8 @@ static const char	*_expand_dollar(
 		return (dollar);
 	if (**start == '\'' || **start == '"')
 		return (void_str);
+	if (**start == '?')
+		return (++(*start), env_ctx->current_code_str);
 	if (dyn_str_init(&dyn_str) != MS_OK)
 		return (NULL);
 	while (ft_isalnum(**start) && **start != '\0')
@@ -173,8 +175,6 @@ static const char	*_expand_dollar(
 			return (NULL);
 		++(*start);
 	}
-	if (dyn_str.len == 1 && *dyn_str.str == '?')
-		return (dyn_str_destroy(&dyn_str), env_ctx->current_code_str);
 	var = env_ctx_get_variable(env_ctx, dyn_str.str);
 	dyn_str_destroy(&dyn_str);
 	if (var == NULL)
