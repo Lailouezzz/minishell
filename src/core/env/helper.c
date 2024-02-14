@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   helper.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 17:01:31 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 21:42:42 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/14 16:30:11 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ t_env_var	*_env_exist(
 	while (*envp != NULL)
 	{
 		if (ft_strncmp(*envp, name, namelen) == 0
-			&& ft_strlen(*envp) >= namelen + 1
+			&& ft_strlen(*envp) >= (size_t) namelen + 1
 			&& (*envp)[namelen] == '=')
 			return (envp);
 		++envp;
