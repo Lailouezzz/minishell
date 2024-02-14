@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 18:39:25 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 21:41:33 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/14 16:36:13 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ t_ms_error	env_set_code(
 				)
 {
 	env_ctx->current_code = code;
+	free(env_ctx->current_code_str);
 	env_ctx->current_code_str = ft_itoa(code);
 	if (env_ctx->current_code_str == NULL)
 		return (env_ctx_destroy(env_ctx), MS_BAD_ALLOC);
