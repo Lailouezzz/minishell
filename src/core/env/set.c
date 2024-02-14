@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 18:39:25 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/14 16:36:13 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/14 16:58:11 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,9 @@ t_ms_error	env_unset_var(
 				const char *name
 				)
 {
-	
+	(void) env;
+	(void) name;
+	return (MS_OK);
 }
 
 // ************************************************************************** //

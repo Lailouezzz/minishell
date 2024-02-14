@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/13 16:44:58 by amassias         ###   ########.fr       */
+/*   Updated: 2024/02/14 16:57:20 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,24 @@ int	_create_heredoc(
 	return (f->_fileno);
 }
 
+int	_open_redirection(
+		t_io_info *io_info
+		)
+{
+	int	fd;
+
+	if (io_info->io_type == IO_IN)
+		fd = open(io_info->file, O_IN);
+	else if (io_info->io_type == IO_OUT)
+		fd = open(io_info->file, O_OT, 0666);
+	else if (io_info->io_type == IO_APPEND)
+		fd = open(io_info->file, O_AP, 0666);
+	else // if (io_info->io_type == IO_HEREDOC)
+		fd = _create_heredoc(io_info->file);
+	return (fd);
+}
+
+// TODO: return error code ?
 void	_handle_redirect_list(
 			const t_redirect_list *list
 			)
@@ -135,14 +153,7 @@ void	_handle_redirect_list(
 	i = 0;
 	while (i < list->used)
 	{
-		if (info[i].io_type == IO_IN)
-			fd = open(info[i].file, O_IN);
-		else if (info[i].io_type == IO_OUT)
-			fd = open(info[i].file, O_OT, 0666);
-		else if (info[i].io_type == IO_APPEND)
-			fd = open(info[i].file, O_AP, 0666);
-		else // if (info[i].io_type == IO_HEREDOC)
-			fd = _create_heredoc(info[i].file);
+		fd = _open_redirection(&info[i]);
 		if (fd == -1)
 			exit(-1); // TODO: Handle case where `fd == -1`
 		if (info[i].io_type == IO_IN || info[i].io_type == IO_HEREDOC)
@@ -191,77 +202,111 @@ char	**_get_paths(
 	return (ft_split("", ':'));
 }
 
-char	*_get_pwd(
-			t_env *env
+const char	*_get_pwd(
+			const char **vars
 			)
 {
-	// t_env_var	*var;
-
-	// var = env->env_vars;
-	// while (*var)
-	// {
-	// 	if (ft_strncmp(*var, "PWD=", 4) == 0)
-	// 		return (*var + 4);
-	// 	++var;
-	// }
-	(void) env;
-	return ("/home/amassias/Documents/minishell");
+	while (*vars)
+	{
+		if (ft_strncmp(*vars, "PWD=", 4) == 0)
+			return (*vars + 4);
+		++vars;
+	}
+	return ("");
+	// (void)vars;
+	// return ("/home/amassias/Documents/minishell");
 }
 
 void	_free_list(
-			void **list
+			void ***list_ptr
 			)
 {
 	void	**itr;
 
-	if (list == NULL)
+	if (*list_ptr == NULL)
 		return ;
-	itr = list;
+	itr = *list_ptr;
 	while (*itr)
 		free(*itr++);
-	free(list);
-	*list = NULL;
+	free(*list_ptr);
+	*list_ptr = NULL;
+}
+
+t_ms_error	__run_command(
+				const char *program_name,
+				const char *path,
+				const char **args,
+				const char **envp
+				)
+{
+	char	*abolute_path;
+
+	abolute_path = _as_full_path(program_name, path);
+	if (access(abolute_path, F_OK) != 0)
+		return (free(abolute_path), MS_OK);
+	if (access(abolute_path, X_OK) != 0)
+		return (free(abolute_path), MS_PERM_DENIED);
+	execve(abolute_path, (char **)args, (char **)envp);
+	return (free(abolute_path), MS_FATAL);
 }
 
 t_ms_error	_run_command(
+				t_exec_ctx *ctx,
 				const char *program_name,
 				const char **args,
-				t_env *env
+				const char **envp
 				)
 {
-	static char	*paths[] = { "/usr/bin", NULL };
+	char		**paths;
 	char		**itr;
-	char		*path;
+	t_ms_error	error;
 
-	// paths = _get_paths(ctx->env_ctx->env);
-	path = _as_full_path(program_name, _get_pwd(env));
-	if (access(path, F_OK) == 0)
-	{
-		if (access(path, X_OK) != 0)
-			return (MS_PERM_DENIED);
-		execve(path, (char **)args, (char **)env->env_vars);
-		free(path);
-		return (MS_FATAL);
-	}
+	paths = _get_paths(&ctx->env_ctx->env);
+	error = __run_command(program_name, _get_pwd(envp),
+			(const char **)args, (const char **)envp);
+	if (error != MS_OK)
+		return (error);
 	itr = paths;
 	while (*itr)
 	{
-		path = _as_full_path(program_name, *itr);
-		if (access(path, F_OK) == 0)
-		{
-			if (access(path, X_OK) != 0)
-				return (MS_PERM_DENIED);
-			execve(path, (char **)args, (char **)env->env_vars);
-			free(path);
-			return (MS_FATAL);
-		}
-		free(path);
-		++itr;
+		error = __run_command(program_name, *itr++,
+				(const char **)args, (const char **)envp);
+		if (error != MS_OK)
+			return (error);
 	}
-	// _free_list(paths);
+	_free_list((void ***)&paths);
 	return (MS_COMMAND_NOT_FOUND);
 }
 
+t_ms_error	__exec_pipeline_simple_command(
+				t_exec_ctx *ctx,
+				t_simple_command *command
+				)
+{
+	t_ms_error	error;
+
+	_handle_redirect_list(command->redirect_list);
+	error = _run_command(
+			ctx,
+			command->pn,
+			(const char **)command->args->args,
+			(const char **)ctx->env_ctx->env.env_vars);
+	return (error);
+}
+
+t_ms_error	__exec_pipeline_subshell(
+				t_exec_ctx *ctx,
+				t_subshell *command
+				)
+{
+	t_ms_error	error;
+
+	_handle_redirect_list(command->redirect_list);
+	_exec_exec(ctx, command->and_or, &error);
+	return (error);
+}
+
+// TODO: do something about the parser leaking each time an error occurs
 t_ms_error	__exec_pipeline(
 				t_exec_ctx *ctx,
 				t_command *commands,
@@ -270,7 +315,6 @@ t_ms_error	__exec_pipeline(
 			)
 {
 	pid_t		pid;
-	t_ms_error	error;
 	int			stat;
 	int			pipe_fd[2];
 
@@ -290,6 +334,9 @@ t_ms_error	__exec_pipeline(
 			__exec_pipeline(ctx, commands, index, pipe_fd[1]);
 		}
 		waitpid(pid, &stat, 0);
+		env_set_code(ctx->env_ctx, WEXITSTATUS(stat));
+		if (WIFSIGNALED(stat))
+			env_set_code(ctx->env_ctx, MS_STATUS_COMMAND_NOT_FOUND + WTERMSIG(stat));
 		return (false);
 	}
 	if (index > 0)
@@ -301,18 +348,8 @@ t_ms_error	__exec_pipeline(
 	dup2(out_fd, STDOUT_FILENO);
 	close(out_fd);
 	if (commands[index].type == COMMAND_SUBSHELL)
-	{
-		_handle_redirect_list(((t_subshell *)commands[index].command)->redirect_list);
-		_exec_exec(ctx, ((t_subshell *)commands)[index].and_or, &error);
-		exit(ctx->env_ctx->current_code); // WARNING: Will leak parser ctx...
-	}
-	_handle_redirect_list(((t_simple_command *)commands[index].command)->redirect_list);
-	if (_run_command(((t_simple_command *)commands[index].command)->pn,
-		(const char **)((t_simple_command *)commands[index].command)->args->args,
-		&ctx->env_ctx->env) == MS_PERM_DENIED)
-		exit(MS_PERM_DENIED);
-	// Test for builtins
-	exit(MS_COMMAND_NOT_FOUND);
+		exit(__exec_pipeline_subshell(ctx, commands[index].command));
+	exit(__exec_pipeline_simple_command(ctx, commands[index].command));
 }
 
 bool	_exec_pipeline(
@@ -336,9 +373,12 @@ bool	_exec_pipeline(
 		if (pipeline->used > 1)
 		{
 			close(pipe_fd[0]);
-			__exec_pipeline(ctx, pipeline->commands, pipeline->used - 1, pipe_fd[1]);
+			*error = __exec_pipeline(ctx, pipeline->commands, pipeline->used - 1, pipe_fd[1]);
 		}
 		waitpid(pid, &stat, 0);
+		env_set_code(ctx->env_ctx, WEXITSTATUS(stat));
+		if (WIFSIGNALED(stat))
+			env_set_code(ctx->env_ctx, MS_STATUS_COMMAND_NOT_FOUND + WTERMSIG(stat));
 		return (false);
 	}
 	if (pipeline->used > 1)
@@ -348,18 +388,9 @@ bool	_exec_pipeline(
 		close(pipe_fd[0]);
 	}
 	if (pipeline->commands[pipeline->used - 1].type == COMMAND_SUBSHELL)
-	{
-		_handle_redirect_list(((t_subshell *)pipeline->commands[pipeline->used - 1].command)->redirect_list);
-		_exec_exec(ctx, ((t_subshell *)pipeline->commands[pipeline->used - 1].command)->and_or, error);
-		exit(ctx->env_ctx->current_code); // WARNING: Will leak parser ctx...
-	}
-	_handle_redirect_list(((t_simple_command *)pipeline->commands[pipeline->used - 1].command)->redirect_list);
-	if (_run_command(((t_simple_command *)pipeline->commands[pipeline->used - 1].command)->pn,
-		(const char **)((t_simple_command *)pipeline->commands[pipeline->used - 1].command)->args->args,
-		&ctx->env_ctx->env) == MS_PERM_DENIED)
-		exit(MS_PERM_DENIED);
+		exit(__exec_pipeline_subshell(ctx, pipeline->commands[pipeline->used - 1].command));
+	exit(__exec_pipeline_simple_command(ctx, pipeline->commands[pipeline->used - 1].command));
 	// Test for builtins
-	exit(MS_COMMAND_NOT_FOUND);
 }
 
 bool	_exec_exec(
