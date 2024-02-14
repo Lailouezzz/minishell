@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_sig_handler.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 21:46:46 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/14 16:47:12 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/14 17:30:15 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ static void	_exec_sig_handler_in_execution(
 
 void	exec_set_interactive(void)
 {
+	g_signo = 0;
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, _exec_sig_handler_interactive);
 }
@@ -76,7 +77,7 @@ static void	_exec_sig_handler_interactive(
 				int signo
 				)
 {
-	(void)(signo);
+	g_signo = signo;
 	ft_putstr_fd("\n", STDOUT_FILENO);
 	rl_on_new_line();
 	rl_replace_line("", 0);
