@@ -1,12 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_count_if.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/02/14 16:47:38 by ale-boud          #+#    #+#             */
+/*   Updated: 2024/02/14 16:48:36 by ale-boud         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 /**
  * @file ft_count_if.c
- * @author your name (you@domain.com)
- * @brief 
- * @version 0.1
+ * @author ale-boud (ale-boud@student.42lehavre.fr)
+ * @brief ft_count_if implementation.
  * @date 2024-02-13
- * 
  * @copyright Copyright (c) 2024
- * 
  */
 
 // ************************************************************************** //

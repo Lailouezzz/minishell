@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_loop.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 22:11:53 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/14 16:47:24 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ static	t_ms_error	_exec_loop_exec(
 		if (r == MS_SYNTAX_ERROR)
 		{
 			printf("%s: parse error near unexpected token `%c`\n",
-				ctx->env_ctx->pn, *(pstr - 1)); // remove printf
+				ctx->env_ctx->pn, *(pstr - 1));
 			return (r);
 		}
 		return (MS_FATAL);
