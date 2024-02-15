@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_loop.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/14 17:39:03 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/15 13:21:58 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,22 +43,22 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-static	t_ms_error	_exec_loop_exec(
+static t_ms_error	_exec_loop_exec(
 						t_exec_ctx *ctx
 						);
 
-static	t_ms_error	_exec_loop_parse(
+static t_ms_error	_exec_loop_parse(
 						t_exec_ctx *ctx,
 						char **pstr
 						);
 
-static	t_lr_error	__exec_loop_parse_exec(
+static t_lr_error	__exec_loop_parse_exec(
 						t_exec_ctx *ctx,
 						t_lr_token_list *lrtoks,
 						t_command_line **cl
 						);
 
-static	void		_exec_loop_handle_signal(
+static void			_exec_loop_handle_signal(
 						t_exec_ctx *ctx
 						);
 
