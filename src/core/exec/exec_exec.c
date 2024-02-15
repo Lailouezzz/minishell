@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/15 13:14:28 by amassias         ###   ########.fr       */
+/*   Updated: 2024/02/15 17:16:45 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,102 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-bool	_exec_exec(
-			t_exec_ctx *ctx,
-			const t_and_or *and_or,
-			t_ms_error *error
-			);
+static const char		*_get_end(
+							const char *str
+							);
+
+static int				_create_heredoc(
+							const char *delim
+							);
+
+static int				_open_redirection(
+							t_io_info *io_info
+							);
+
+static void				_handle_redirect_list(
+							const t_redirect_list *list
+							);
+
+static char				*_as_full_path(
+							const char *file,
+							const char *path
+							);
+
+static char				**_get_paths(
+							t_env_ctx *ctx
+							);
+
+static void				_free_list(
+							void ***list_ptr
+							);
+
+static t_ms_error		__run_command(
+							const char *program_name,
+							const char *path,
+							const char **args,
+							const char **envp
+							);
+
+static t_ms_error		_run_command(
+							t_exec_ctx *ctx,
+							const char *program_name,
+							const char **args,
+							const char **envp
+							);
+
+static t_ms_error		__exec_pipeline_simple_command(
+							t_exec_ctx *ctx,
+							t_simple_command *command
+							);
+
+static t_ms_error		__exec_pipeline_subshell(
+							t_exec_ctx *ctx,
+							t_subshell *command
+							);
+
+static noreturn void	_quit(
+							t_exec_ctx *ctx,
+							t_ms_error error
+							);
+
+static noreturn void	_child(
+							size_t index,
+							int fds[3],
+							t_command *commands,
+							t_exec_ctx *ctx
+							);
+
+static t_ms_error		__exec_pipeline(
+							t_exec_ctx *ctx,
+							t_command *commands,
+							size_t index,
+							int out_fd
+							);
+
+static t_ms_error		_exec_pipeline_parent(
+							t_exec_ctx *ctx,
+							const t_pipeline *pipeline,
+							pid_t pid,
+							int pipe_fd[2]
+							);
+
+static bool				_test_builtin(
+							t_exec_ctx *ctx,
+							t_simple_command *command,
+							t_ms_error *error
+							);
+
+static bool				_exec_pipeline(
+							t_exec_ctx *ctx,
+							const t_pipeline *pipeline,
+							t_ms_error *error
+							);
+
+static bool				_exec_exec(
+							t_exec_ctx *ctx,
+							const t_and_or *and_or,
+							t_ms_error *error
+							);
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -80,9 +171,9 @@ t_ms_error	exec_exec(
 /*                                                                            */
 /* ************************************************************************** */
 
-const char	*_get_end(
-				const char *str
-				)
+static const char	*_get_end(
+						const char *str
+						)
 {
 	const char	*end;
 
@@ -92,9 +183,9 @@ const char	*_get_end(
 	return (end);
 }
 
-int	_create_heredoc(
-		const char *delim
-		)
+static int	_create_heredoc(
+				const char *delim
+				)
 {
 	FILE	*f;
 	char	*line;
@@ -123,9 +214,9 @@ int	_create_heredoc(
 	return (f->_fileno);
 }
 
-int	_open_redirection(
-		t_io_info *io_info
-		)
+static int	_open_redirection(
+				t_io_info *io_info
+				)
 {
 	int	fd;
 
@@ -135,15 +226,16 @@ int	_open_redirection(
 		fd = open(io_info->file, O_OT, 0666);
 	else if (io_info->io_type == IO_APPEND)
 		fd = open(io_info->file, O_AP, 0666);
-	else // if (io_info->io_type == IO_HEREDOC)
+	else
 		fd = _create_heredoc(io_info->file);
 	return (fd);
 }
 
 // TODO: return error code ?
-void	_handle_redirect_list(
-			const t_redirect_list *list
-			)
+// TODO: Handle case where `fd == -1`
+static void	_handle_redirect_list(
+				const t_redirect_list *list
+				)
 {
 	size_t		i;
 	int			fd;
@@ -157,7 +249,7 @@ void	_handle_redirect_list(
 	{
 		fd = _open_redirection(&info[i]);
 		if (fd == -1)
-			exit(-1); // TODO: Handle case where `fd == -1`
+			exit(-1);
 		if (info[i].io_type == IO_IN || info[i].io_type == IO_HEREDOC)
 			dup2(fd, STDIN_FILENO);
 		else
@@ -167,10 +259,10 @@ void	_handle_redirect_list(
 	}
 }
 
-char	*_as_full_path(
-			const char *file,
-			const char *path
-			)
+static char	*_as_full_path(
+				const char *file,
+				const char *path
+				)
 {
 	size_t	file_name_len;
 	size_t	path_len;
@@ -188,40 +280,20 @@ char	*_as_full_path(
 	return (full_path);
 }
 
-char	**_get_paths(
-			t_env *env
-			)
+static char	**_get_paths(
+				t_env_ctx *ctx
+				)
 {
-	t_env_var	*var;
+	const char	*path = env_ctx_get_variable(ctx, "PATH");
 
-	var = env->env_vars;
-	while (*var)
-	{
-		if (ft_strncmp(*var, "PATH=", 5) == 0)
-			return (ft_split((*var) + 5, ':'));
-		++var;
-	}
+	if (path)
+		return (ft_split(path, ':'));
 	return (ft_split("", ':'));
 }
 
-const char	*_get_pwd(
-			const char **vars
-			)
-{
-	while (*vars)
-	{
-		if (ft_strncmp(*vars, "PWD=", 4) == 0)
-			return (*vars + 4);
-		++vars;
-	}
-	return ("");
-	// (void)vars;
-	// return ("/home/amassias/Documents/minishell");
-}
-
-void	_free_list(
-			void ***list_ptr
-			)
+static void	_free_list(
+				void ***list_ptr
+				)
 {
 	void	**itr;
 
@@ -234,12 +306,12 @@ void	_free_list(
 	*list_ptr = NULL;
 }
 
-t_ms_error	__run_command(
-				const char *program_name,
-				const char *path,
-				const char **args,
-				const char **envp
-				)
+static t_ms_error	__run_command(
+						const char *program_name,
+						const char *path,
+						const char **args,
+						const char **envp
+						)
 {
 	char	*abolute_path;
 
@@ -257,39 +329,43 @@ t_ms_error	__run_command(
 	return (MS_FATAL);
 }
 
-t_ms_error	_run_command(
-				t_exec_ctx *ctx,
-				const char *program_name,
-				const char **args,
-				const char **envp
-				)
+static t_ms_error	_run_command(
+						t_exec_ctx *ctx,
+						const char *program_name,
+						const char **args,
+						const char **envp
+						)
 {
 	char		**paths;
 	char		**itr;
+	const char	*pwd;
 	t_ms_error	error;
 
-	paths = _get_paths(&ctx->env_ctx->env);
-	error = __run_command(program_name, _get_pwd(envp),
-			(const char **)args, (const char **)envp);
-	if (error != MS_OK)
-		return (_free_list((void ***)&paths), error);
-	itr = paths;
-	while (*itr)
+	paths = _get_paths(ctx->env_ctx);
+	if (paths == NULL)
+		return (MS_BAD_ALLOC);
+	pwd = env_ctx_get_variable(ctx->env_ctx, "PWD");
+	if (pwd)
 	{
-		error = __run_command(program_name, *itr++,
-				(const char **)args, (const char **)envp);
+		error = __run_command(program_name, pwd, args, envp);
 		if (error != MS_OK)
 			return (_free_list((void ***)&paths), error);
 	}
-	_free_list((void ***)&paths);
+	itr = paths;
+	while (*itr)
+	{
+		error = __run_command(program_name, *itr++, args, envp);
+		if (error != MS_OK)
+			return (_free_list((void ***)&paths), error);
+	}
 	dprintf(STDERR_FILENO, "minishell: command not found: %s\n", program_name);
-	return (MS_COMMAND_NOT_FOUND);
+	return (_free_list((void ***)&paths), MS_COMMAND_NOT_FOUND);
 }
 
-t_ms_error	__exec_pipeline_simple_command(
-				t_exec_ctx *ctx,
-				t_simple_command *command
-				)
+static t_ms_error	__exec_pipeline_simple_command(
+						t_exec_ctx *ctx,
+						t_simple_command *command
+						)
 {
 	t_ms_error	error;
 
@@ -302,10 +378,10 @@ t_ms_error	__exec_pipeline_simple_command(
 	return (error);
 }
 
-t_ms_error	__exec_pipeline_subshell(
-				t_exec_ctx *ctx,
-				t_subshell *command
-				)
+static t_ms_error	__exec_pipeline_subshell(
+						t_exec_ctx *ctx,
+						t_subshell *command
+						)
 {
 	t_ms_error	error;
 
@@ -339,99 +415,131 @@ static noreturn void	_quit(
 	exec_cleanup_exit(ctx, status);
 }
 
-// TODO: do something about the parser leaking each time an error occurs
-t_ms_error	__exec_pipeline(
-				t_exec_ctx *ctx,
-				t_command *commands,
-				size_t index,
-				int out_fd
-			)
+static noreturn void	_child(
+							size_t index,
+							int fds[3],
+							t_command *commands,
+							t_exec_ctx *ctx
+							)
 {
-	pid_t		pid;
-	int			stat;
-	int			pipe_fd[2];
-	t_ms_error	error;
-
-	if (index-- == 0)
-		return (MS_OK);
 	if (index > 0)
-		pipe(pipe_fd);
-	pid = fork();
-	if (pid == -1)
-		return (MS_FATAL);
-	if (pid != 0)
-	{
-		close(out_fd);
-		if (index > 0)
-		{
-			close(pipe_fd[0]);
-			__exec_pipeline(ctx, commands, index, pipe_fd[1]);
-		}
-		waitpid(pid, &stat, 0);
-		env_set_code(ctx->env_ctx, WEXITSTATUS(stat));
-		if (WIFSIGNALED(stat))
-			env_set_code(ctx->env_ctx, 128 + WTERMSIG(stat));
-		return (false);
-	}
-	if (index > 0)
-	{
-		dup2(pipe_fd[0], STDIN_FILENO);
-		close(pipe_fd[1]);
-		close(pipe_fd[0]);
-	}
-	dup2(out_fd, STDOUT_FILENO);
-	close(out_fd);
+		(dup2(fds[0], STDIN_FILENO), close(fds[0]), close(fds[1]));
+	if (fds[2] >= 0)
+		(dup2(fds[2], STDOUT_FILENO), close(fds[2]));
 	if (commands[index].type == COMMAND_SUBSHELL)
 		_quit(ctx, __exec_pipeline_subshell(ctx, commands[index].command));
 	_quit(ctx, __exec_pipeline_simple_command(ctx, commands[index].command));
 }
 
-bool	_exec_pipeline(
-			t_exec_ctx *ctx,
-			const t_pipeline *pipeline,
-			t_ms_error *error)
+// TODO: do something about the parser leaking each time an error occurs
+static t_ms_error	__exec_pipeline(
+						t_exec_ctx *ctx,
+						t_command *commands,
+						size_t index,
+						int out_fd
+						)
 {
-	pid_t	pid;
-	int		stat;
-	int		pipe_fd[2];
+	pid_t		pid;
+	int			stat;
+	int			pipe_fd[2];
 
-	if (pipeline->used == 1)
-	{
-		// test for builtins
-	}
-	else
+	if (index-- == 0)
+		return (close(out_fd), MS_OK);
+	if (index > 0)
 		pipe(pipe_fd);
 	pid = fork();
-	if (pid > 0)
+	if (pid == -1)
 	{
-		if (pipeline->used > 1)
-		{
-			close(pipe_fd[0]);
-			*error = __exec_pipeline(ctx, pipeline->commands, pipeline->used - 1, pipe_fd[1]);
-		}
-		waitpid(pid, &stat, 0);
-		env_set_code(ctx->env_ctx, WEXITSTATUS(stat));
-		if (WIFSIGNALED(stat))
-			env_set_code(ctx->env_ctx, 128 + WTERMSIG(stat));
-		return (false);
+		if (index > 0)
+			(close(pipe_fd[0]), close(pipe_fd[1]), close(out_fd));
+		return (MS_FATAL);
 	}
-	if (pipeline->used > 1)
-	{
-		close(pipe_fd[1]);
-		dup2(pipe_fd[0], STDIN_FILENO);
-		close(pipe_fd[0]);
-	}
-	if (pipeline->commands[pipeline->used - 1].type == COMMAND_SUBSHELL)
-		_quit(ctx, __exec_pipeline_subshell(ctx, pipeline->commands[pipeline->used - 1].command));
-	_quit(ctx, __exec_pipeline_simple_command(ctx, pipeline->commands[pipeline->used - 1].command));
-	// Test for builtins
+	if (pid == 0)
+		_child(index, (int [3]){pipe_fd[0], pipe_fd[1], out_fd}, commands, ctx);
+	close(out_fd);
+	if (index > 0)
+		(close(pipe_fd[0]), __exec_pipeline(ctx, commands, index, pipe_fd[1]));
+	waitpid(pid, &stat, 0);
+	env_set_code(ctx->env_ctx, WEXITSTATUS(stat));
+	if (WIFSIGNALED(stat))
+		env_set_code(ctx->env_ctx, 128 + WTERMSIG(stat));
+	return (false);
 }
 
-bool	_exec_exec(
-			t_exec_ctx *ctx,
-			const t_and_or *and_or,
-			t_ms_error *error
-			)
+static t_ms_error	_exec_pipeline_parent(
+						t_exec_ctx *ctx,
+						const t_pipeline *pipeline,
+						pid_t pid,
+						int pipe_fd[2]
+						)
+{
+	int			stat;
+	t_ms_error	error;
+
+	error = MS_OK;
+	if (pipeline->used > 1)
+	{
+		close(pipe_fd[0]);
+		error = __exec_pipeline(ctx, pipeline->commands,
+				pipeline->used - 1, pipe_fd[1]);
+	}
+	waitpid(pid, &stat, 0);
+	env_set_code(ctx->env_ctx, WEXITSTATUS(stat));
+	if (WIFSIGNALED(stat))
+		env_set_code(ctx->env_ctx, 128 + WTERMSIG(stat));
+	return (error);
+}
+
+static bool	_test_builtin(
+				t_exec_ctx *ctx,
+				t_simple_command *command,
+				t_ms_error *error
+				)
+{
+	(void)ctx;
+	(void)command;
+	(void)error;
+	return (false);
+}
+
+static bool	_exec_pipeline(
+				t_exec_ctx *ctx,
+				const t_pipeline *pipeline,
+				t_ms_error *error
+				)
+{
+	pid_t		pid;
+	int			pipe_fd[2];
+
+	if (pipeline->used > 1)
+	{
+		if (pipe(pipe_fd) == -1)
+			return (MS_FATAL);
+	}
+	else if (pipeline->commands[0].type == COMMAND_SIMPLE_COMMAND)
+	{
+		if (_test_builtin(ctx, pipeline->commands[0].command, error))
+			return (*error != MS_OK);
+	}
+	pid = fork();
+	if (pid == -1)
+	{
+		if (pipeline->used > 1)
+			(close(pipe_fd[0]), close(pipe_fd[1]));
+		return (MS_FATAL);
+	}
+	if (pid == 0)
+		_child(pipeline->used - 1, (int [3]){pipe_fd[0], pipe_fd[1], -1},
+			pipeline->commands, ctx);
+	*error = _exec_pipeline_parent(ctx, pipeline, pid, pipe_fd);
+	return (*error != MS_OK);
+}
+
+static bool	_exec_exec(
+				t_exec_ctx *ctx,
+				const t_and_or *and_or,
+				t_ms_error *error
+				)
 {
 	bool			should_stop;
 	t_logic_type	logic_type;
