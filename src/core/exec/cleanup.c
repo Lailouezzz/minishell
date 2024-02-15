@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/14 17:22:11 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/15 13:21:14 by amassias         ###   ########.fr       */
+/*   Updated: 2024/02/15 20:41:03 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,10 @@
 // *                                                                        * //
 // ************************************************************************** //
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <readline/readline.h>
+
 #include "core/exec.h"
 
 // ************************************************************************** //
@@ -40,5 +44,6 @@ noreturn void	exec_cleanup_exit(
 	free(ctx->current_line);
 	command_line_destroy(ctx->current_cl);
 	env_ctx_destroy(ctx->env_ctx);
+	rl_clear_history();
 	exit(code);
 }
