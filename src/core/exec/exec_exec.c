@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/14 16:57:20 by amassias         ###   ########.fr       */
+/*   Updated: 2024/02/15 13:14:28 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@
 #define O_IN 0
 #define O_OT 577
 #define O_AP 1601
+
+#define PERM_DENIED_MSG "minishell: permission denied: %s\n"
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -245,9 +247,14 @@ t_ms_error	__run_command(
 	if (access(abolute_path, F_OK) != 0)
 		return (free(abolute_path), MS_OK);
 	if (access(abolute_path, X_OK) != 0)
-		return (free(abolute_path), MS_PERM_DENIED);
+	{
+		dprintf(STDERR_FILENO, PERM_DENIED_MSG, program_name);
+		free(abolute_path);
+		return (MS_PERM_DENIED);
+	}
 	execve(abolute_path, (char **)args, (char **)envp);
-	return (free(abolute_path), MS_FATAL);
+	free(abolute_path);
+	return (MS_FATAL);
 }
 
 t_ms_error	_run_command(
@@ -265,16 +272,17 @@ t_ms_error	_run_command(
 	error = __run_command(program_name, _get_pwd(envp),
 			(const char **)args, (const char **)envp);
 	if (error != MS_OK)
-		return (error);
+		return (_free_list((void ***)&paths), error);
 	itr = paths;
 	while (*itr)
 	{
 		error = __run_command(program_name, *itr++,
 				(const char **)args, (const char **)envp);
 		if (error != MS_OK)
-			return (error);
+			return (_free_list((void ***)&paths), error);
 	}
 	_free_list((void ***)&paths);
+	dprintf(STDERR_FILENO, "minishell: command not found: %s\n", program_name);
 	return (MS_COMMAND_NOT_FOUND);
 }
 
@@ -306,6 +314,31 @@ t_ms_error	__exec_pipeline_subshell(
 	return (error);
 }
 
+static noreturn void	_quit(
+							t_exec_ctx *ctx,
+							t_ms_error error
+							)
+{
+	t_ms_status	status;
+
+	status = ctx->env_ctx->current_code;
+	if (error == MS_FATAL)
+	{
+		ft_putendl_fd("minishell: internal error", STDERR_FILENO);
+		status = MS_STATUS_FAILURE;
+	}
+	else if (error == MS_BAD_ALLOC)
+	{
+		ft_putendl_fd("minishell: out of resources", STDERR_FILENO);
+		status = MS_STATUS_FAILURE;
+	}
+	else if (error == MS_COMMAND_NOT_FOUND)
+		status = MS_STATUS_COMMAND_NOT_FOUND;
+	else if (error == MS_PERM_DENIED)
+		status = MS_STATUS_PERM_DENIED;
+	exec_cleanup_exit(ctx, status);
+}
+
 // TODO: do something about the parser leaking each time an error occurs
 t_ms_error	__exec_pipeline(
 				t_exec_ctx *ctx,
@@ -317,6 +350,7 @@ t_ms_error	__exec_pipeline(
 	pid_t		pid;
 	int			stat;
 	int			pipe_fd[2];
+	t_ms_error	error;
 
 	if (index-- == 0)
 		return (MS_OK);
@@ -336,7 +370,7 @@ t_ms_error	__exec_pipeline(
 		waitpid(pid, &stat, 0);
 		env_set_code(ctx->env_ctx, WEXITSTATUS(stat));
 		if (WIFSIGNALED(stat))
-			env_set_code(ctx->env_ctx, MS_STATUS_COMMAND_NOT_FOUND + WTERMSIG(stat));
+			env_set_code(ctx->env_ctx, 128 + WTERMSIG(stat));
 		return (false);
 	}
 	if (index > 0)
@@ -348,8 +382,8 @@ t_ms_error	__exec_pipeline(
 	dup2(out_fd, STDOUT_FILENO);
 	close(out_fd);
 	if (commands[index].type == COMMAND_SUBSHELL)
-		exit(__exec_pipeline_subshell(ctx, commands[index].command));
-	exit(__exec_pipeline_simple_command(ctx, commands[index].command));
+		_quit(ctx, __exec_pipeline_subshell(ctx, commands[index].command));
+	_quit(ctx, __exec_pipeline_simple_command(ctx, commands[index].command));
 }
 
 bool	_exec_pipeline(
@@ -378,7 +412,7 @@ bool	_exec_pipeline(
 		waitpid(pid, &stat, 0);
 		env_set_code(ctx->env_ctx, WEXITSTATUS(stat));
 		if (WIFSIGNALED(stat))
-			env_set_code(ctx->env_ctx, MS_STATUS_COMMAND_NOT_FOUND + WTERMSIG(stat));
+			env_set_code(ctx->env_ctx, 128 + WTERMSIG(stat));
 		return (false);
 	}
 	if (pipeline->used > 1)
@@ -388,8 +422,8 @@ bool	_exec_pipeline(
 		close(pipe_fd[0]);
 	}
 	if (pipeline->commands[pipeline->used - 1].type == COMMAND_SUBSHELL)
-		exit(__exec_pipeline_subshell(ctx, pipeline->commands[pipeline->used - 1].command));
-	exit(__exec_pipeline_simple_command(ctx, pipeline->commands[pipeline->used - 1].command));
+		_quit(ctx, __exec_pipeline_subshell(ctx, pipeline->commands[pipeline->used - 1].command));
+	_quit(ctx, __exec_pipeline_simple_command(ctx, pipeline->commands[pipeline->used - 1].command));
 	// Test for builtins
 }
 
