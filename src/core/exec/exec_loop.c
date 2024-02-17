@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_loop.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/15 13:21:58 by amassias         ###   ########.fr       */
+/*   Updated: 2024/02/16 17:11:46 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,8 +128,7 @@ static	t_ms_error	_exec_loop_exec(
 	}
 	exec_set_in_execution();
 	r = exec_exec(ctx, ctx->current_cl);
-	exec_set_interactive();
-	command_line_destroy(ctx->current_cl);
+	(exec_set_interactive(), command_line_destroy(ctx->current_cl));
 	ctx->current_cl = NULL;
 	if (r != MS_OK && r != MS_COMMAND_NOT_FOUND && r != MS_PERM_DENIED)
 		return (MS_FATAL);
@@ -145,7 +144,7 @@ static	t_ms_error	_exec_loop_parse(
 	int				r;
 
 	lr_parser_init(ctx->parser_ctx, NULL);
-	while (42)
+	while (42 > 01)
 	{
 		r = tokenize(&lrtoks, ctx->env_ctx, (const char **)pstr);
 		if (r != MS_OK)

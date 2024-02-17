@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_exec.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/15 17:16:45 by amassias         ###   ########.fr       */
+/*   Updated: 2024/02/16 16:47:33 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 #include "core/exec.h"
 
 #include <fcntl.h>
+#include <sys/signal.h>
 #include <libft.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -431,6 +432,19 @@ static noreturn void	_child(
 	_quit(ctx, __exec_pipeline_simple_command(ctx, commands[index].command));
 }
 
+static void	_wait_child(
+						t_exec_ctx *ctx,
+						pid_t pid
+						)
+{
+	int	stat;
+
+	waitpid(pid, &stat, 0);
+	env_set_code(ctx->env_ctx, WEXITSTATUS(stat));
+	if (WIFSIGNALED(stat))
+		env_set_code(ctx->env_ctx, 128 + WTERMSIG(stat));
+}
+
 // TODO: do something about the parser leaking each time an error occurs
 static t_ms_error	__exec_pipeline(
 						t_exec_ctx *ctx,
@@ -440,13 +454,12 @@ static t_ms_error	__exec_pipeline(
 						)
 {
 	pid_t		pid;
-	int			stat;
 	int			pipe_fd[2];
 
 	if (index-- == 0)
 		return (close(out_fd), MS_OK);
 	if (index > 0)
-		pipe(pipe_fd);
+		(void)(pipe(pipe_fd) == 0);
 	pid = fork();
 	if (pid == -1)
 	{
@@ -459,11 +472,8 @@ static t_ms_error	__exec_pipeline(
 	close(out_fd);
 	if (index > 0)
 		(close(pipe_fd[0]), __exec_pipeline(ctx, commands, index, pipe_fd[1]));
-	waitpid(pid, &stat, 0);
-	env_set_code(ctx->env_ctx, WEXITSTATUS(stat));
-	if (WIFSIGNALED(stat))
-		env_set_code(ctx->env_ctx, 128 + WTERMSIG(stat));
-	return (false);
+	_wait_child(ctx, pid);
+	return (MS_OK);
 }
 
 static t_ms_error	_exec_pipeline_parent(
@@ -473,7 +483,6 @@ static t_ms_error	_exec_pipeline_parent(
 						int pipe_fd[2]
 						)
 {
-	int			stat;
 	t_ms_error	error;
 
 	error = MS_OK;
@@ -483,10 +492,7 @@ static t_ms_error	_exec_pipeline_parent(
 		error = __exec_pipeline(ctx, pipeline->commands,
 				pipeline->used - 1, pipe_fd[1]);
 	}
-	waitpid(pid, &stat, 0);
-	env_set_code(ctx->env_ctx, WEXITSTATUS(stat));
-	if (WIFSIGNALED(stat))
-		env_set_code(ctx->env_ctx, 128 + WTERMSIG(stat));
+	_wait_child(ctx, pid);
 	return (error);
 }
 
@@ -554,5 +560,5 @@ static bool	_exec_exec(
 	if (and_or->left == NULL
 		|| (*current_code == MS_STATUS_OK) ^ (logic_type == LOGIC_OR))
 		should_stop = _exec_pipeline(ctx, and_or->right_pipeline, error);
-	return (should_stop || *error != MS_OK);
+	return (should_stop || *error != MS_OK || g_signo == SIGINT);
 }
