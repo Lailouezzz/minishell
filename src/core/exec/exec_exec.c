@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_exec.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/16 16:47:33 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/21 12:46:32 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -339,19 +339,19 @@ static t_ms_error	_run_command(
 {
 	char		**paths;
 	char		**itr;
-	const char	*pwd;
+	char		*cwd;
 	t_ms_error	error;
 
+	cwd = getcwd(NULL, 0);
+	if (cwd == NULL)
+		return (MS_BAD_ALLOC);
+	error = __run_command(program_name, cwd, args, envp);
+	free(cwd);
+	if (error != MS_OK)
+		return (error);
 	paths = _get_paths(ctx->env_ctx);
 	if (paths == NULL)
 		return (MS_BAD_ALLOC);
-	pwd = env_ctx_get_variable(ctx->env_ctx, "PWD");
-	if (pwd)
-	{
-		error = __run_command(program_name, pwd, args, envp);
-		if (error != MS_OK)
-			return (_free_list((void ***)&paths), error);
-	}
 	itr = paths;
 	while (*itr)
 	{
