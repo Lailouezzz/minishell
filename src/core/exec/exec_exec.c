@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/21 12:46:32 by amassias         ###   ########.fr       */
+/*   Updated: 2024/02/21 12:54:39 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 /* ************************************************************************** */
 
 #include "core/exec.h"
+#include "core/builtins.h"
 
 #include <fcntl.h>
 #include <sys/signal.h>
