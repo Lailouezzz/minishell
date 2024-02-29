@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/15 18:10:55 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/21 16:39:58 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/01 00:54:36 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,9 @@ t_ms_error	builtin_echo(
 	{
 		printf("%s", *argv++);
 		if (*argv)
-			ft_putchar(' ');
+			printf(" ");
 	}
 	if (nl)
-		ft_putchar('\n');
+		printf("\n");
 	return (env_set_code(ctx->env_ctx, 0));
 }
