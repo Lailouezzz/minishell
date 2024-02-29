@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/21 15:06:19 by amassias         ###   ########.fr       */
+/*   Updated: 2024/02/29 16:46:38 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 #define ERROR_TO_MANY_ARGS "minishell: cd: too many arguments"
 #define ERROR_NOT_ENOUGH_ARGS "minishell: cd: not enough arguments"
 #define ERROR_NO_FILE "minishell: cd: %s: No such file or directory"
-#define ERROR_CANT_CHANGE_DIR "minishell: cd: %s: could change directory"
+#define ERROR_CANT_CHANGE_DIR "minishell: cd: %s: couldn't change directory"
 
 /* ************************************************************************** */
 /*                                                                            */
