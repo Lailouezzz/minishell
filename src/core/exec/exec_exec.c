@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_exec.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/29 15:01:59 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/01 00:51:39 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ static t_ms_error		_exec_pipeline_parent(
 							int pipe_fd[2]
 							);
 
-static bool				_test_builtin(
+static bool				_test_for_lone_builtin(
 							t_exec_ctx *ctx,
 							t_simple_command *command,
 							t_ms_error *error
@@ -461,20 +461,20 @@ static t_ms_error	__exec_pipeline(
 
 	if (index-- == 0)
 		return (close(out_fd), MS_OK);
-	if (index > 0)
-		(void)(pipe(pipe_fd) == 0);
+	if (index > 0 && pipe(pipe_fd) == -1)
+		return (close(out_fd), MS_FATAL);
 	if (g_signo == SIGINT)
 	{
 		if (index > 0)
-			(close(pipe_fd[0]), close(pipe_fd[1]), close(out_fd));
-		return (MS_OK);
+			(close(pipe_fd[0]), close(pipe_fd[1]));
+		return (close(out_fd), MS_OK);
 	}
 	pid = fork();
 	if (pid == -1)
 	{
 		if (index > 0)
-			(close(pipe_fd[0]), close(pipe_fd[1]), close(out_fd));
-		return (MS_FATAL);
+			(close(pipe_fd[0]), close(pipe_fd[1]));
+		return (close(out_fd), MS_FATAL);
 	}
 	if (pid == 0)
 		_child(index, (int [3]){pipe_fd[0], pipe_fd[1], out_fd}, commands, ctx);
@@ -505,15 +505,36 @@ static t_ms_error	_exec_pipeline_parent(
 	return (error);
 }
 
-static bool	_test_builtin(
+static bool	_test_for_lone_builtin(
 				t_exec_ctx *ctx,
 				t_simple_command *command,
 				t_ms_error *error
 				)
 {
-	(void)ctx;
-	(void)command;
-	(void)error;
+	size_t	i;
+	int		in;
+	int		out;
+
+	i = 0;
+	while (i < BUILTIN_COUNT)
+	{
+		if (ft_strcmp(command->pn, g_builtins[i++].name) != 0)
+			continue ;
+		in = dup(STDIN_FILENO);
+		out = dup(STDOUT_FILENO);
+		if (in == -1 || out == -1)
+		{
+			*error = MS_FATAL;
+			return (true);
+		}
+		_handle_redirect_list(command->redirect_list);
+		g_builtins[i - 1].fun(ctx,
+			command->args->args,
+			ctx->env_ctx->env.env_vars);
+		if (dup2(in, STDIN_FILENO) < 0 || dup2(out, STDOUT_FILENO) < 0)
+			*error = MS_FATAL;
+		return (true);
+	}
 	return (false);
 }
 
@@ -533,7 +554,7 @@ static bool	_exec_pipeline(
 	}
 	else if (pipeline->commands[0].type == COMMAND_SIMPLE_COMMAND)
 	{
-		if (_test_builtin(ctx, pipeline->commands[0].command, error))
+		if (_test_for_lone_builtin(ctx, pipeline->commands[0].command, error))
 			return (*error != MS_OK);
 	}
 	pid = fork();
