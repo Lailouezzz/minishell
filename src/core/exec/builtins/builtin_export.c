@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/21 16:35:17 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/01 00:48:38 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ t_ms_error	builtin_export(
 
 	if (argv[1] == NULL)
 		return (env_set_code(ctx->env_ctx, -1), _show_envp(ctx, envp));
+	++argv;
 	should_fail = false;
 	while (*argv)
 	{
