@@ -109,4 +109,7 @@ $(OBJDIR)/%.res.o: $(RESDIR)/%
 
 -include $(DEPS)
 
-.PHONY: all-infini-3d
+.PHONY: all-minishell norminette
+
+norminette:
+	@norminette $(SRCDIR) $(INCDIR) | grep -Ev '^Notice|OK!$$'
