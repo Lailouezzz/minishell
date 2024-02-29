@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_exec.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/21 12:54:39 by amassias         ###   ########.fr       */
+/*   Updated: 2024/02/29 15:01:59 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -424,6 +424,7 @@ static noreturn void	_child(
 							t_exec_ctx *ctx
 							)
 {
+	(signal(SIGINT, SIG_DFL), signal(SIGQUIT, SIG_DFL));
 	if (index > 0)
 		(dup2(fds[0], STDIN_FILENO), close(fds[0]), close(fds[1]));
 	if (fds[2] >= 0)
@@ -455,12 +456,19 @@ static t_ms_error	__exec_pipeline(
 						)
 {
 	pid_t		pid;
+	int			status;
 	int			pipe_fd[2];
 
 	if (index-- == 0)
 		return (close(out_fd), MS_OK);
 	if (index > 0)
 		(void)(pipe(pipe_fd) == 0);
+	if (g_signo == SIGINT)
+	{
+		if (index > 0)
+			(close(pipe_fd[0]), close(pipe_fd[1]), close(out_fd));
+		return (MS_OK);
+	}
 	pid = fork();
 	if (pid == -1)
 	{
@@ -473,7 +481,7 @@ static t_ms_error	__exec_pipeline(
 	close(out_fd);
 	if (index > 0)
 		(close(pipe_fd[0]), __exec_pipeline(ctx, commands, index, pipe_fd[1]));
-	_wait_child(ctx, pid);
+	waitpid(pid, &status, 0);
 	return (MS_OK);
 }
 
