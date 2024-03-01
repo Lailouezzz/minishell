@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 18:39:25 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/01 02:15:31 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/01 02:38:43 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,9 +97,9 @@ t_ms_error	env_unset_var(
 
 	if (exist == NULL)
 		return (MS_OK);
-	idx = (exist - env->env_vars) / sizeof(*env->env_vars);
+	idx = exist - env->env_vars;
 	free(*exist);
-	ft_memmove(exist,  exist + 1, (env->used - idx) * sizeof(*env->env_vars));
+	ft_memmove(exist, exist + 1, (env->used - idx) * sizeof(*env->env_vars));
 	--env->used;
 	return (MS_OK);
 }
