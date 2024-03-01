@@ -447,7 +447,6 @@ static void	_wait_child(
 		env_set_code(ctx->env_ctx, 128 + WTERMSIG(stat));
 }
 
-// TODO: do something about the parser leaking each time an error occurs
 static t_ms_error	__exec_pipeline(
 						t_exec_ctx *ctx,
 						t_command *commands,
