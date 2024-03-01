@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/29 16:46:38 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/01 01:11:33 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,20 @@
 
 /* ************************************************************************** */
 /*                                                                            */
+/* Helper prototypes                                                          */
+/*                                                                            */
+/* ************************************************************************** */
+
+static size_t		_count_args(
+						char **argv
+						);
+
+static t_ms_error	_update_pwd(
+						t_exec_ctx *ctx
+						);
+
+/* ************************************************************************** */
+/*                                                                            */
 /* Header implementation                                                      */
 /*                                                                            */
 /* ************************************************************************** */
@@ -56,9 +70,7 @@ t_ms_error	builtin_cd(
 	int		code;
 
 	(void)envp;
-	count = 0;
-	while (argv[count])
-		++count;
+	count = _count_args(argv);
 	if (count != 2)
 	{
 		ctx->env_ctx->current_code = 1;
@@ -76,5 +88,33 @@ t_ms_error	builtin_cd(
 	code = chdir(argv[1]) == -1;
 	if (code != 0)
 		dprintf(STDERR_FILENO, ERROR_CANT_CHANGE_DIR "\n", argv[1]);
+	if (_update_pwd(ctx))
+		return (env_set_code(ctx->env_ctx, 1), MS_FATAL);
 	return (env_set_code(ctx->env_ctx, code));
+}
+
+static size_t	_count_args(
+					char **argv
+					)
+{
+	size_t	count;
+
+	count = 0;
+	while (argv[count])
+		++count;
+	return (count);
+}
+
+static t_ms_error	_update_pwd(
+						t_exec_ctx *ctx
+						)
+{
+	char	*buf;
+
+	buf = getcwd(NULL, 0);
+	if (buf == NULL)
+		return (MS_FATAL);
+	env_set_var(&ctx->env_ctx->env, "PWD", buf);
+	free(buf);
+	return (MS_OK);
 }
