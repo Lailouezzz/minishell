@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/01 16:13:56 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/01 16:54:32 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static int				_open_redirection(
 							t_io_info *io_info
 							);
 
-static void				_handle_redirect_list(
+static bool				_handle_redirect_list(
 							const t_redirect_list *list
 							);
 
@@ -242,6 +242,23 @@ static int	_create_heredoc(
 	return (f->_fileno);
 }
 
+static void	_print_redirection_error(
+				t_io_info *io_info
+				)
+{
+	const char	*message;
+
+	if (io_info->io_type == IO_IN)
+		message = "minishell: %s: No such file or directory\n";
+	else if (io_info->io_type == IO_OUT)
+		message = "minishell: %s: Cannot open file\n";
+	else if (io_info->io_type == IO_APPEND)
+		message = "minishell: %s: Cannot open file\n";
+	else
+		message = "minishell: Cannot create heredoc\n";
+	dprintf(STDERR_FILENO, message, io_info->file);
+}
+
 static int	_open_redirection(
 				t_io_info *io_info
 				)
@@ -256,12 +273,12 @@ static int	_open_redirection(
 		fd = open(io_info->file, O_AP, 0666);
 	else
 		fd = _create_heredoc(io_info->file);
+	if (fd == -1)
+		_print_redirection_error(io_info);
 	return (fd);
 }
 
-// TODO: return error code ?
-// TODO: Handle case where `fd == -1`
-static void	_handle_redirect_list(
+static bool	_handle_redirect_list(
 				const t_redirect_list *list
 				)
 {
@@ -270,14 +287,14 @@ static void	_handle_redirect_list(
 	t_io_info	*info;
 
 	if (list == NULL)
-		return ;
+		return (false);
 	info = list->io_infos;
 	i = 0;
 	while (i < list->used)
 	{
 		fd = _open_redirection(&info[i]);
 		if (fd == -1)
-			exit(-1);
+			return (close(STDIN_FILENO), close(STDOUT_FILENO), true);
 		if (info[i].io_type == IO_IN || info[i].io_type == IO_HEREDOC)
 			dup2(fd, STDIN_FILENO);
 		else
@@ -285,6 +302,7 @@ static void	_handle_redirect_list(
 		close(fd);
 		++i;
 	}
+	return (false);
 }
 
 static char	*_as_full_path(
@@ -453,7 +471,8 @@ static t_ms_error	__exec_pipeline_simple_command(
 {
 	t_ms_error	error;
 
-	_handle_redirect_list(command->redirect_list);
+	if (_handle_redirect_list(command->redirect_list))
+		exec_cleanup_exit(ctx, 1);
 	error = _run_command(
 			ctx,
 			command->pn,
@@ -469,7 +488,8 @@ static t_ms_error	__exec_pipeline_subshell(
 {
 	t_ms_error	error;
 
-	_handle_redirect_list(command->redirect_list);
+	if (_handle_redirect_list(command->redirect_list))
+		exec_cleanup_exit(ctx, 1);
 	_exec_exec(ctx, command->and_or, &error);
 	return (error);
 }
@@ -607,17 +627,14 @@ static bool	_test_for_lone_builtin(
 		in = dup(STDIN_FILENO);
 		out = dup(STDOUT_FILENO);
 		if (in == -1 || out == -1)
-		{
-			*error = MS_FATAL;
-			return (true);
-		}
-		_handle_redirect_list(command->redirect_list);
+			return (*error = MS_FATAL, true);
+		if (_handle_redirect_list(command->redirect_list))
+			return (env_set_code(ctx->env_ctx, 1), true);
 		g_builtins[i - 1].fun(ctx,
-			command->args->args,
-			ctx->env_ctx->env.env_vars);
+			command->args->args, ctx->env_ctx->env.env_vars);
 		if (dup2(in, STDIN_FILENO) < 0 || dup2(out, STDOUT_FILENO) < 0)
 			*error = MS_FATAL;
-		return (true);
+		return (close(in), close(out), true);
 	}
 	return (false);
 }
