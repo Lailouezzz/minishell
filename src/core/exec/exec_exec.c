@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/01 01:57:58 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/01 16:01:27 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -325,7 +325,7 @@ static t_ms_error	__run_command(
 
 	abolute_path = _as_full_path(program_name, path);
 	if (access(abolute_path, F_OK) != 0)
-		return (free(abolute_path), MS_OK);
+		return (free(abolute_path), MS_COMMAND_NOT_FOUND);
 	if (access(abolute_path, X_OK) != 0)
 	{
 		dprintf(STDERR_FILENO, PERM_DENIED_MSG, program_name);
@@ -337,15 +337,12 @@ static t_ms_error	__run_command(
 	return (MS_FATAL);
 }
 
-static t_ms_error	_run_command(
-						t_exec_ctx *ctx,
+static t_ms_error	_run_command_with_cwd(
 						const char *program_name,
 						const char **args,
 						const char **envp
 						)
 {
-	char		**paths;
-	char		**itr;
 	char		*cwd;
 	t_ms_error	error;
 
@@ -354,8 +351,20 @@ static t_ms_error	_run_command(
 		return (MS_BAD_ALLOC);
 	error = __run_command(program_name, cwd, args, envp);
 	free(cwd);
-	if (error != MS_OK)
-		return (error);
+	return (error);
+}
+
+static t_ms_error	_run_command_with_path(
+						t_exec_ctx *ctx,
+						const char *program_name,
+						const char **args,
+						const char **envp
+						)
+{
+	char		**paths;
+	char		**itr;
+	t_ms_error	error;
+
 	paths = _get_paths(ctx->env_ctx);
 	if (paths == NULL)
 		return (MS_BAD_ALLOC);
@@ -363,11 +372,35 @@ static t_ms_error	_run_command(
 	while (*itr)
 	{
 		error = __run_command(program_name, *itr++, args, envp);
-		if (error != MS_OK)
-			return (_free_list((void ***)&paths), error);
+		if (error == MS_COMMAND_NOT_FOUND)
+			continue ;
+		_free_list((void ***)&paths);
+		return (error);
 	}
+	_free_list((void ***)&paths);
+	return (MS_COMMAND_NOT_FOUND);
+}
+
+static t_ms_error	_run_command(
+						t_exec_ctx *ctx,
+						const char *program_name,
+						const char **args,
+						const char **envp
+						)
+{
+	t_ms_error	error;
+
+	error = __run_command(program_name, "", args, envp);
+	if (error != MS_COMMAND_NOT_FOUND)
+		return (error);
+	error = _run_command_with_cwd(program_name, args, envp);
+	if (error != MS_COMMAND_NOT_FOUND)
+		return (error);
+	error = _run_command_with_path(ctx, program_name, args, envp);
+	if (error != MS_COMMAND_NOT_FOUND)
+		return (error);
 	dprintf(STDERR_FILENO, "minishell: command not found: %s\n", program_name);
-	return (_free_list((void ***)&paths), MS_COMMAND_NOT_FOUND);
+	return (MS_COMMAND_NOT_FOUND);
 }
 
 static t_ms_error	__exec_pipeline_simple_command(
