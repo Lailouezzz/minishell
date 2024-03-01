@@ -1,0 +1,39 @@
+# microparser library information
+# Naming convention : <name_information>_<file> where file is <file>.dep
+
+# Dependence file name
+TFILENAME := libft-full
+LIBDIR := libft-full
+
+# Library dependencies
+DEP_LD_LIBS_$(TFILENAME) :=
+# Include directory of the library
+INCDIR_$(TFILENAME) := $(LIBDIR)
+# Library location
+LIBDIR_$(TFILENAME) := $(LIBDIR)
+# Library .a
+LIBA_$(TFILENAME) := libftfull.a
+
+# Rule to make clean and fclean the lib
+define bite-$(TFILENAME)
+
+MAKE_RULE_$(TFILENAME): $(THIRDPARTY)/$(LIBDIR)/$(LIBA_$(TFILENAME))
+$(THIRDPARTY)/$(LIBDIR)/$(LIBA_$(TFILENAME)): $(THIRDPARTY)/$(LIBDIR)/Makefile
+	@$(MAKE) -C $(THIRDPARTY)/$(LIBDIR)
+
+CLEAN_RULE_$(TFILENAME):
+	@$(MAKE) -C $(THIRDPARTY)/$(LIBDIR) clean
+
+FCLEAN_RULE_$(TFILENAME):
+	@$(MAKE) -C $(THIRDPARTY)/$(LIBDIR) fclean
+
+$(THIRDPARTY)/$(LIBDIR)/Makefile:
+	@echo Did you init submodules ?
+	@exit 1
+
+.PHONY: MAKE_RULE_$(TFILENAME) CLEAN_RULE_$(TFILENAME) FCLEAN_RULE_$(TFILENAME)
+
+endef
+
+$(eval $(call bite-$(TFILENAME)))
+

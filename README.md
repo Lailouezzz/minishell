@@ -30,33 +30,33 @@ cd minishell
 
 ## Features
 
-- [ ] `Prompt` when waiting for a new command
-- [ ] Working `history`
+- [x] `Prompt` when waiting for a new command
+- [x] Working `history`
 - [ ] Search and launch the right executable (based on the `PATH` variable or using a
 relative or an absolute path).
-- [ ] Not interpret unclosed quotes or special characters which are not required by the
+- [x] Not interpret unclosed quotes or special characters which are not required by the
 subject such as `\` (backslash) or `;` (semicolon)
-- [ ] `’` (single quote) should prevent the shell from interpreting the meta-
+- [x] `’` (single quote) should prevent the shell from interpreting the meta-
 characters in the quoted sequence
-- [ ] `"` (double quote) should prevent the shell from interpreting the meta-
+- [x] `"` (double quote) should prevent the shell from interpreting the meta-
 characters in the quoted sequence except for `$` (dollar sign)
-- [ ] Redirections
-	- [ ] `<` redirects input
-	- [ ] `>` redirects output
-	- [ ] `<< [DELIMITER]` reads the input until a line containing the
+- [x] Redirections
+	- [x] `<` redirects input
+	- [x] `>` redirects output
+	- [x] `<< [DELIMITER]` reads the input until a line containing the
 delimiter is seen. However, it doesn’t have to update the history
-	- [ ] `>>` redirects output in append mode
-- [ ] Pipes (`|` character). The output of each command in the pipeline is
+	- [x] `>>` redirects output in append mode
+- [x] Pipes (`|` character). The output of each command in the pipeline is
 connected to the input of the next command via a pipe
 - [ ] Environment variables (`$` followed by a sequence of characters) which
 should expand to their values
 - [ ] `$?` which should expand to the exit status of the most recently executed
 foreground pipeline
-- [ ] `Ctrl-C`, `Ctrl-D` and `Ctrl-\` which should behave like in bash
-- [ ] Interactive mode
-	- [ ] `Ctrl-C` displays a new `prompt` on a new line
-	- [ ] `Ctrl-D` exits the shell
-	- [ ] `Ctrl-\` does nothing
+- [x] `Ctrl-C`, `Ctrl-D` and `Ctrl-\` which should behave like in bash
+- [x] Interactive mode
+	- [x] `Ctrl-C` displays a new `prompt` on a new line
+	- [x] `Ctrl-D` exits the shell
+	- [x] `Ctrl-\` does nothing
 - [ ] Builtins
 	- [ ] `echo` with option -n
 	- [ ] `cd` with only a relative or absolute path
@@ -65,8 +65,8 @@ foreground pipeline
 	- [ ] `unset` with no options
 	- [ ] `env` with no options or arguments
 	- [ ] `exit` with no option
-- [ ] Command chaining (`&&` and `||`)
-- [ ] Subshell with `(COMMAND)`
+- [x] Command chaining (`&&` and `||`)
+- [x] Subshell with `(COMMAND)`
 - [ ] Wildcard (`*` character) for the current working directory
 
 ## Todo

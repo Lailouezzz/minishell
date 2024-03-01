@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 21:46:46 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/08 15:55:47 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/29 14:54:20 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,16 +24,15 @@
 // *                                                                        * //
 // ************************************************************************** //
 
+#include <stdio.h>
 #include <readline/readline.h>
 #include <signal.h>
 
+#include <libft.h>
+
 #include "core/exec.h"
 
-#include "utils.h"
-
-
 volatile int	g_signo;
-
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -57,6 +56,7 @@ static void	_exec_sig_handler_in_execution(
 
 void	exec_set_interactive(void)
 {
+	g_signo = 0;
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, _exec_sig_handler_interactive);
 }
@@ -77,7 +77,7 @@ static void	_exec_sig_handler_interactive(
 				int signo
 				)
 {
-	(void)(signo);
+	g_signo = signo;
 	ft_putstr_fd("\n", STDOUT_FILENO);
 	rl_on_new_line();
 	rl_replace_line("", 0);

@@ -1,25 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.h                                            :+:      :+:    :+:   */
+/*   destroy.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/29 04:16:04 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 17:44:54 by ale-boud         ###   ########.fr       */
+/*   Created: 2024/01/23 03:06:06 by ale-boud          #+#    #+#             */
+/*   Updated: 2024/02/13 21:35:30 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file utils.h
+ * @file destroy.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief The helpers definition.
- * @date 2023-11-29
- * @copyright Copyright (c) 2023
+ * @brief Environnement destroy.
+ * @date 2024-01-23
+ * @copyright Copyright (c) 2024
  */
-
-#ifndef UTILS_H
-# define UTILS_H
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -27,23 +24,33 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-# include <unistd.h>
-# include <stdlib.h>
+#include "core/env.h"
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Function prototypes.                                                   * //
+// * Header functions.                                                      * //
 // *                                                                        * //
 // ************************************************************************** //
 
-void	*_realloc(
-			void *p,
-			size_t oldsize,
-			size_t newsize
-			);
+void	env_ctx_destroy(
+			t_env_ctx *env_ctx
+			)
+{
+	env_destroy(&env_ctx->env);
+	free(env_ctx->current_code_str);
+}
 
-int		ft_count_if(
-			const char *s, int (*func)(char)
-			);
+void	env_destroy(
+			t_env *env
+			)
+{
+	t_env_var	*envp;
 
-#endif
+	envp = env->env_vars;
+	while (*envp != NULL)
+	{
+		free(*envp);
+		++envp;
+	}
+	free(env->env_vars);
+}

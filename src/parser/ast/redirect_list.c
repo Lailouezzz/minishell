@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 19:54:32 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 23:33:48 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 17:44:54 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 // * Includes.                                                              * //
 // *                                                                        * //
 // ************************************************************************** //
+
+#include <libft.h>
 
 #include "parser/ast.h"
 
@@ -77,7 +79,7 @@ int	redirect_list_pushback(
 
 	if (rl->used >= rl->alloced)
 	{
-		tmp = ft_realloc(rl->io_infos,
+		tmp = _realloc(rl->io_infos,
 				rl->alloced * sizeof(*rl->io_infos),
 				rl->alloced * 2 * sizeof(*rl->io_infos));
 		if (tmp == NULL)
@@ -101,7 +103,7 @@ int	redirect_list_cat(
 	total_size = rl1->used + rl2->used;
 	if (total_size > rl1->alloced)
 	{
-		tmp = ft_realloc(rl1->io_infos,
+		tmp = _realloc(rl1->io_infos,
 				rl1->alloced * sizeof(*rl1->io_infos),
 				total_size * sizeof(*rl1->io_infos));
 		if (tmp == NULL)

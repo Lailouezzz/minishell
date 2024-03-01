@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 21:53:56 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 23:49:55 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/13 17:44:54 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int	pipeline_pushback(
 
 	if (pl->used >= pl->alloced)
 	{
-		tmp = ft_realloc(pl->commands,
+		tmp = _realloc(pl->commands,
 				pl->alloced * sizeof(*pl->commands),
 				pl->alloced * 2 * sizeof(*pl->commands));
 		if (tmp == NULL)

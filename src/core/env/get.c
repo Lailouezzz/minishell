@@ -1,25 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.h                                            :+:      :+:    :+:   */
+/*   get.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/29 04:16:04 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 17:44:54 by ale-boud         ###   ########.fr       */
+/*   Created: 2024/02/13 19:15:38 by ale-boud          #+#    #+#             */
+/*   Updated: 2024/02/13 19:32:44 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file utils.h
+ * @file get.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief The helpers definition.
- * @date 2023-11-29
- * @copyright Copyright (c) 2023
+ * @brief Environment get function.
+ * @date 2024-02-13
+ * @copyright Copyright (c) 2024
  */
-
-#ifndef UTILS_H
-# define UTILS_H
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -27,23 +24,24 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-# include <unistd.h>
-# include <stdlib.h>
+#include <libft.h>
+
+#include "core/env.h"
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Function prototypes.                                                   * //
+// * Header function.                                                       * //
 // *                                                                        * //
 // ************************************************************************** //
 
-void	*_realloc(
-			void *p,
-			size_t oldsize,
-			size_t newsize
-			);
+const char	*env_ctx_get_variable(
+				t_env_ctx *env_ctx,
+				const char *name
+				)
+{
+	t_env_var *const	exist = _env_exist(&env_ctx->env, name);
 
-int		ft_count_if(
-			const char *s, int (*func)(char)
-			);
-
-#endif
+	if (exist == NULL)
+		return (NULL);
+	return ((*exist) + ft_strlen(name) + 1);
+}

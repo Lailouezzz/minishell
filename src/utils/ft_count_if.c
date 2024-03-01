@@ -1,25 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.h                                            :+:      :+:    :+:   */
+/*   ft_count_if.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/29 04:16:04 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 17:44:54 by ale-boud         ###   ########.fr       */
+/*   Created: 2024/02/14 16:47:38 by ale-boud          #+#    #+#             */
+/*   Updated: 2024/02/14 16:48:36 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file utils.h
- * @author ale-boud (ale-boud@student.42.fr)
- * @brief The helpers definition.
- * @date 2023-11-29
- * @copyright Copyright (c) 2023
+ * @file ft_count_if.c
+ * @author ale-boud (ale-boud@student.42lehavre.fr)
+ * @brief ft_count_if implementation.
+ * @date 2024-02-13
+ * @copyright Copyright (c) 2024
  */
-
-#ifndef UTILS_H
-# define UTILS_H
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -27,23 +24,20 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-# include <unistd.h>
-# include <stdlib.h>
-
 // ************************************************************************** //
 // *                                                                        * //
-// * Function prototypes.                                                   * //
+// * Header function.                                                       * //
 // *                                                                        * //
 // ************************************************************************** //
 
-void	*_realloc(
-			void *p,
-			size_t oldsize,
-			size_t newsize
-			);
+int	ft_count_if(
+		const char *s, int (*func)(char)
+		)
+{
+	int	k;
 
-int		ft_count_if(
-			const char *s, int (*func)(char)
-			);
-
-#endif
+	k = 0;
+	while (s[k] != '\0' && func(s[k]))
+		++k;
+	return (k);
+}

@@ -1,25 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.h                                            :+:      :+:    :+:   */
+/*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/29 04:16:04 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 17:44:54 by ale-boud         ###   ########.fr       */
+/*   Created: 2024/02/14 17:22:11 by ale-boud          #+#    #+#             */
+/*   Updated: 2024/02/15 20:41:03 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file utils.h
+ * @file cleanup.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief The helpers definition.
- * @date 2023-11-29
- * @copyright Copyright (c) 2023
+ * @brief Minishell cleanup exit.
+ * @date 2024-02-14
+ * @copyright Copyright (c) 2024
  */
-
-#ifndef UTILS_H
-# define UTILS_H
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -27,23 +24,26 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-# include <unistd.h>
-# include <stdlib.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <readline/readline.h>
+
+#include "core/exec.h"
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Function prototypes.                                                   * //
+// * Header function.                                                       * //
 // *                                                                        * //
 // ************************************************************************** //
 
-void	*_realloc(
-			void *p,
-			size_t oldsize,
-			size_t newsize
-			);
-
-int		ft_count_if(
-			const char *s, int (*func)(char)
-			);
-
-#endif
+noreturn void	exec_cleanup_exit(
+					t_exec_ctx *ctx,
+					t_ms_status code
+					)
+{
+	free(ctx->current_line);
+	command_line_destroy(ctx->current_cl);
+	env_ctx_destroy(ctx->env_ctx);
+	rl_clear_history();
+	exit(code);
+}

@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:15:15 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/08 14:44:30 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/14 17:36:30 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,8 @@ typedef struct s_exec_ctx
 {
 	t_env_ctx		*env_ctx;
 	t_lr_parser_ctx	*parser_ctx;
-	volatile int	cur_signo;
+	t_command_line	*current_cl;
+	char			*current_line;
 }	t_exec_ctx;
 
 // ************************************************************************** //
@@ -63,20 +64,25 @@ typedef struct s_exec_ctx
 // *                                                                        * //
 // ************************************************************************** //
 
-void		exec_init(
-				t_exec_ctx *ctx,
-				t_env_ctx *env_ctx,
-				t_lr_parser_ctx *parser_ctx
-				);
+void			exec_init(
+					t_exec_ctx *ctx,
+					t_env_ctx *env_ctx,
+					t_lr_parser_ctx *parser_ctx
+					);
 
-t_ms_error	exec_exec(
-				t_exec_ctx *ctx,
-				const t_command_line *cl
-				);
+t_ms_error		exec_exec(
+					t_exec_ctx *ctx,
+					const t_command_line *cl
+					);
 
-void		exec_loop(
-				t_exec_ctx *ctx
-				);
+void			exec_loop(
+					t_exec_ctx *ctx
+					);
+
+noreturn void	exec_cleanup_exit(
+					t_exec_ctx *ctx,
+					t_ms_status code
+					);
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -84,8 +90,8 @@ void		exec_loop(
 // *                                                                        * //
 // ************************************************************************** //
 
-void		exec_set_interactive(void);
+void			exec_set_interactive(void);
 
-void		exec_set_in_execution(void);
+void			exec_set_in_execution(void);
 
 #endif

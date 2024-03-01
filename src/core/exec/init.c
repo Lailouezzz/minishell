@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:27 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/08 16:43:17 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/02/14 17:25:42 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,6 @@ void	exec_init(
 {
 	ctx->env_ctx = env_ctx;
 	ctx->parser_ctx = parser_ctx;
+	ctx->current_cl = NULL;
+	ctx->current_line = NULL;
 }
