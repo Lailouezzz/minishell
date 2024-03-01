@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/01 16:01:27 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/01 16:06:27 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,19 @@ static void				_free_list(
 static t_ms_error		__run_command(
 							const char *program_name,
 							const char *path,
+							const char **args,
+							const char **envp
+							);
+
+static t_ms_error		_run_command_with_path(
+							t_exec_ctx *ctx,
+							const char *program_name,
+							const char **args,
+							const char **envp
+							);
+
+static t_ms_error		_run_command_with_cwd(
+							const char *program_name,
 							const char **args,
 							const char **envp
 							);
