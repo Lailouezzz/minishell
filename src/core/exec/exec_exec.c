@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/01 00:51:39 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/01 01:57:58 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,12 @@ static noreturn void	_child(
 							int fds[3],
 							t_command *commands,
 							t_exec_ctx *ctx
+							);
+
+static void				_conditional_close(
+							bool close_pipe,
+							int pipe_fd[2],
+							int out_fd
 							);
 
 static t_ms_error		__exec_pipeline(
@@ -447,6 +453,17 @@ static void	_wait_child(
 		env_set_code(ctx->env_ctx, 128 + WTERMSIG(stat));
 }
 
+static void	_conditional_close(
+				bool close_pipe,
+				int pipe_fd[2],
+				int out_fd
+				)
+{
+	if (close_pipe)
+		(close(pipe_fd[0]), close(pipe_fd[1]));
+	close(out_fd);
+}
+
 static t_ms_error	__exec_pipeline(
 						t_exec_ctx *ctx,
 						t_command *commands,
@@ -463,18 +480,10 @@ static t_ms_error	__exec_pipeline(
 	if (index > 0 && pipe(pipe_fd) == -1)
 		return (close(out_fd), MS_FATAL);
 	if (g_signo == SIGINT)
-	{
-		if (index > 0)
-			(close(pipe_fd[0]), close(pipe_fd[1]));
-		return (close(out_fd), MS_OK);
-	}
+		return (_conditional_close(index > 0, pipe_fd, out_fd), MS_OK);
 	pid = fork();
 	if (pid == -1)
-	{
-		if (index > 0)
-			(close(pipe_fd[0]), close(pipe_fd[1]));
-		return (close(out_fd), MS_FATAL);
-	}
+		return (_conditional_close(index > 0, pipe_fd, out_fd), MS_FATAL);
 	if (pid == 0)
 		_child(index, (int [3]){pipe_fd[0], pipe_fd[1], out_fd}, commands, ctx);
 	close(out_fd);
