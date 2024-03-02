@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/21 16:56:11 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/02 17:18:44 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 #include "core/builtins.h"
 
 #include <libft.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -77,22 +78,32 @@ t_ms_error	builtin_exit(
 
 static bool	_read_arg(
 				const char *str,
-				int *code
+				int *_code
 				)
 {
 	const char	*itr;
+	long		code;
+	int			sign;
 
+	code = 0;
+	sign = 1;
 	while (ft_isspace(*str))
 		++str;
-	if (*str == '-')
+	if (*str == '-' && ++str)
+		sign = -1;
+	else if (*str == '+')
 		++str;
 	itr = str;
 	while (ft_isdigit(*itr))
-		++itr;
+	{
+		code = 10 * code + *itr++ - '0';
+		if (sign * code > INT_MAX || code * sign < INT_MIN)
+			return (false);
+	}
 	while (ft_isspace(*itr))
 		++itr;
 	if (*itr != '\0')
 		return (true);
-	*code = ft_atoi(str);
+	*_code = sign * (int)code;
 	return (false);
 }
