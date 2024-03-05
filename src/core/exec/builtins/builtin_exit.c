@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/02 17:18:44 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/05 19:34:24 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,15 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
+
+/* ************************************************************************** */
+/*                                                                            */
+/* Defines                                                                    */
+/*                                                                            */
+/* ************************************************************************** */
+
+#define ERR_NUMERIC_ARG "minishell: exit: %s: numeric argument required"
+#define ERR_TOO_MANY_ARGS "minishell: exit: too many arguments"
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -61,12 +70,12 @@ t_ms_error	builtin_exit(
 		exec_cleanup_exit(ctx, 0);
 	if (_read_arg(argv[1], &code))
 	{
-		printf("minishell: exit: numeric argument required\n");
+		dprintf(STDERR_FILENO, ERR_NUMERIC_ARG "\n", argv[1]);
 		exec_cleanup_exit(ctx, 2);
 	}
 	if (argv[2] == NULL)
 		exec_cleanup_exit(ctx, code);
-	dprintf(STDERR_FILENO, "minishell: exit: too many arguments\n");
+	dprintf(STDERR_FILENO, ERR_TOO_MANY_ARGS "\n");
 	return (env_set_code(ctx->env_ctx, 1));
 }
 
