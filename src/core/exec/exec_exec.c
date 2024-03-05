@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/05 19:59:10 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/05 23:03:20 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 #include <libft.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -44,7 +45,31 @@
 #define O_OT 577
 #define O_AP 1601
 
-#define PERM_DENIED_MSG "minishell: permission denied: %s\n"
+#define MS "minishell: "
+
+/* ************************************************************************** */
+/*                                                                            */
+/* Global variables                                                           */
+/*                                                                            */
+/* ************************************************************************** */
+
+static const char	*g_file_status_error_msg[] = {
+[FILE_STATUS_NOT_FOUND] = "%s: command not found\n",
+[FILE_STATUS_DIRECTORY] = MS "%s: Is a directory\n",
+[FILE_STATUS_PERM_DENIED] = MS "%s: Permission denied\n",
+};
+
+static t_ms_error	g_file_status_to_error[] = {
+[FILE_STATUS_NOT_FOUND] = MS_COMMAND_NOT_FOUND,
+[FILE_STATUS_DIRECTORY] = MS_COMMAND_IS_DIRECTORY,
+[FILE_STATUS_PERM_DENIED] = MS_PERM_DENIED,
+};
+
+static t_ms_status	g_file_status_to_exit_code[] = {
+[FILE_STATUS_NOT_FOUND] = MS_STATUS_COMMAND_NOT_FOUND,
+[FILE_STATUS_DIRECTORY] = MS_STATUS_PERM_DENIED,
+[FILE_STATUS_PERM_DENIED] = MS_STATUS_PERM_DENIED,
+};
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -82,17 +107,16 @@ static void				_free_list(
 							);
 
 static t_ms_error		__run_command(
+							t_env_ctx *ctx,
 							const char *program_name,
 							const char *path,
-							const char **args,
-							const char **envp
+							const char **args
 							);
 
 static t_ms_error		_run_command_with_path(
-							t_exec_ctx *ctx,
+							t_env_ctx *ctx,
 							const char *program_name,
-							const char **args,
-							const char **envp
+							const char **args
 							);
 
 static t_ms_error		_run_builtin(
@@ -103,9 +127,9 @@ static t_ms_error		_run_builtin(
 							);
 
 static t_ms_error		_run_command_with_cwd(
+							t_env_ctx *ctx,
 							const char *program_name,
-							const char **args,
-							const char **envp
+							const char **args
 							);
 
 static t_ms_error		_run_command(
@@ -352,25 +376,60 @@ static void	_free_list(
 	*list_ptr = NULL;
 }
 
-static t_ms_error	__run_command(
-						const char *program_name,
-						const char *path,
-						const char **args,
-						const char **envp
+static bool	_is_valid_exec(
+				const char *absolute_path,
+				t_file_status *status_ptr
+				)
+{
+	struct stat	status;
+
+	if (access(absolute_path, F_OK))
+		return (*status_ptr = FILE_STATUS_NOT_FOUND, false);
+	if (stat(absolute_path, &status) != 0)
+		return (true);
+	if (!S_ISREG(status.st_mode))
+		return (*status_ptr = FILE_STATUS_DIRECTORY, false);
+	if (!(status.st_mode & S_IXUSR))
+		return (*status_ptr = FILE_STATUS_PERM_DENIED, false);
+	return (*status_ptr = FILE_STATUS_OK, false);
+}
+
+static t_ms_error	_file_status_error(
+						t_env_ctx *ctx,
+						t_file_status status,
+						const char *program_name
 						)
 {
-	char	*abolute_path;
+	t_ms_error	error;
+
+	dprintf(STDERR_FILENO, g_file_status_error_msg[status], program_name);
+	error = env_set_code(ctx, g_file_status_to_exit_code[status]);
+	if (error)
+		return (error);
+	return (g_file_status_to_error[status]);
+}
+
+static t_ms_error	__run_command(
+						t_env_ctx *ctx,
+						const char *program_name,
+						const char *path,
+						const char **args
+						)
+{
+	char			*abolute_path;
+	t_file_status	status;
 
 	abolute_path = _as_full_path(program_name, path);
-	if (access(abolute_path, F_OK) != 0)
+	if (abolute_path == NULL)
+		return (MS_FATAL);
+	if (_is_valid_exec(abolute_path, &status))
+		return (free(abolute_path), MS_FATAL);
+	if (status == FILE_STATUS_NOT_FOUND)
 		return (free(abolute_path), MS_COMMAND_NOT_FOUND);
-	if (access(abolute_path, X_OK) != 0)
-	{
-		dprintf(STDERR_FILENO, PERM_DENIED_MSG, program_name);
-		free(abolute_path);
-		return (MS_PERM_DENIED);
-	}
-	execve(abolute_path, (char **)args, (char **)envp);
+	if (status != FILE_STATUS_OK)
+		return (free(abolute_path),
+			_file_status_error(ctx, status, program_name));
+	execve(abolute_path, (char **)args, (char **)ctx->env.env_vars);
 	free(abolute_path);
 	return (MS_FATAL);
 }
@@ -396,44 +455,43 @@ static t_ms_error	_run_builtin(
 }
 
 static t_ms_error	_run_command_with_cwd(
+						t_env_ctx *ctx,
 						const char *program_name,
-						const char **args,
-						const char **envp
+						const char **args
 						)
 {
 	char		*cwd;
 	t_ms_error	error;
 
+	if (ft_strchr(program_name, '/') == NULL)
+		return (MS_COMMAND_NOT_FOUND);
 	cwd = getcwd(NULL, 0);
 	if (cwd == NULL)
 		return (MS_BAD_ALLOC);
-	error = __run_command(program_name, cwd, args, envp);
+	error = __run_command(ctx, program_name, cwd, args);
 	free(cwd);
 	return (error);
 }
 
 static t_ms_error	_run_command_with_path(
-						t_exec_ctx *ctx,
+						t_env_ctx *ctx,
 						const char *program_name,
-						const char **args,
-						const char **envp
+						const char **args
 						)
 {
 	char		**paths;
 	char		**itr;
 	t_ms_error	error;
 
-	paths = _get_paths(ctx->env_ctx);
+	paths = _get_paths(ctx);
 	if (paths == NULL)
 		return (MS_BAD_ALLOC);
 	itr = paths;
 	while (*itr)
 	{
-		error = __run_command(program_name, *itr++, args, envp);
-		if (error == MS_COMMAND_NOT_FOUND)
-			continue ;
-		_free_list((void ***)&paths);
-		return (error);
+		error = __run_command(ctx, program_name, *itr++, args);
+		if (error != MS_COMMAND_NOT_FOUND)
+			return (_free_list((void ***)&paths), error);
 	}
 	_free_list((void ***)&paths);
 	return (MS_COMMAND_NOT_FOUND);
@@ -451,16 +509,20 @@ static t_ms_error	_run_command(
 	error = _run_builtin(ctx, program_name, args, envp);
 	if (error != MS_COMMAND_NOT_FOUND)
 		return (error);
-	error = __run_command(program_name, "", args, envp);
+	error = __run_command(ctx->env_ctx, program_name, "", args);
 	if (error != MS_COMMAND_NOT_FOUND)
 		return (error);
-	error = _run_command_with_cwd(program_name, args, envp);
+	error = _run_command_with_cwd(ctx->env_ctx, program_name, args);
 	if (error != MS_COMMAND_NOT_FOUND)
 		return (error);
-	error = _run_command_with_path(ctx, program_name, args, envp);
+	error = _run_command_with_path(ctx->env_ctx, program_name, args);
 	if (error != MS_COMMAND_NOT_FOUND)
 		return (error);
-	dprintf(STDERR_FILENO, "minishell: command not found: %s\n", program_name);
+	if (ft_strchr(program_name, '/'))
+		dprintf(STDERR_FILENO,
+			MS "%s: No such file or directory\n", program_name);
+	else
+		dprintf(STDERR_FILENO, "%s: command not found\n", program_name);
 	return (MS_COMMAND_NOT_FOUND);
 }
 

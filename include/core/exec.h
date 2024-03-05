@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:15:15 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/14 17:36:30 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/05 22:31:54 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,14 @@
 // * Structure definition.                                                  * //
 // *                                                                        * //
 // ************************************************************************** //
+
+typedef enum e_file_status
+{
+	FILE_STATUS_OK,
+	FILE_STATUS_NOT_FOUND,
+	FILE_STATUS_DIRECTORY,
+	FILE_STATUS_PERM_DENIED
+}	t_file_status;
 
 typedef struct s_exec_unit
 {
