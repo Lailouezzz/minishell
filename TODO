@@ -1,0 +1,13 @@
+# Reading errors
+- If stdin is a tty, use GNL instead of read_line. (istty(STDIN_FILENO))
+
+# Parsing errors
+- `echo "$"` prints nothing except it should print `$`.
+- `export E='' && $E` gives a `parse error` as it should only exit with 0.
+
+# Exec errors
+- `echo -e 'echo hi > test bye' | minishell | cat` puts `hi bye` on `stdout` instead of `test`.
+- Fix error messages for redirections.
+
+# Improvements
+- Add the `-c` option
