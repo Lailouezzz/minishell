@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/05 23:03:20 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/05 23:43:08 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -257,13 +257,13 @@ static int	_create_heredoc(
 			break ;
 		end = line;
 		while (end)
-			(void)(write(f->_fileno, end++, 1) == 0);
+			(void)(write(fileno(f), end++, 1) == 0);
 		free(line);
 		line = get_next_line(STDIN_FILENO);
 	}
 	free(line);
-	lseek(f->_fileno, 0, SEEK_SET);
-	return (f->_fileno);
+	lseek(fileno(f), 0, SEEK_SET);
+	return (fileno(f));
 }
 
 static void	_print_redirection_error(
