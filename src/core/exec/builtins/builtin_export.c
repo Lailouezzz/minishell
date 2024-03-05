@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/05 19:11:38 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/05 19:27:16 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ static t_ms_error	_show_envp(
 						char **envp
 						);
 
-static t_ms_error	_export_var(
+static bool			_export_var(
+						t_ms_error *error_ptr,
 						t_exec_ctx *ctx,
 						const char *var
 						);
@@ -79,13 +80,11 @@ t_ms_error	builtin_export(
 	should_fail = false;
 	while (*argv)
 	{
-		if (!ft_isalpha(**argv))
+		if (_export_var(&error, ctx, *argv++))
 		{
-			dprintf(STDERR_FILENO, ERROR_NOT_VALID_ID "\n", *argv++);
 			should_fail = true;
 			continue ;
 		}
-		error = _export_var(ctx, *argv++);
 		if (error != MS_OK)
 			return (env_set_code(ctx->env_ctx, -1), error);
 	}
@@ -143,19 +142,44 @@ static t_ms_error	_show_envp(
 	return (env_set_code(ctx->env_ctx, 0));
 }
 
-static t_ms_error	_export_var(
-						t_exec_ctx *ctx,
-						const char *var
-						)
+static bool	_is_valid_id(
+				const char *id,
+				const char *end
+				)
+{
+	if (end == NULL)
+		end = id + ft_strlen(id);
+	if (id >= end)
+		return (false);
+	if (!ft_isalpha(*id++))
+		return (false);
+	while (id < end)
+	{
+		if (!ft_isalnum(*id) && *id != '_')
+			return (false);
+		++id;
+	}
+	return (true);
+}
+
+static bool	_export_var(
+				t_ms_error *error_ptr,
+				t_exec_ctx *ctx,
+				const char *var
+				)
 {
 	char		*eq;
-	t_ms_error	error;
 
 	eq = ft_strchr(var, '=');
-	if (eq == NULL)
-		return (env_set_var(&ctx->env_ctx->env, var, ""));
-	*eq = '\0';
-	error = env_set_var(&ctx->env_ctx->env, var, eq + 1);
-	*eq = '=';
-	return (error);
+	if (!_is_valid_id(var, eq))
+		return (dprintf(STDERR_FILENO, ERROR_NOT_VALID_ID "\n", var), true);
+	if (eq != NULL)
+	{
+		*eq = '\0';
+		*error_ptr = env_set_var(&ctx->env_ctx->env, var, eq + 1);
+		*eq = '=';
+	}
+	else
+		*error_ptr = env_set_var(&ctx->env_ctx->env, var, "");
+	return (false);
 }
