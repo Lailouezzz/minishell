@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/01 16:54:32 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/05 19:59:10 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -619,19 +619,22 @@ static bool	_test_for_lone_builtin(
 	int		in;
 	int		out;
 
-	i = 0;
-	while (i < BUILTIN_COUNT)
+	i = (size_t)-1;
+	while (++i < BUILTIN_COUNT)
 	{
-		if (ft_strcmp(command->pn, g_builtins[i++].name) != 0)
+		if (ft_strcmp(command->pn, g_builtins[i].name) != 0)
 			continue ;
 		in = dup(STDIN_FILENO);
 		out = dup(STDOUT_FILENO);
 		if (in == -1 || out == -1)
-			return (*error = MS_FATAL, true);
+			return (close(in), close(out), *error = MS_FATAL, true);
 		if (_handle_redirect_list(command->redirect_list))
-			return (env_set_code(ctx->env_ctx, 1), true);
-		g_builtins[i - 1].fun(ctx,
-			command->args->args, ctx->env_ctx->env.env_vars);
+		{
+			if (dup2(in, STDIN_FILENO) < 0 || dup2(out, STDOUT_FILENO) < 0)
+				return (*error = MS_FATAL, true);
+			return (close(in), close(out), env_set_code(ctx->env_ctx, 1), true);
+		}
+		g_builtins[i].fun(ctx, command->args->args, ctx->env_ctx->env.env_vars);
 		if (dup2(in, STDIN_FILENO) < 0 || dup2(out, STDOUT_FILENO) < 0)
 			*error = MS_FATAL;
 		return (close(in), close(out), true);
