@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/05 21:34:52 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/06 16:15:29 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ t_ms_error	builtin_exit(
 	int	code;
 
 	(void)envp;
+	code = 0;
 	dprintf(STDOUT_FILENO, "exit\n");
 	if (argv[1] == NULL)
 		exec_cleanup_exit(ctx, 0);
