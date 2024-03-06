@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/05 23:43:08 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/06 16:52:52 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,8 +241,8 @@ static int	_create_heredoc(
 {
 	FILE	*f;
 	char	*line;
-	char	*end;
 	size_t	delim_length;
+	int		fd;
 
 	f = tmpfile();
 	if (f == NULL)
@@ -251,19 +251,18 @@ static int	_create_heredoc(
 	line = get_next_line(STDIN_FILENO);
 	while (line)
 	{
-		end = (char *)_get_end(line);
 		if (ft_strncmp(delim, line, delim_length) == 0
-			&& line + delim_length == end)
+			&& line + delim_length == (char *)_get_end(line))
 			break ;
-		end = line;
-		while (end)
-			(void)(write(fileno(f), end++, 1) == 0);
+		dprintf(fileno(f), "%s", line);
 		free(line);
 		line = get_next_line(STDIN_FILENO);
 	}
 	free(line);
 	lseek(fileno(f), 0, SEEK_SET);
-	return (fileno(f));
+	fd = dup(fileno(f));
+	fclose(f);
+	return (fd);
 }
 
 static void	_print_redirection_error(

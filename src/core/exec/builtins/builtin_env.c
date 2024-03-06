@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/21 16:56:24 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/06 17:28:10 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,6 @@ t_ms_error	builtin_env(
 {
 	(void)argv;
 	while (*envp)
-		printf("%s\n", *envp++);
+		dprintf(STDOUT_FILENO, "%s\n", *envp++);
 	return (env_set_code(ctx->env_ctx, 0));
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_loop.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/16 17:11:46 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/06 17:29:35 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,14 @@
 
 #include "tokenizer/tokenizer.h"
 #include "utils.h"
+
+// ************************************************************************** //
+// *                                                                        * //
+// * Defines.                                                               * //
+// *                                                                        * //
+// ************************************************************************** //
+
+#define ERR_PARSE "%s: parse error near unexpected token `%c`"
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -118,7 +126,7 @@ static	t_ms_error	_exec_loop_exec(
 	{
 		if (r == MS_SYNTAX_ERROR)
 		{
-			printf("%s: parse error near unexpected token `%c`\n",
+			dprintf(STDOUT_FILENO, ERR_PARSE "\n",
 				ctx->env_ctx->pn, *(pstr - 1));
 			if (env_set_code(ctx->env_ctx, 2) != MS_OK)
 				exec_cleanup_exit(ctx, MS_STATUS_FAILURE);

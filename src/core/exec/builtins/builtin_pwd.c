@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_pwd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/02/21 16:40:15 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/06 17:27:53 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,6 @@ t_ms_error	builtin_pwd(
 	if (cwd == NULL)
 		dprintf(STDERR_FILENO, "minishell: pwd: Internal error\n");
 	else
-		(printf("%s\n", cwd), free(cwd));
+		(dprintf(STDOUT_FILENO, "%s\n", cwd), free(cwd));
 	return (env_set_code(ctx->env_ctx, 0));
 }

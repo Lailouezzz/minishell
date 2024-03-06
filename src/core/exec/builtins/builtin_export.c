@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/05 19:27:16 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/06 17:27:12 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ static t_ms_error	_show_envp(
 	ft_qsort(sorted, count, sizeof(char *), (t_comparator)_string_comparator);
 	i = 0;
 	while (i < count)
-		printf("%s\n", sorted[i++]);
+		dprintf(STDOUT_FILENO, "%s\n", sorted[i++]);
 	free(sorted);
 	return (env_set_code(ctx->env_ctx, 0));
 }
