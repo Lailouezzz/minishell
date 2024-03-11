@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_exec.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/06 16:52:52 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/11 15:20:05 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,10 @@ static int				_create_heredoc(
 							const char *delim
 							);
 
+static void				_print_redirection_error(
+							t_io_info *io_info
+							);
+
 static int				_open_redirection(
 							t_io_info *io_info
 							);
@@ -106,16 +110,21 @@ static void				_free_list(
 							void ***list_ptr
 							);
 
+static bool				_is_valid_exec(
+							const char *absolute_path,
+							t_file_status *status_ptr
+							);
+
+static t_ms_error		_file_status_error(
+							t_env_ctx *ctx,
+							t_file_status status,
+							const char *program_name
+							);
+
 static t_ms_error		__run_command(
 							t_env_ctx *ctx,
 							const char *program_name,
 							const char *path,
-							const char **args
-							);
-
-static t_ms_error		_run_command_with_path(
-							t_env_ctx *ctx,
-							const char *program_name,
 							const char **args
 							);
 
@@ -127,6 +136,12 @@ static t_ms_error		_run_builtin(
 							);
 
 static t_ms_error		_run_command_with_cwd(
+							t_env_ctx *ctx,
+							const char *program_name,
+							const char **args
+							);
+
+static t_ms_error		_run_command_with_path(
 							t_env_ctx *ctx,
 							const char *program_name,
 							const char **args
@@ -159,6 +174,11 @@ static noreturn void	_child(
 							int fds[3],
 							t_command *commands,
 							t_exec_ctx *ctx
+							);
+
+static void				_wait_child(
+							t_exec_ctx *ctx,
+							pid_t pid
 							);
 
 static void				_conditional_close(
@@ -598,9 +618,9 @@ static noreturn void	_child(
 }
 
 static void	_wait_child(
-						t_exec_ctx *ctx,
-						pid_t pid
-						)
+				t_exec_ctx *ctx,
+				pid_t pid
+				)
 {
 	int	stat;
 
