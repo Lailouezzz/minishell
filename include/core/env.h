@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:08:41 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 21:37:00 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 17:34:37 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ extern volatile int	g_signo;
 // *                                                                        * //
 // ************************************************************************** //
 
-# define MS_PROMPT "\e[31;42mGrosS3x&N1B4RD\e[m> "
+# define MS_PROMPT "\e[31;42mminishell\e[m> "
 
 typedef char *		t_env_var;
 
