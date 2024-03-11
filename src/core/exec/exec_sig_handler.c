@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_sig_handler.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 21:46:46 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/29 14:54:20 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 18:31:16 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static void	_exec_sig_handler_interactive(
 				)
 {
 	g_signo = signo;
-	ft_putstr_fd("\n", STDOUT_FILENO);
+	dprintf(STDOUT_FILENO, "\n");
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
@@ -90,7 +90,7 @@ static void	_exec_sig_handler_in_execution(
 {
 	g_signo = signo;
 	if (signo == SIGQUIT)
-		ft_putstr_fd("Quit (core dumped)\n", STDOUT_FILENO);
+		dprintf(STDOUT_FILENO, "Quit (core dumped)\n");
 	else if (signo == SIGINT)
-		ft_putstr_fd("\n", STDOUT_FILENO);
+		dprintf(STDOUT_FILENO, "\n");
 }
