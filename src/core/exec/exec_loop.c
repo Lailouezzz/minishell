@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_loop.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/11 20:20:05 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 22:04:12 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-#define ERR_PARSE "%s: parse error near unexpected token `%c`"
+#define ERR_PARSE "%s: syntax error near unexpected token `%c'"
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -130,7 +130,7 @@ static	t_ms_error	_exec_loop_exec(
 	{
 		if (r != MS_SYNTAX_ERROR)
 			return (MS_FATAL);
-		dprintf(STDOUT_FILENO, ERR_PARSE "\n",
+		dprintf(STDERR_FILENO, ERR_PARSE "\n",
 			ctx->env_ctx->pn, *(pstr - 1));
 		if (env_set_code(ctx->env_ctx, 2) != MS_OK)
 			exec_cleanup_exit(ctx, MS_STATUS_FAILURE);
