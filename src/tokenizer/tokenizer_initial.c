@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:41:51 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/11 17:06:41 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 19:58:53 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ static t_ms_error	__state_initial_like_norminette(
 						)
 {
 	t_lr_token	lrtok;
+	t_ms_error	r;
 
 	if (current == '(')
 		return (_token_gen_obracket(&lrtok) || lrtoks_pushback(lrtoks, &lrtok));
@@ -93,12 +94,16 @@ static t_ms_error	__state_initial_like_norminette(
 			|| ft_isspace(*int_token->cur) || *int_token->cur == '\0'))
 		return (_state_wildcard(lrtoks, int_token));
 	if (current == '$')
-		if (_state_dollar(lrtoks, int_token))
-			return (1);
+	{
+		r = _state_dollar(lrtoks, int_token);
+		if (r != MS_OK)
+			return (r);
+	}
 	if (current == '"')
 		return (_state_doublequote(lrtoks, int_token));
 	if (current == '\'')
 		return (_state_quote(lrtoks, int_token));
-	return ((current != '$' && dyn_str_pushback(&int_token->word_read, current))
-		|| _state_word(lrtoks, int_token));
+	if (current != '$' && dyn_str_pushback(&int_token->word_read, current))
+		return (MS_FATAL);
+	return (_state_word(lrtoks, int_token));
 }
