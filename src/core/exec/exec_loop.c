@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/11 19:44:10 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 20:20:05 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,8 +173,6 @@ static	t_ms_error	_exec_loop_parse(
 		if (r != MS_OK)
 			return (r);
 	}
-	if (r != LR_ACCEPT)
-		return (lr_parser_destroy(ctx->parser_ctx), MS_SYNTAX_ERROR);
 	return (lr_parser_destroy(ctx->parser_ctx), MS_OK);
 }
 
