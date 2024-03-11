@@ -113,7 +113,6 @@ args_red ::= WORD | io_info
 
 ## Todo
 
-- Pass the norminette
 - Doxygen documentation
 
 ---
