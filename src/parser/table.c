@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   table.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 02:56:39 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/14 03:06:28 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 14:50:11 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,7 @@ const t_lr_action	g_lr_table[STATE__COUNT][TOKEN__COUNT] = {
 [12] = {
 [TOKEN_WORD] = {ACTION_SHIFT, .data.shift_id = 24},
 [TOKEN_IO] = {ACTION_SHIFT, .data.shift_id = 7},
-[TOKEN_AND_OR] = {ACTION_SHIFT, .data.shift_id = 12},
+[TOKEN_AND_OR] = {ACTION_ERROR, {}},
 [TOKEN_PIPE] = {ACTION_ERROR, {}},
 [TOKEN_OBRACKET] = {ACTION_SHIFT, .data.shift_id = 9},
 [TOKEN_CBRACKET] = {ACTION_ERROR, {}},
