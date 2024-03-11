@@ -11,3 +11,7 @@
 
 # Improvements
 - Add the `-c` option
+
+# For the end
+- Remove wildcard in Makefile
+- Remove GrosSex&Nibard
