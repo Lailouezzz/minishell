@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error_code.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:59:57 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/05 22:32:32 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/11 15:22:07 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ typedef enum s_ms_error
 	MS_NOT_VALID_IDENTIFIER,
 	MS_SYNTAX_ERROR,
 	MS_BAD_ALLOC,
+	MS_EMPTY_COMMAND,
 	MS_COMMAND_NOT_FOUND,
 	MS_COMMAND_IS_DIRECTORY,
 	MS_PERM_DENIED,
