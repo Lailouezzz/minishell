@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 14:12:05 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/11 17:15:42 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 19:33:01 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,11 @@ int			ft_ismeta(
 				);
 
 const char	*_expand_dollar(
+				const char **start,
+				t_env_ctx *env_ctx
+				);
+
+const char	*_expand_dollar_doublequote(
 				const char **start,
 				t_env_ctx *env_ctx
 				);

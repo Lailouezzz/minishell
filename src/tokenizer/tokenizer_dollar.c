@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:46:48 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/11 16:50:12 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 19:34:47 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ t_ms_error	_state_dollar_quoted(
 	const char	*expended;
 
 	(void)(lrtoks);
-	expended = _expand_dollar(&int_token->cur, int_token->env_ctx);
+	expended = _expand_dollar_doublequote(&int_token->cur, int_token->env_ctx);
 	if (expended == NULL)
 		return (MS_FATAL);
 	if (*expended != '\0')

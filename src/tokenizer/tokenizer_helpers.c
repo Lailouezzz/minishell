@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:37:52 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/11 16:50:59 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 19:34:06 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,36 @@ const char	*_expand_dollar(
 		return (dollar);
 	if (**start == '\'' || **start == '"')
 		return (void_str);
+	if (**start == '?')
+		return (++(*start), env_ctx->current_code_str);
+	if (dyn_str_init(&dyn_str) != MS_OK)
+		return (NULL);
+	while (ft_isalnum(**start) && **start != '\0')
+	{
+		if (dyn_str_pushback(&dyn_str, **start) != MS_OK)
+			return (NULL);
+		++(*start);
+	}
+	var = env_ctx_get_variable(env_ctx, dyn_str.str);
+	dyn_str_destroy(&dyn_str);
+	if (var == NULL)
+		return (void_str);
+	return (var);
+}
+
+const char	*_expand_dollar_doublequote(
+				const char **start,
+				t_env_ctx *env_ctx
+				)
+{
+	static const char	*dollar = "$";
+	static const char	*void_str = "";
+	const char			*var;
+	t_dyn_str			dyn_str;
+
+	if (ft_ismeta(**start) || ft_isspace(**start) || **start == '\0'
+		|| **start == '\'' || **start == '"')
+		return (dollar);
 	if (**start == '?')
 		return (++(*start), env_ctx->current_code_str);
 	if (dyn_str_init(&dyn_str) != MS_OK)
