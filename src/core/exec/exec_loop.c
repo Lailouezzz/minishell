@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/11 15:32:09 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 18:52:16 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,6 @@ static t_lr_error	__exec_loop_parse_exec(
 						t_command_line **cl
 						);
 
-static void			_exec_loop_handle_signal(
-						t_exec_ctx *ctx
-						);
-
 // ************************************************************************** //
 // *                                                                        * //
 // * Header functions.                                                      * //
@@ -132,15 +128,13 @@ static	t_ms_error	_exec_loop_exec(
 		return (r);
 	if (r != MS_OK)
 	{
-		if (r == MS_SYNTAX_ERROR)
-		{
-			dprintf(STDOUT_FILENO, ERR_PARSE "\n",
-				ctx->env_ctx->pn, *(pstr - 1));
-			if (env_set_code(ctx->env_ctx, 2) != MS_OK)
-				exec_cleanup_exit(ctx, MS_STATUS_FAILURE);
-			return (r);
-		}
-		return (MS_FATAL);
+		if (r != MS_SYNTAX_ERROR)
+			return (MS_FATAL);
+		dprintf(STDOUT_FILENO, ERR_PARSE "\n",
+			ctx->env_ctx->pn, *(pstr - 1));
+		if (env_set_code(ctx->env_ctx, 2) != MS_OK)
+			exec_cleanup_exit(ctx, MS_STATUS_FAILURE);
+		return (r);
 	}
 	exec_set_in_execution();
 	r = exec_exec(ctx, ctx->current_cl);
@@ -159,9 +153,8 @@ static	t_ms_error	_exec_loop_parse(
 	t_lr_token_list	lrtoks;
 	int				r;
 
-	r = __exec_loop_parse_tokenize(ctx, &lrtoks, pstr);
-	if (r != MS_OK)
-		return (r);
+	if (__exec_loop_parse_tokenize(ctx, &lrtoks, pstr) != MS_OK)
+		return (MS_FATAL);
 	if (lrtoks.lrtoks[0].id == TOKEN_END)
 		return (free(lrtoks.lrtoks), MS_EMPTY_COMMAND);
 	lr_parser_init(ctx->parser_ctx, NULL);
@@ -229,14 +222,4 @@ static	t_lr_error	__exec_loop_parse_exec(
 				g_tok_free_cbs[lrtoks->lrtoks[k - 1].id](
 					&lrtoks->lrtoks[k - 1].data);
 	return (r);
-}
-
-static	void	_exec_loop_handle_signal(
-					t_exec_ctx *ctx
-					)
-{
-	if (g_signo != 0)
-		if (env_set_code(ctx->env_ctx, 128 + g_signo) != MS_OK)
-			exec_cleanup_exit(ctx, MS_STATUS_FAILURE);
-	g_signo = 0;
 }

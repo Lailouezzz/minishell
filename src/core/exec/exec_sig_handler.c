@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_sig_handler.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 21:46:46 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/11 18:31:16 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/11 18:48:28 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,4 +93,20 @@ static void	_exec_sig_handler_in_execution(
 		dprintf(STDOUT_FILENO, "Quit (core dumped)\n");
 	else if (signo == SIGINT)
 		dprintf(STDOUT_FILENO, "\n");
+}
+
+// ************************************************************************** //
+// *                                                                        * //
+// * Header function.                                                       * //
+// *                                                                        * //
+// ************************************************************************** //
+
+void	_exec_loop_handle_signal(
+			t_exec_ctx *ctx
+			)
+{
+	if (g_signo != 0)
+		if (env_set_code(ctx->env_ctx, 128 + g_signo) != MS_OK)
+			exec_cleanup_exit(ctx, MS_STATUS_FAILURE);
+	g_signo = 0;
 }

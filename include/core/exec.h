@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:15:15 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/05 22:31:54 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/11 18:48:55 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,5 +101,9 @@ noreturn void	exec_cleanup_exit(
 void			exec_set_interactive(void);
 
 void			exec_set_in_execution(void);
+
+void			_exec_loop_handle_signal(
+					t_exec_ctx *ctx
+					);
 
 #endif
