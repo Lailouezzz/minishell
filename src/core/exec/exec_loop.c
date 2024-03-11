@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_loop.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/06 17:29:35 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/11 15:32:09 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,12 @@ static t_ms_error	_exec_loop_parse(
 						char **pstr
 						);
 
+static t_ms_error	__exec_loop_parse_tokenize(
+						t_exec_ctx *ctx,
+						t_lr_token_list *lrtoks,
+						char **pstr
+						);
+
 static t_lr_error	__exec_loop_parse_exec(
 						t_exec_ctx *ctx,
 						t_lr_token_list *lrtoks,
@@ -97,7 +103,7 @@ void	exec_loop(
 		if (*pstr != '\0')
 		{
 			r = _exec_loop_exec(ctx);
-			if (r != MS_OK && r != MS_SYNTAX_ERROR)
+			if (r != MS_OK && r != MS_SYNTAX_ERROR && r != MS_EMPTY_COMMAND)
 				break ;
 		}
 		free(ctx->current_line);
@@ -122,6 +128,8 @@ static	t_ms_error	_exec_loop_exec(
 
 	pstr = ctx->current_line;
 	r = _exec_loop_parse(ctx, &pstr);
+	if (r == MS_EMPTY_COMMAND)
+		return (r);
 	if (r != MS_OK)
 	{
 		if (r == MS_SYNTAX_ERROR)
@@ -151,15 +159,14 @@ static	t_ms_error	_exec_loop_parse(
 	t_lr_token_list	lrtoks;
 	int				r;
 
+	r = __exec_loop_parse_tokenize(ctx, &lrtoks, pstr);
+	if (r != MS_OK)
+		return (r);
+	if (lrtoks.lrtoks[0].id == TOKEN_END)
+		return (free(lrtoks.lrtoks), MS_EMPTY_COMMAND);
 	lr_parser_init(ctx->parser_ctx, NULL);
 	while (42 > 01)
 	{
-		r = tokenize(&lrtoks, ctx->env_ctx, (const char **)pstr);
-		if (r != MS_OK)
-		{
-			lr_parser_destroy(ctx->parser_ctx);
-			return (r);
-		}
 		r = __exec_loop_parse_exec(ctx, &lrtoks, &ctx->current_cl);
 		free(lrtoks.lrtoks);
 		if (r == LR_SYNTAX_ERROR)
@@ -168,11 +175,32 @@ static	t_ms_error	_exec_loop_parse(
 			break ;
 		if (r != LR_ACCEPT && r != LR_OK)
 			return (MS_FATAL);
+		r = __exec_loop_parse_tokenize(ctx, &lrtoks, pstr);
+		if (r != MS_OK)
+			return (r);
 	}
-	lr_parser_destroy(ctx->parser_ctx);
 	if (r != LR_ACCEPT)
-		return (MS_SYNTAX_ERROR);
-	return (MS_OK);
+		return (lr_parser_destroy(ctx->parser_ctx), MS_SYNTAX_ERROR);
+	return (lr_parser_destroy(ctx->parser_ctx), MS_OK);
+}
+
+static t_ms_error	__exec_loop_parse_tokenize(
+						t_exec_ctx *ctx,
+						t_lr_token_list *lrtoks,
+						char **pstr
+						)
+{
+	t_ms_error	r;
+
+	while (42 > 01)
+	{
+		r = tokenize(lrtoks, ctx->env_ctx, (const char **)pstr);
+		if (r != MS_OK)
+			return (lr_parser_destroy(ctx->parser_ctx), r);
+		if (lrtoks->used != 0)
+			return (r);
+		free(lrtoks->lrtoks);
+	}
 }
 
 static	t_lr_error	__exec_loop_parse_exec(
