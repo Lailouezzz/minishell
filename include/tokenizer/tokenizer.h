@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 14:12:05 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/11 16:35:39 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 17:15:42 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,6 @@ t_ms_error	_flush_word_read(
 				t_lr_token_list *lrtoks,
 				t_int_token *int_token
 				);
-
 
 t_ms_error	_init_dyn_str_if_null(
 				t_int_token *int_token
