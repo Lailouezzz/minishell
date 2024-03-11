@@ -80,7 +80,7 @@ This project is powered by a [`DFA`](https://fr.wikipedia.org/wiki/Automate_fini
 
 ### Grammar
 
-```bnf
+```EBNF
 command_line ::= and_or
 
 and_or ::= pipeline | and_or AND_OR pipeline
