@@ -74,9 +74,9 @@ foreground pipeline
 - [x] Subshell with `(COMMAND)`
 - [x] Wildcard (`*` character) for the current working directory
 
-## Automata
+## Automaton
 
-This project is powered by a [`DFA`](https://fr.wikipedia.org/wiki/Automate_fini_d%C3%A9terministe) (deterministic finite automaton) `LALR(1)` made from a simplified `bash` grammar.
+This project is powered by a [`DFA`](https://en.wikipedia.org/wiki/Deterministic_finite_automaton) (deterministic finite automaton) `LALR(1)` made from a simplified `bash` grammar.
 
 ### Grammar
 
@@ -107,7 +107,7 @@ args_red_list ::= args_red | args_red_list args_red
 args_red ::= WORD | io_info
 ```
 
-### Automata representation
+### Automaton representation
 
 ![Error](doc/automata/MINISHELL_DFA.png)
 
