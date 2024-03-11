@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 14:12:05 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 21:48:55 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 16:35:39 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,67 @@ t_ms_error	tokenize(
 
 // ************************************************************************** //
 // *                                                                        * //
+// * Tokenizer states.                                                      * //
+// *                                                                        * //
+// ************************************************************************** //
+
+t_ms_error	_state_initial(
+				t_lr_token_list *lrtoks,
+				t_int_token *int_token
+				);
+
+t_ms_error	_state_dollar(
+				t_lr_token_list *lrtoks,
+				t_int_token *int_token
+				);
+
+t_ms_error	_state_wildcard(
+				t_lr_token_list *lrtoks,
+				t_int_token *int_token
+				);
+
+t_ms_error	_state_dollar_quoted(
+				t_lr_token_list *lrtoks,
+				t_int_token *int_token
+				);
+
+t_ms_error	_state_out(
+				t_lr_token_list *lrtoks,
+				t_int_token *int_token
+				);
+
+t_ms_error	_state_in(
+				t_lr_token_list *lrtoks,
+				t_int_token *int_token
+				);
+
+t_ms_error	_state_pipe_or(
+				t_lr_token_list *lrtoks,
+				t_int_token *int_token
+				);
+
+t_ms_error	_state_and(
+				t_lr_token_list *lrtoks,
+				t_int_token *int_token
+				);
+
+t_ms_error	_state_word(
+				t_lr_token_list *lrtoks,
+				t_int_token *int_token
+				);
+
+t_ms_error	_state_quote(
+				t_lr_token_list *lrtoks,
+				t_int_token *int_token
+				);
+
+t_ms_error	_state_doublequote(
+				t_lr_token_list *lrtoks,
+				t_int_token *int_token
+				);
+
+// ************************************************************************** //
+// *                                                                        * //
 // * Token free callback table definition.                                  * //
 // *                                                                        * //
 // ************************************************************************** //
@@ -94,6 +155,31 @@ t_ms_error	tokenize(
  * @brief Token free callback table.
  */
 extern const t_lr_token_free_cb	g_tok_free_cbs[TOKEN__COUNT];
+
+// ************************************************************************** //
+// *                                                                        * //
+// * Helpers functions.                                                     * //
+// *                                                                        * //
+// ************************************************************************** //
+
+int			ft_ismeta(
+				char c
+				);
+
+const char	*_expand_dollar(
+				const char **start,
+				t_env_ctx *env_ctx
+				);
+
+t_ms_error	_flush_word_read(
+				t_lr_token_list *lrtoks,
+				t_int_token *int_token
+				);
+
+
+t_ms_error	_init_dyn_str_if_null(
+				t_int_token *int_token
+				);
 
 // ************************************************************************** //
 // *                                                                        * //
