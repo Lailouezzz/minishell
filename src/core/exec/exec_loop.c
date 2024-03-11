@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/11 18:52:16 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/11 19:44:10 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,11 +153,12 @@ static	t_ms_error	_exec_loop_parse(
 	t_lr_token_list	lrtoks;
 	int				r;
 
-	if (__exec_loop_parse_tokenize(ctx, &lrtoks, pstr) != MS_OK)
-		return (MS_FATAL);
+	lr_parser_init(ctx->parser_ctx, NULL);
+	r = __exec_loop_parse_tokenize(ctx, &lrtoks, pstr);
+	if (r != MS_OK)
+		return (r);
 	if (lrtoks.lrtoks[0].id == TOKEN_END)
 		return (free(lrtoks.lrtoks), MS_EMPTY_COMMAND);
-	lr_parser_init(ctx->parser_ctx, NULL);
 	while (42 > 01)
 	{
 		r = __exec_loop_parse_exec(ctx, &lrtoks, &ctx->current_cl);
