@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:30:48 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/11 17:00:00 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/11 19:04:11 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 #include "core/_exec.h"
 
 #include <fcntl.h>
+#include <errno.h>
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -36,19 +37,6 @@
 #define O_IN 0
 #define O_OT 577
 #define O_AP 1601
-
-/* ************************************************************************** */
-/*                                                                            */
-/* Global variables                                                           */
-/*                                                                            */
-/* ************************************************************************** */
-
-static const char	*g_messages[] = {
-[IO_IN] = MS "%s: No such file or directory\n",
-[IO_OUT] = MS "%s: Cannot open file\n",
-[IO_APPEND] = MS "%s: Cannot open file\n",
-[IO_HEREDOC] = MS "Cannot create heredoc\n",
-};
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -141,9 +129,11 @@ static void	_print_redirection_error(
 				t_io_info *io_info
 				)
 {
-	const char	*message = g_messages[io_info->io_type];
-
-	dprintf(STDERR_FILENO, message, io_info->file);
+	dprintf(STDERR_FILENO, MS);
+	if (io_info->io_type == IO_HEREDOC)
+		dprintf(STDERR_FILENO, "Cannot create heredoc\n");
+	else
+		(dprintf(STDERR_FILENO, "%s: ", io_info->file), perror(""));
 }
 
 static int	_open_redirection(
