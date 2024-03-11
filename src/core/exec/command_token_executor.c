@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_exec.c                                        :+:      :+:    :+:   */
+/*   command_token_executor.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/11 18:25:15 by amassias         ###   ########.fr       */
+/*   Created: 2024/03/11 18:15:00 by amassias          #+#    #+#             */
+/*   Updated: 2024/03/11 18:24:10 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file exec_exec.c
+ * @file command_token_executor.c
  * @author Antoine Massias (amassias@student.42lehavre.fr)
- * @date 2024-02-08
+ * @date 2024-03-11
  * @copyright Copyright (c) 2024
  */
 
@@ -31,14 +31,32 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-t_ms_error	exec_exec(
+t_ms_error	execute_simple_command(
 				t_exec_ctx *ctx,
-				const t_command_line *cl
+				t_simple_command *command
 				)
 {
 	t_ms_error	error;
 
-	error = MS_OK;
-	and_or_executor(ctx, cl->and_or, &error);
+	if (handle_redirect_list(command->redirect_list))
+		exec_cleanup_exit(ctx, 1);
+	error = run_command(
+			ctx,
+			command->pn,
+			(const char **)command->args->args,
+			(const char **)ctx->env_ctx->env.env_vars);
+	return (error);
+}
+
+t_ms_error	execute_subshell(
+				t_exec_ctx *ctx,
+				t_subshell *command
+				)
+{
+	t_ms_error	error;
+
+	if (handle_redirect_list(command->redirect_list))
+		exec_cleanup_exit(ctx, 1);
+	and_or_executor(ctx, command->and_or, &error);
 	return (error);
 }
