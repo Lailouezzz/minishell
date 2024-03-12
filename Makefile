@@ -112,4 +112,6 @@ $(OBJDIR)/%.res.o: $(RESDIR)/%
 .PHONY: all-minishell norminette
 
 norminette:
-	@norminette $(SRCDIR) $(INCDIR) | grep -Ev '^Notice|OK!$$'
+	@norminette $(SRCDIR) $(INCDIR) | grep -Ev '^Notice|OK!$$'	\
+	&& echo "Norminette KO !"									\
+	|| echo "Norminette OK !"
