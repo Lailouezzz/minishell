@@ -113,5 +113,5 @@ $(OBJDIR)/%.res.o: $(RESDIR)/%
 
 norminette:
 	@norminette $(SRCDIR) $(INCDIR) | grep -Ev '^Notice|OK!$$'	\
-	&& echo "Norminette KO !"									\
-	|| echo "Norminette OK !"
+	&& echo '\033[1;31mNorminette OK !'							\
+	|| echo '\033[1;32mNorminette OK !'
