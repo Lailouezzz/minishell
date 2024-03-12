@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:30:48 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/11 19:04:11 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/12 16:14:32 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,18 +38,23 @@
 #define O_OT 577
 #define O_AP 1601
 
+#define STDIN 0
+#define STDOUT 1
+
 /* ************************************************************************** */
 /*                                                                            */
 /* Helper protoypes                                                           */
 /*                                                                            */
 /* ************************************************************************** */
 
-static int			_create_heredoc(
-						const char *delim
+static char			*_prompt(void);
+
+static void			_close_all(
+						const int fds[2]
 						);
 
-static void			_print_redirection_error(
-						t_io_info *io_info
+static int			_create_heredoc(
+						const char *delim
 						);
 
 static int			_open_redirection(
@@ -66,9 +71,10 @@ bool	handle_redirect_list(
 				const t_redirect_list *list
 				)
 {
+	const int	io[2] = {-1, -1};
+	t_io_info	*info;
 	size_t		i;
 	int			fd;
-	t_io_info	*info;
 
 	if (list == NULL)
 		return (false);
@@ -78,14 +84,17 @@ bool	handle_redirect_list(
 	{
 		fd = _open_redirection(&info[i]);
 		if (fd == -1)
-			return (close(STDIN_FILENO), close(STDOUT_FILENO), true);
+			return (_close_all(io), true);
 		if (info[i].io_type == IO_IN || info[i].io_type == IO_HEREDOC)
-			dup2(fd, STDIN_FILENO);
+			(close(io[STDIN]), *((int *)&io[STDIN]) = fd);
 		else
-			dup2(fd, STDOUT_FILENO);
-		close(fd);
+			(close(io[STDOUT]), *((int *)&io[STDOUT]) = fd);
 		++i;
 	}
+	if (io[STDOUT] != -1 && dup2(io[STDOUT], STDOUT_FILENO) == -1)
+		return (dprintf(2, "ALED"), _close_all(io), true);
+	if (io[STDIN] != -1 && dup2(io[STDIN], STDIN_FILENO) == -1)
+		return (dprintf(2, "ALED"), _close_all(io), true);
 	return (false);
 }
 
@@ -94,6 +103,20 @@ bool	handle_redirect_list(
 /* Helper implementation                                                      */
 /*                                                                            */
 /* ************************************************************************** */
+
+static char	*_prompt(void)
+{
+	dprintf(STDOUT_FILENO, "> ");
+	return (get_next_line(STDIN_FILENO));
+}
+
+static void	_close_all(
+				const int fds[2]
+				)
+{
+	(close(STDIN_FILENO), close(fds[STDIN]));
+	(close(STDOUT_FILENO), close(fds[STDOUT]));
+}
 
 static int	_create_heredoc(
 				const char *delim
@@ -108,32 +131,21 @@ static int	_create_heredoc(
 	if (f == NULL)
 		return (-1);
 	delim_length = ft_strlen(delim);
-	line = get_next_line(STDIN_FILENO);
+	line = _prompt();
 	while (line)
 	{
 		if (ft_strncmp(delim, line, delim_length) == 0
 			&& line + delim_length == (char *)u_get_end(line))
 			break ;
-		dprintf(fileno(f), "%s", line);
+		ft_putstr_fd(line, fileno(f));
 		free(line);
-		line = get_next_line(STDIN_FILENO);
+		line = _prompt();
 	}
 	free(line);
 	lseek(fileno(f), 0, SEEK_SET);
 	fd = dup(fileno(f));
 	fclose(f);
 	return (fd);
-}
-
-static void	_print_redirection_error(
-				t_io_info *io_info
-				)
-{
-	dprintf(STDERR_FILENO, MS);
-	if (io_info->io_type == IO_HEREDOC)
-		dprintf(STDERR_FILENO, "Cannot create heredoc\n");
-	else
-		(dprintf(STDERR_FILENO, "%s: ", io_info->file), perror(""));
 }
 
 static int	_open_redirection(
@@ -143,14 +155,19 @@ static int	_open_redirection(
 	int	fd;
 
 	if (io_info->io_type == IO_IN)
-		fd = open(io_info->file, O_IN);
+		fd = open(io_info->file, O_RDONLY);
 	else if (io_info->io_type == IO_OUT)
-		fd = open(io_info->file, O_OT, 0666);
+		fd = open(io_info->file, O_CREAT | O_WRONLY | O_TRUNC, 0666);
 	else if (io_info->io_type == IO_APPEND)
-		fd = open(io_info->file, O_AP, 0666);
+		fd = open(io_info->file, O_CREAT | O_WRONLY | O_APPEND, 0666);
 	else
 		fd = _create_heredoc(io_info->file);
-	if (fd == -1)
-		_print_redirection_error(io_info);
-	return (fd);
+	if (fd != -1)
+		return (fd);
+	dprintf(STDERR_FILENO, MS);
+	if (io_info->io_type == IO_HEREDOC)
+		dprintf(STDERR_FILENO, "Cannot create heredoc\n");
+	else
+		perror(io_info->file);
+	return (-1);
 }
