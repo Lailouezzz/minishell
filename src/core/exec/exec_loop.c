@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_loop.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/12 13:19:22 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/12 15:20:15 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,9 +95,8 @@ void	exec_loop(
 		while (ft_isspace(*pstr))
 			++pstr;
 		if (*pstr != '\0')
-			add_history(pstr);
-		if (*pstr != '\0')
 		{
+			add_history(pstr);
 			r = _exec_loop_exec(ctx);
 			if (r != MS_OK && r != MS_SYNTAX_ERROR && r != MS_EMPTY_COMMAND)
 				break ;
