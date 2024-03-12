@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:37:45 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/11 18:39:41 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/12 20:07:31 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,7 @@ bool			handle_redirect_list(
 t_ms_error		run_command(
 					t_exec_ctx *ctx,
 					const char *program_name,
-					const char **args,
-					const char **envp
+					const char **args
 					);
 
 t_ms_error		launch_command(
@@ -87,6 +86,10 @@ bool			and_or_executor(
 					t_exec_ctx *ctx,
 					const t_and_or *and_or,
 					t_ms_error *error
+					);
+
+int				create_heredoc(
+					const char *delim
 					);
 
 const char		*u_get_end(

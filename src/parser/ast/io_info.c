@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   io_info.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 20:11:32 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 22:55:18 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/12 18:35:19 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ t_io_info	*io_info_create(
 		return (NULL);
 	io_info->io_type = type;
 	io_info->file = file;
+	io_info->fd = -1;
 	return (io_info);
 }
 

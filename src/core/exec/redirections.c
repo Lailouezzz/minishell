@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:30:48 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/12 16:14:32 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/12 20:13:56 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-static char			*_prompt(void);
-
 static void			_close_all(
 						const int fds[2]
 						);
 
-static int			_create_heredoc(
-						const char *delim
+static void			_swap_fd(
+						int new_fd,
+						int *fd
 						);
 
 static int			_open_redirection(
@@ -71,7 +70,7 @@ bool	handle_redirect_list(
 				const t_redirect_list *list
 				)
 {
-	const int	io[2] = {-1, -1};
+	const int	x[2] = {-1, -1};
 	t_io_info	*info;
 	size_t		i;
 	int			fd;
@@ -84,18 +83,18 @@ bool	handle_redirect_list(
 	{
 		fd = _open_redirection(&info[i]);
 		if (fd == -1)
-			return (_close_all(io), true);
+			return (_close_all(x), true);
 		if (info[i].io_type == IO_IN || info[i].io_type == IO_HEREDOC)
-			(close(io[STDIN]), *((int *)&io[STDIN]) = fd);
+			_swap_fd(fd, (int *)&x[STDIN]);
 		else
-			(close(io[STDOUT]), *((int *)&io[STDOUT]) = fd);
+			_swap_fd(fd, (int *)&x[STDOUT]);
 		++i;
 	}
-	if (io[STDOUT] != -1 && dup2(io[STDOUT], STDOUT_FILENO) == -1)
-		return (dprintf(2, "ALED"), _close_all(io), true);
-	if (io[STDIN] != -1 && dup2(io[STDIN], STDIN_FILENO) == -1)
-		return (dprintf(2, "ALED"), _close_all(io), true);
-	return (false);
+	if (x[STDOUT] != -1 && dup2(x[STDOUT], STDOUT_FILENO) == -1)
+		return (_close_all(x), true);
+	if (x[STDIN] != -1 && dup2(x[STDIN], STDIN_FILENO) == -1)
+		return (_close_all(x), true);
+	return ((void)(x[0] >= 0 && close(x[0])), x[1] >= 0 && close(x[1]), false);
 }
 
 /* ************************************************************************** */
@@ -104,48 +103,25 @@ bool	handle_redirect_list(
 /*                                                                            */
 /* ************************************************************************** */
 
-static char	*_prompt(void)
-{
-	dprintf(STDOUT_FILENO, "> ");
-	return (get_next_line(STDIN_FILENO));
-}
-
 static void	_close_all(
 				const int fds[2]
 				)
 {
-	(close(STDIN_FILENO), close(fds[STDIN]));
-	(close(STDOUT_FILENO), close(fds[STDOUT]));
+	if (fds[STDIN] >= 0)
+		close(fds[STDIN]);
+	if (fds[STDOUT] >= 0)
+		close(fds[STDOUT]);
+	(close(STDIN_FILENO), close(STDOUT_FILENO));
 }
 
-static int	_create_heredoc(
-				const char *delim
+static void	_swap_fd(
+				int new_fd,
+				int *fd
 				)
 {
-	FILE	*f;
-	char	*line;
-	size_t	delim_length;
-	int		fd;
-
-	f = tmpfile();
-	if (f == NULL)
-		return (-1);
-	delim_length = ft_strlen(delim);
-	line = _prompt();
-	while (line)
-	{
-		if (ft_strncmp(delim, line, delim_length) == 0
-			&& line + delim_length == (char *)u_get_end(line))
-			break ;
-		ft_putstr_fd(line, fileno(f));
-		free(line);
-		line = _prompt();
-	}
-	free(line);
-	lseek(fileno(f), 0, SEEK_SET);
-	fd = dup(fileno(f));
-	fclose(f);
-	return (fd);
+	if (*fd >= 0)
+		close(*fd);
+	*fd = new_fd;
 }
 
 static int	_open_redirection(
@@ -161,7 +137,7 @@ static int	_open_redirection(
 	else if (io_info->io_type == IO_APPEND)
 		fd = open(io_info->file, O_CREAT | O_WRONLY | O_APPEND, 0666);
 	else
-		fd = _create_heredoc(io_info->file);
+		fd = io_info->fd;
 	if (fd != -1)
 		return (fd);
 	dprintf(STDERR_FILENO, MS);

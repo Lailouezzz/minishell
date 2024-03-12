@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ast.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 08:02:47 by ale-boud          #+#    #+#             */
-/*   Updated: 2023/12/11 22:57:48 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/12 18:34:04 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ typedef struct s_io_info
 {
 	t_io_type	io_type;
 	char		*file;
+	int			fd;
 }	t_io_info;
 
 typedef struct s_redirect_list

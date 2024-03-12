@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command_token_executor.c                           :+:      :+:    :+:   */
+/*   create_heredoc.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/11 18:15:00 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/12 20:07:54 by amassias         ###   ########.fr       */
+/*   Created: 2024/03/12 19:16:07 by amassias          #+#    #+#             */
+/*   Updated: 2024/03/12 19:19:08 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file command_token_executor.c
+ * @file create_heredoc.c
  * @author Antoine Massias (amassias@student.42lehavre.fr)
- * @date 2024-03-11
+ * @date 2024-03-12
  * @copyright Copyright (c) 2024
  */
 
@@ -31,31 +31,33 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-t_ms_error	execute_simple_command(
-				t_exec_ctx *ctx,
-				t_simple_command *command
-				)
+int	create_heredoc(
+		const char *delim
+		)
 {
-	t_ms_error	error;
+	FILE	*f;
+	char	*line;
+	size_t	delim_length;
+	int		fd;
 
-	if (handle_redirect_list(command->redirect_list))
-		exec_cleanup_exit(ctx, 1);
-	error = run_command(
-			ctx,
-			command->pn,
-			(const char **)command->args->args);
-	return (error);
-}
-
-t_ms_error	execute_subshell(
-				t_exec_ctx *ctx,
-				t_subshell *command
-				)
-{
-	t_ms_error	error;
-
-	if (handle_redirect_list(command->redirect_list))
-		exec_cleanup_exit(ctx, 1);
-	and_or_executor(ctx, command->and_or, &error);
-	return (error);
+	f = tmpfile();
+	if (f == NULL)
+		return (-1);
+	delim_length = ft_strlen(delim);
+	dprintf(STDOUT_FILENO, "Xheredoc> ");
+	line = get_next_line(STDIN_FILENO);
+	while (line)
+	{
+		if (ft_strncmp(delim, line, delim_length) == 0
+			&& line + delim_length == (char *)u_get_end(line))
+			break ;
+		ft_putstr_fd(line, fileno(f));
+		dprintf(STDOUT_FILENO, "Xheredoc> ");
+		(free(line), line = get_next_line(STDIN_FILENO));
+	}
+	free(line);
+	lseek(fileno(f), 0, SEEK_SET);
+	fd = dup(fileno(f));
+	fclose(f);
+	return (fd);
 }

@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 17:55:47 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/11 18:23:35 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/12 20:08:22 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,9 +174,17 @@ static noreturn void	_child(
 {
 	(signal(SIGINT, SIG_DFL), signal(SIGQUIT, SIG_DFL));
 	if (index > 0)
-		(dup2(fds[0], STDIN_FILENO), close(fds[0]), close(fds[1]));
+	{
+		if (dup2(fds[0], STDIN_FILENO) < 0)
+			u_quit(ctx, MS_FATAL);
+		(close(fds[0]), close(fds[1]));
+	}
 	if (fds[2] >= 0)
-		(dup2(fds[2], STDOUT_FILENO), close(fds[2]));
+	{
+		if (dup2(fds[2], STDOUT_FILENO) < 0)
+			u_quit(ctx, MS_FATAL);
+		close(fds[2]);
+	}
 	if (commands[index].type == COMMAND_SUBSHELL)
 		u_quit(ctx, execute_subshell(ctx, commands[index].command));
 	u_quit(ctx, execute_simple_command(ctx, commands[index].command));
