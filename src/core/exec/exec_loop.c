@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/12 15:20:15 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/12 15:23:59 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ void	exec_loop(
 			++pstr;
 		if (*pstr != '\0')
 		{
-			add_history(pstr);
+			add_history(ctx->current_line);
 			r = _exec_loop_exec(ctx);
 			if (r != MS_OK && r != MS_SYNTAX_ERROR && r != MS_EMPTY_COMMAND)
 				break ;
