@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 03:06:06 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/12 14:36:39 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/12 16:43:11 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ t_ms_error	_env_init(
 				)
 {
 	char *const	pwd = getcwd(NULL, 0);
+	int			r;
 
 	if (pwd == NULL)
 		return (MS_BAD_ALLOC);
@@ -104,7 +105,9 @@ t_ms_error	_env_init(
 	env->env_vars[0] = NULL;
 	env->used = 0;
 	env->alloced = 1;
-	return (env_set_var(env, "PWD", pwd));
+	r = env_set_var(env, "PWD", pwd);
+	free(pwd);
+	return (r);
 }
 
 static t_ms_error	_env_init_fill(
