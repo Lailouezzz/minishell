@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 03:06:06 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/12 16:43:11 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/14 14:10:02 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,9 @@ t_ms_error	env_ctx_init(
 	env_ctx->current_code_str = ft_itoa(MS_STATUS_OK);
 	if (env_ctx->current_code_str == NULL)
 		return (env_ctx_destroy(env_ctx), MS_BAD_ALLOC);
+	env_ctx->heredocs.fds = NULL;
+	env_ctx->heredocs.count = 0;
+	env_ctx->heredocs._index = 0;
 	return (MS_OK);
 }
 

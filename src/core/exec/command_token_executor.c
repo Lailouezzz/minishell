@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 18:15:00 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/14 13:45:39 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/14 15:04:24 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ t_ms_error	execute_simple_command(
 
 	if (handle_redirect_list(command->redirect_list))
 		exec_cleanup_exit(ctx, 1);
+	env_ctx_heredocs_cleanup(ctx->env_ctx);
 	error = run_command(
 			ctx,
 			command->pn,
@@ -57,6 +58,7 @@ t_ms_error	execute_subshell(
 	error = MS_OK;
 	if (handle_redirect_list(command->redirect_list))
 		exec_cleanup_exit(ctx, 1);
+	env_ctx_heredocs_cleanup(ctx->env_ctx);
 	and_or_executor(ctx, command->and_or, &error);
 	return (error);
 }

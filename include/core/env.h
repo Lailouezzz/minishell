@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:08:41 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/11 17:34:37 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/14 14:13:32 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,13 @@ extern volatile int	g_signo;
 
 typedef char *		t_env_var;
 
+typedef struct s_heredocs_fds
+{
+	int		*fds;
+	size_t	count;
+	size_t	_index;
+}					t_heredocs_fds;
+
 typedef struct s_env
 {
 	t_env_var	*env_vars;
@@ -59,10 +66,11 @@ typedef struct s_env
 
 typedef struct s_env_ctx
 {
-	char		*pn;
-	t_env		env;
-	int			current_code;
-	char		*current_code_str;
+	char			*pn;
+	t_env			env;
+	int				current_code;
+	char			*current_code_str;
+	t_heredocs_fds	heredocs;
 }					t_env_ctx;
 
 // ************************************************************************** //
@@ -78,6 +86,10 @@ t_ms_error	env_ctx_init(
 				);
 
 void		env_ctx_destroy(
+				t_env_ctx *env_ctx
+				);
+
+void		env_ctx_heredocs_cleanup(
 				t_env_ctx *env_ctx
 				);
 

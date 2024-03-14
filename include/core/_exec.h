@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:37:45 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/12 20:07:31 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/14 14:52:33 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,10 @@ bool			and_or_executor(
 
 int				create_heredoc(
 					const char *delim
+					);
+
+size_t			u_count_heredocs(
+					const t_command_line *command_line
 					);
 
 const char		*u_get_end(

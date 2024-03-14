@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:30:48 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/14 14:00:42 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/14 15:01:00 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,13 +133,14 @@ static int	_open_redirection(
 	else if (io_info->io_type == IO_APPEND)
 		fd = open(io_info->file, O_CREAT | O_WRONLY | O_APPEND, 0666);
 	else
-		fd = io_info->fd;
-	if (fd != -1)
-		return (fd);
-	dprintf(STDERR_FILENO, MS);
-	if (io_info->io_type == IO_HEREDOC)
-		dprintf(STDERR_FILENO, "Cannot create heredoc\n");
-	else
-		perror(io_info->file);
-	return (-1);
+		fd = dup(io_info->fd);
+	if (fd == -1)
+	{
+		dprintf(STDERR_FILENO, MS);
+		if (io_info->io_type == IO_HEREDOC)
+			dprintf(STDERR_FILENO, "Cannot create heredoc\n");
+		else
+			perror(io_info->file);
+	}
+	return (fd);
 }

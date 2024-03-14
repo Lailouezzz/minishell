@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   destroy.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 03:06:06 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/13 21:35:30 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/14 15:01:54 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,32 @@
 
 #include "core/env.h"
 
+#include <unistd.h>
+
 // ************************************************************************** //
 // *                                                                        * //
 // * Header functions.                                                      * //
 // *                                                                        * //
 // ************************************************************************** //
+
+void	env_ctx_heredocs_cleanup(
+			t_env_ctx *env_ctx
+			)
+{
+	size_t	count;
+
+	if (env_ctx->heredocs.fds == NULL)
+		return ;
+	count = env_ctx->heredocs.count;
+	if (env_ctx->heredocs._index < count)
+		count = env_ctx->heredocs._index;
+	while (count--)
+		close(env_ctx->heredocs.fds[count]);
+	free(env_ctx->heredocs.fds);
+	env_ctx->heredocs.fds = NULL;
+	env_ctx->heredocs.count = 0;
+	env_ctx->heredocs._index = 0;
+}
 
 void	env_ctx_destroy(
 			t_env_ctx *env_ctx
@@ -38,6 +59,7 @@ void	env_ctx_destroy(
 {
 	env_destroy(&env_ctx->env);
 	free(env_ctx->current_code_str);
+	env_ctx_heredocs_cleanup(env_ctx);
 }
 
 void	env_destroy(
