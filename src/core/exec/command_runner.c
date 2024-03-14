@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:53:56 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/14 13:43:04 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/14 19:46:14 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,12 +82,15 @@ t_ms_error	run_command(
 	error = launch_command(ctx->env_ctx, program_name, "", args);
 	if (error != MS_COMMAND_NOT_FOUND)
 		return (error);
-	error = _run_command_with_cwd(ctx->env_ctx, program_name, args);
-	if (error != MS_COMMAND_NOT_FOUND)
-		return (error);
-	error = _run_command_with_path(ctx->env_ctx, program_name, args);
-	if (error != MS_COMMAND_NOT_FOUND)
-		return (error);
+	if (program_name[0] != '/')
+	{
+		error = _run_command_with_cwd(ctx->env_ctx, program_name, args);
+		if (error != MS_COMMAND_NOT_FOUND)
+			return (error);
+		error = _run_command_with_path(ctx->env_ctx, program_name, args);
+		if (error != MS_COMMAND_NOT_FOUND)
+			return (error);
+	}
 	if (ft_strchr(program_name, '/'))
 		dprintf(STDERR_FILENO, MS ERR_NO_FILE_OR_DIR "\n", program_name);
 	else
