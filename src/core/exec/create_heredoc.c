@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/12 19:16:07 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/12 19:19:08 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/13 13:25:12 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,14 @@
 
 /* ************************************************************************** */
 /*                                                                            */
+/* Helper protoypes                                                           */
+/*                                                                            */
+/* ************************************************************************** */
+
+static char	*_prompt(void);
+
+/* ************************************************************************** */
+/*                                                                            */
 /* Header implementation                                                      */
 /*                                                                            */
 /* ************************************************************************** */
@@ -44,20 +52,31 @@ int	create_heredoc(
 	if (f == NULL)
 		return (-1);
 	delim_length = ft_strlen(delim);
-	dprintf(STDOUT_FILENO, "Xheredoc> ");
-	line = get_next_line(STDIN_FILENO);
+	line = _prompt();
 	while (line)
 	{
 		if (ft_strncmp(delim, line, delim_length) == 0
 			&& line + delim_length == (char *)u_get_end(line))
 			break ;
 		ft_putstr_fd(line, fileno(f));
-		dprintf(STDOUT_FILENO, "Xheredoc> ");
-		(free(line), line = get_next_line(STDIN_FILENO));
+		free(line);
+		line = _prompt();
 	}
 	free(line);
 	lseek(fileno(f), 0, SEEK_SET);
 	fd = dup(fileno(f));
 	fclose(f);
 	return (fd);
+}
+
+/* ************************************************************************** */
+/*                                                                            */
+/* Helper implementation                                                      */
+/*                                                                            */
+/* ************************************************************************** */
+
+static char	*_prompt(void)
+{
+	dprintf(STDOUT_FILENO, "heredoc> ");
+	return (get_next_line(STDIN_FILENO));
 }

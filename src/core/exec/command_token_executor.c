@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 18:15:00 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/12 20:07:54 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/14 13:45:39 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ t_ms_error	execute_subshell(
 {
 	t_ms_error	error;
 
+	error = MS_OK;
 	if (handle_redirect_list(command->redirect_list))
 		exec_cleanup_exit(ctx, 1);
 	and_or_executor(ctx, command->and_or, &error);

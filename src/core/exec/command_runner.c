@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:53:56 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/12 17:45:17 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/14 13:43:04 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,8 @@ static t_ms_error	_run_builtin(
 			continue ;
 		g_builtins[i - 1].fun(ctx,
 			(char **)args, (char **)ctx->env_ctx->env.env_vars);
+		close(STDIN_FILENO);
+		close(STDOUT_FILENO);
 		exec_cleanup_exit(ctx, ctx->env_ctx->current_code);
 	}
 	return (MS_COMMAND_NOT_FOUND);
