@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:30:48 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/12 20:13:56 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/14 14:00:42 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,21 +78,17 @@ bool	handle_redirect_list(
 	if (list == NULL)
 		return (false);
 	info = list->io_infos;
-	i = 0;
-	while (i < list->used)
+	i = (size_t)-1;
+	while (++i < list->used)
 	{
 		fd = _open_redirection(&info[i]);
 		if (fd == -1)
 			return (_close_all(x), true);
-		if (info[i].io_type == IO_IN || info[i].io_type == IO_HEREDOC)
-			_swap_fd(fd, (int *)&x[STDIN]);
-		else
-			_swap_fd(fd, (int *)&x[STDOUT]);
-		++i;
+		_swap_fd(fd, (int *)&x[info[i].io_type == IO_OUT
+			|| info[i].io_type == IO_APPEND]);
 	}
-	if (x[STDOUT] != -1 && dup2(x[STDOUT], STDOUT_FILENO) == -1)
-		return (_close_all(x), true);
-	if (x[STDIN] != -1 && dup2(x[STDIN], STDIN_FILENO) == -1)
+	if ((x[STDOUT] >= 0 && dup2(x[STDOUT], STDOUT_FILENO) < 0)
+		|| (x[STDIN] >= 0 && dup2(x[STDIN], STDIN_FILENO) < 0))
 		return (_close_all(x), true);
 	return ((void)(x[0] >= 0 && close(x[0])), x[1] >= 0 && close(x[1]), false);
 }
