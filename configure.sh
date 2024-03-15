@@ -10,7 +10,7 @@ make_full_log=
 debug=
 optimize=y
 objdir=build
-outdir=bin
+outdir=.
 cflags=
 ldflags=
 

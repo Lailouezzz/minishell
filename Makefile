@@ -36,8 +36,10 @@ mclean: clean
 # Clean everything
 
 fclean: clean cleandoc
+ifneq ($(OUTDIR),.)
 	$(call rmsg,Removing the output binary folder ($(OUTDIR)))
 	$(call qcmd,$(RM) -rf $(OUTDIR))
+endif
 
 # Clean libs
 
