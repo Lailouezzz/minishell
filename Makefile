@@ -39,6 +39,9 @@ fclean: clean cleandoc
 ifneq ($(OUTDIR),.)
 	$(call rmsg,Removing the output binary folder ($(OUTDIR)))
 	$(call qcmd,$(RM) -rf $(OUTDIR))
+else
+	$(call rmsg,Removing the output binary ($(BIN_PATH)))
+	$(call qcmd,$(RM) -f $(BIN_PATH))
 endif
 
 # Clean libs
