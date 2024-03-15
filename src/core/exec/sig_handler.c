@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_sig_handler.c                                 :+:      :+:    :+:   */
+/*   sig_handler.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 21:46:46 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/14 13:44:50 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/15 01:13:18 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file exec_sig_handler.c
+ * @file sig_handler.c
  * @author ale-boud (ale-boud@student.42.fr)
  * @brief The signal handlers of minishell.
  * @date 2024-01-22
@@ -56,7 +56,6 @@ static void	_exec_sig_handler_in_execution(
 
 void	exec_set_interactive(void)
 {
-	g_signo = 0;
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, _exec_sig_handler_interactive);
 }

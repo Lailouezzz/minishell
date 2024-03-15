@@ -1,21 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   heredoc_sig_handler.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/15 00:41:56 by ale-boud         ###   ########.fr       */
+/*   Created: 2024/03/14 20:27:50 by ale-boud          #+#    #+#             */
+/*   Updated: 2024/03/15 01:10:30 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file main.c
+ * @file heredoc_sig_handler.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief The main testing mouahahahah
- * @date 2023-11-29
- * @copyright Copyright (c) 2023
+ * @brief Here doc sig handler.
+ * @date 2024-03-14
+ * @copyright Copyright (c) 2024
  */
 
 // ************************************************************************** //
@@ -24,72 +24,62 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <readline/readline.h>
-#include <lr_parser.h>
-
-#include "parser/prod.h"
-#include "tokenizer/tokenizer.h"
-#include "parser/table.h"
-#include "parser/ast.h"
-
-#include "core/exec.h"
+#include <signal.h>
+#include <unistd.h>
+#include <termios.h>
 
 #include <libft.h>
 
+#include "core/exec.h"
+
 // ************************************************************************** //
 // *                                                                        * //
-// * Helper functions definition.                                           * //
+// * Signal handlers definition.                                            * //
 // *                                                                        * //
 // ************************************************************************** //
 
-static void	_setup_parser_ctx(
-				t_lr_parser_ctx *parser_ctx
+static void	_exec_sig_handler_in_heredoc(
+				int signo
 				);
 
 // ************************************************************************** //
 // *                                                                        * //
-// * MINISHELL MAIN.                                                        * //
+// * Header function.                                                       * //
 // *                                                                        * //
 // ************************************************************************** //
 
-int	main(int argc, char **argv, char **envp)
+void	exec_set_in_heredoc(
+			t_exec_ctx *ctx
+			)
 {
-	t_lr_parser_ctx	parser_ctx;
-	t_exec_ctx		ex_ctx;
-	t_env_ctx		env_ctx;
+	struct termios	tty;
 
-	(void)argc;
-	_setup_parser_ctx(&parser_ctx);
-	if (env_ctx_init(&env_ctx, argv[0], envp) != MS_OK)
+	if (ctx->env_ctx->istty)
 	{
-		ft_putstr_fd("minishell: fatal error.\n", STDERR_FILENO);
-		return (EXIT_FAILURE);
+		tcgetattr(STDIN_FILENO, &tty);
+		tty.c_lflag &= ~(ECHOCTL);
+		tcsetattr(STDIN_FILENO, TCSAFLUSH, &tty);
 	}
-	exec_init(&ex_ctx, &env_ctx, &parser_ctx);
-	exec_loop(&ex_ctx);
-	env_ctx_destroy(&env_ctx);
-	rl_clear_history();
-	ft_putstr_fd("exit\n", STDOUT_FILENO);
-	return (env_ctx.current_code);
+	g_signo = 0;
+	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, _exec_sig_handler_in_heredoc);
 }
 
 // ************************************************************************** //
 // *                                                                        * //
-// * Helper function.                                                       * //
+// * Signal handlers.                                                       * //
 // *                                                                        * //
 // ************************************************************************** //
 
-static void	_setup_parser_ctx(
-				t_lr_parser_ctx *parser_ctx
+static void	_exec_sig_handler_in_heredoc(
+				int signo
 				)
 {
-	parser_ctx->prod_count = PROD__COUNT;
-	parser_ctx->state_count = STATE__COUNT;
-	parser_ctx->token_count = TOKEN__COUNT;
-	parser_ctx->action_table = (t_lr_action *)g_lr_table;
-	parser_ctx->goto_table = (t_lr_state_id *)g_lr_goto_table;
-	parser_ctx->prod_cb = (t_lr_prod_cb *)g_prod_cbs;
-	parser_ctx->token_free_cbs = (t_lr_token_free_cb *)g_tok_free_cbs;
+	if (signo == SIGINT)
+	{
+		ft_putstr_fd("^C\n", STDOUT_FILENO);
+		g_signo = signo;
+	}
 }

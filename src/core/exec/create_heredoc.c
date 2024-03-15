@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_heredoc.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/12 19:16:07 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/13 13:25:12 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/15 01:06:22 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,11 @@
 /* Includes                                                                   */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <signal.h>
+#include <sys/ioctl.h>
+#include <errno.h>
+#include <string.h>
 
 #include "core/_exec.h"
 
@@ -40,20 +45,20 @@ static char	*_prompt(void);
 /* ************************************************************************** */
 
 int	create_heredoc(
-		const char *delim
+		const char *delim,
+		int *fd
 		)
 {
-	FILE	*f;
-	char	*line;
-	size_t	delim_length;
-	int		fd;
+	FILE			*f;
+	char			*line;
+	const size_t	delim_length = ft_strlen(delim);
+	int				airno;
 
 	f = tmpfile();
 	if (f == NULL)
-		return (-1);
-	delim_length = ft_strlen(delim);
+		return (*fd = -1, 1);
 	line = _prompt();
-	while (line)
+	while (line && g_signo != SIGINT)
 	{
 		if (ft_strncmp(delim, line, delim_length) == 0
 			&& line + delim_length == (char *)u_get_end(line))
@@ -62,11 +67,12 @@ int	create_heredoc(
 		free(line);
 		line = _prompt();
 	}
+	airno = errno;
 	free(line);
 	lseek(fileno(f), 0, SEEK_SET);
-	fd = dup(fileno(f));
+	*fd = dup(fileno(f));
 	fclose(f);
-	return (fd);
+	return (line == NULL && airno == 0 && g_signo != SIGINT);
 }
 
 /* ************************************************************************** */
@@ -77,6 +83,17 @@ int	create_heredoc(
 
 static char	*_prompt(void)
 {
-	dprintf(STDOUT_FILENO, "heredoc> ");
-	return (get_next_line(STDIN_FILENO));
+	char			*r;
+
+	ft_putstr_fd("> ", STDOUT_FILENO);
+	ioctl(STDIN_FILENO, FIONBIO, (char *)(int []){1});
+	errno = 0;
+	r = get_next_line(STDIN_FILENO);
+	while (r == NULL && errno == EAGAIN && g_signo != SIGINT)
+	{
+		errno = 0;
+		r = get_next_line(STDIN_FILENO);
+	}
+	ioctl(STDIN_FILENO, FIONBIO, (char *)(int []){0});
+	return (r);
 }

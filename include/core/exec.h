@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:15:15 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/11 18:48:55 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/15 01:16:07 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,10 @@ noreturn void	exec_cleanup_exit(
 void			exec_set_interactive(void);
 
 void			exec_set_in_execution(void);
+
+void			exec_set_in_heredoc(
+					t_exec_ctx *ctx
+					);
 
 void			_exec_loop_handle_signal(
 					t_exec_ctx *ctx

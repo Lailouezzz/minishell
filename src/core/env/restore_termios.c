@@ -1,20 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   destroy.c                                          :+:      :+:    :+:   */
+/*   restore_termios.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/23 03:06:06 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/15 01:20:24 by ale-boud         ###   ########.fr       */
+/*   Created: 2024/03/15 01:10:15 by ale-boud          #+#    #+#             */
+/*   Updated: 2024/03/15 01:22:00 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file destroy.c
+ * @file restore_termios.c
  * @author ale-boud (ale-boud@student.42.fr)
- * @brief Environnement destroy.
- * @date 2024-01-23
+ * @brief Termios restore to default.
+ * @date 2024-03-15
  * @copyright Copyright (c) 2024
  */
 
@@ -24,55 +24,21 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-#include "core/env.h"
-
+#include <termios.h>
 #include <unistd.h>
 
+#include "core/exec.h"
+
 // ************************************************************************** //
 // *                                                                        * //
-// * Header functions.                                                      * //
+// * Header function.                                                       * //
 // *                                                                        * //
 // ************************************************************************** //
 
-void	env_ctx_heredocs_cleanup(
+void	env_ctx_restore_termios(
 			t_env_ctx *env_ctx
 			)
 {
-	size_t	count;
-
-	if (env_ctx->heredocs.fds == NULL)
-		return ;
-	count = env_ctx->heredocs.count;
-	if (env_ctx->heredocs._index < count)
-		count = env_ctx->heredocs._index;
-	while (count--)
-		close(env_ctx->heredocs.fds[count]);
-	free(env_ctx->heredocs.fds);
-	env_ctx->heredocs.fds = NULL;
-	env_ctx->heredocs.count = 0;
-	env_ctx->heredocs._index = 0;
-}
-
-void	env_ctx_destroy(
-			t_env_ctx *env_ctx
-			)
-{
-	env_destroy(&env_ctx->env);
-	free(env_ctx->current_code_str);
-	env_ctx_heredocs_cleanup(env_ctx);
-}
-
-void	env_destroy(
-			t_env *env
-			)
-{
-	t_env_var	*envp;
-
-	envp = env->env_vars;
-	while (*envp != NULL)
-	{
-		free(*envp);
-		++envp;
-	}
-	free(env->env_vars);
+	if (env_ctx->istty)
+		tcsetattr(STDIN_FILENO, TCSAFLUSH, &env_ctx->tstart);
 }

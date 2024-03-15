@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_exec.c                                        :+:      :+:    :+:   */
+/*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 15:34:01 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/14 15:01:19 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/15 01:21:19 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file exec_exec.c
+ * @file exec.c
  * @author Antoine Massias (amassias@student.42lehavre.fr)
  * @date 2024-02-08
  * @copyright Copyright (c) 2024
@@ -23,7 +23,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <signal.h>
+#include <stdio.h>
+
 #include "core/_exec.h"
+
+// ************************************************************************** //
+// *                                                                        * //
+// * Error messages.                                                        * //
+// *                                                                        * //
+// ************************************************************************** //
+
+#define WARN_HEREDOC_EOF "minishell: warning: here-document delimited by\
+ end-of-file (wanted `%s')\n"
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -65,8 +77,14 @@ t_ms_error	exec_exec(
 	t_ms_error	error;
 
 	error = MS_OK;
+	exec_set_in_heredoc(ctx);
 	if (_open_heredocs(&ctx->env_ctx->heredocs, cl))
-		return (env_ctx_heredocs_cleanup(ctx->env_ctx), MS_FATAL);
+		return (env_ctx_restore_termios(ctx->env_ctx),
+			env_ctx_heredocs_cleanup(ctx->env_ctx), MS_FATAL);
+	env_ctx_restore_termios(ctx->env_ctx);
+	if (g_signo == SIGINT)
+		return (env_ctx_heredocs_cleanup(ctx->env_ctx), MS_OK);
+	exec_set_in_execution();
 	and_or_executor(ctx, cl->and_or, &error);
 	return (env_ctx_heredocs_cleanup(ctx->env_ctx), error);
 }
@@ -85,16 +103,18 @@ static bool	_process(
 	size_t	i;
 
 	i = 0;
-	while (list && i < list->used)
+	while (list && i < list->used && g_signo != SIGINT)
 	{
 		if (list->io_infos[i++].io_type != IO_HEREDOC)
 			continue ;
-		hd->fds[hd->_index] = create_heredoc(list->io_infos[i - 1].file);
+		if (create_heredoc(list->io_infos[i - 1].file, &hd->fds[hd->_index]))
+			dprintf(STDIN_FILENO, WARN_HEREDOC_EOF,
+				list->io_infos[i - 1].file);
 		if (hd->fds[hd->_index] < 0)
 			return (true);
 		list->io_infos[i - 1].fd = hd->fds[hd->_index++];
 	}
-	return (0);
+	return (false);
 }
 
 static bool	_open_heredocs_pipeline(

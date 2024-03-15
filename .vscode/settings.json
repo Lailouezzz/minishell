@@ -23,6 +23,7 @@
 		"commandp",
 		"destoy",
 		"doublequote",
+		"heredocs",
 		"lrparser",
 		"lrprod",
 		"lrrule",

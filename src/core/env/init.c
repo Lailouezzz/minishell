@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 03:06:06 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/14 14:10:02 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/14 21:14:05 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,9 @@ t_ms_error	env_ctx_init(
 	t_ms_error	r;
 
 	env_ctx->pn = pn;
+	env_ctx->istty = isatty(STDIN_FILENO);
+	if (env_ctx->istty && tcgetattr(STDIN_FILENO, &env_ctx->tstart) == -1)
+		return (MS_FATAL);
 	r = env_init(&env_ctx->env, envp);
 	if (r != MS_OK)
 		return (r);

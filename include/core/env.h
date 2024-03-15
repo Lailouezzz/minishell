@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:08:41 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/14 14:13:32 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/15 01:18:26 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 // ************************************************************************** //
 
 # include <stdlib.h>
+# include <termios.h>
 
 # include "core/status_code.h"
 # include "core/error_code.h"
@@ -70,6 +71,8 @@ typedef struct s_env_ctx
 	t_env			env;
 	int				current_code;
 	char			*current_code_str;
+	int				istty;
+	struct termios	tstart;
 	t_heredocs_fds	heredocs;
 }					t_env_ctx;
 
@@ -121,6 +124,10 @@ t_ms_error	env_set_code(
 t_ms_error	env_unset_var(
 				t_env *env,
 				const char *name
+				);
+
+void		env_ctx_restore_termios(
+				t_env_ctx *env_ctx
 				);
 
 // ************************************************************************** //

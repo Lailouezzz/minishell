@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   _exec.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 16:37:45 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/14 14:52:33 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/14 22:51:46 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,8 @@ bool			and_or_executor(
 					);
 
 int				create_heredoc(
-					const char *delim
+					const char *delim,
+					int *fd
 					);
 
 size_t			u_count_heredocs(

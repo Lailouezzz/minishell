@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_loop.c                                        :+:      :+:    :+:   */
+/*   loop.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/12 15:23:59 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/15 01:12:59 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file exec_loop.c
+ * @file loop.c
  * @author ale-boud (ale-boud@student.42.fr)
  * @brief The execution loop of minishell.
  * @date 2024-01-22
@@ -135,7 +135,6 @@ static	t_ms_error	_exec_loop_exec(
 			exec_cleanup_exit(ctx, MS_STATUS_FAILURE);
 		return (r);
 	}
-	exec_set_in_execution();
 	r = exec_exec(ctx, ctx->current_cl);
 	(exec_set_interactive(), command_line_destroy(ctx->current_cl));
 	ctx->current_cl = NULL;
