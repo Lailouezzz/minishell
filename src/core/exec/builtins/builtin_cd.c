@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/12 20:26:13 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/16 09:45:15 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#define ERROR_TO_MANY_ARGS "minishell: cd: too many arguments"
-#define ERROR_NOT_ENOUGH_ARGS "minishell: cd: not enough arguments"
-#define ERROR_NO_FILE "minishell: cd: %s: No such file or directory"
-#define ERROR_CANT_CHANGE_DIR "minishell: cd: %s: couldn't change directory"
+#define ENV_VAR_PWD "PWD"
+#define ENV_VAR_PWD_OLD "OLDPWD"
+
+#define MS_CD "minishell: cd: "
+
+#define ERROR_NO_OLDPWD "OLDPWD not set"
+#define ERROR_NO_HOME "HOME not set"
+#define ERROR_TO_MANY_ARGS "too many arguments"
+#define ERROR_NOT_ENOUGH_ARGS "not enough arguments"
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -50,8 +55,15 @@ static size_t		_count_args(
 						char **argv
 						);
 
-static t_ms_error	_update_pwd(
-						t_exec_ctx *ctx
+static t_ms_error	_update_pwd_vars(
+						t_exec_ctx *ctx,
+						const char *pwd,
+						const char *old_pwd
+						);
+
+static t_ms_error	_change_pwd(
+						t_exec_ctx *ctx,
+						const char *dir
 						);
 
 /* ************************************************************************** */
@@ -66,26 +78,26 @@ t_ms_error	builtin_cd(
 				char __attribute__((unused)) **envp
 				)
 {
-	size_t	count;
-	int		code;
+	const size_t	count = _count_args(argv);
+	const char		*home;
 
-	count = _count_args(argv);
-	if (count != 2)
-	{
-		ctx->env_ctx->current_code = 1;
-		if (count > 2)
-			dprintf(STDERR_FILENO, ERROR_TO_MANY_ARGS "\n");
-		else
-			dprintf(STDERR_FILENO, ERROR_NOT_ENOUGH_ARGS "\n");
-		return (env_set_code(ctx->env_ctx, 1));
-	}
-	code = chdir(argv[1]) == -1;
-	if (code != 0)
-		(dprintf(STDERR_FILENO, "minishell: cd: "), perror(argv[1]));
-	if (_update_pwd(ctx))
-		return (env_set_code(ctx->env_ctx, 1), MS_FATAL);
-	return (env_set_code(ctx->env_ctx, code));
+	if (count == 2)
+		return (_change_pwd(ctx, argv[1]));
+	if (count > 2)
+		return (dprintf(STDERR_FILENO, MS_CD ERROR_TO_MANY_ARGS "\n"),
+			env_set_code(ctx->env_ctx, 1));
+	home = env_ctx_get_variable(ctx->env_ctx, "HOME");
+	if (home == NULL)
+		return (dprintf(STDERR_FILENO, MS_CD ERROR_NO_HOME "\n"),
+			env_set_code(ctx->env_ctx, 1));
+	return (_change_pwd(ctx, home));
 }
+
+/* ************************************************************************** */
+/*                                                                            */
+/* helper implementation                                                      */
+/*                                                                            */
+/* ************************************************************************** */
 
 static size_t	_count_args(
 					char **argv
@@ -99,16 +111,56 @@ static size_t	_count_args(
 	return (count);
 }
 
-static t_ms_error	_update_pwd(
-						t_exec_ctx *ctx
+static t_ms_error	_update_pwd_vars(
+						t_exec_ctx *ctx,
+						const char *pwd,
+						const char *old_pwd
 						)
 {
-	char	*buf;
+	t_ms_error	error;
 
-	buf = getcwd(NULL, 0);
-	if (buf == NULL)
-		return (MS_FATAL);
-	env_set_var(&ctx->env_ctx->env, "PWD", buf);
-	free(buf);
-	return (MS_OK);
+	error = env_set_var(&ctx->env_ctx->env, ENV_VAR_PWD, pwd);
+	if (error != MS_OK)
+		return (error);
+	return (env_set_var(&ctx->env_ctx->env, ENV_VAR_PWD_OLD, old_pwd));
+}
+
+static const char	*_chose_dir(
+						t_env_ctx *ctx,
+						const char *dir
+						)
+{
+	if (ft_strcmp(dir, "-") != 0)
+		return (dir);
+	dir = env_ctx_get_variable(ctx, ENV_VAR_PWD_OLD);
+	if (dir == NULL)
+		dprintf(STDERR_FILENO, MS_CD ERROR_NO_OLDPWD "\n");
+	return (dir);
+}
+
+static t_ms_error	_change_pwd(
+						t_exec_ctx *ctx,
+						const char *dir
+						)
+{
+	const bool	rollback = ft_strcmp(dir, "-") == 0;
+	t_ms_error	error;
+	char		*old_pwd;
+
+	dir = _chose_dir(ctx->env_ctx, dir);
+	if (dir == NULL)
+		return (env_set_code(ctx->env_ctx, 1));
+	old_pwd = getcwd(NULL, 0);
+	if (old_pwd == NULL)
+		return (env_set_code(ctx->env_ctx, 1), MS_BAD_ALLOC);
+	if (chdir(dir) == -1)
+	{
+		(dprintf(STDERR_FILENO, MS_CD), perror(dir));
+		return (free(old_pwd), env_set_code(ctx->env_ctx, 1));
+	}
+	error = _update_pwd_vars(ctx, dir, old_pwd);
+	if (rollback && error == MS_OK)
+		dprintf(STDOUT_FILENO, "%s\n",
+			env_ctx_get_variable(ctx->env_ctx, ENV_VAR_PWD));
+	return (free(old_pwd), error);
 }
