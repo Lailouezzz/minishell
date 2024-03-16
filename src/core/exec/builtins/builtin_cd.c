@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/16 09:45:15 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/16 10:30:43 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@
 
 #define ENV_VAR_PWD "PWD"
 #define ENV_VAR_PWD_OLD "OLDPWD"
+#define ENV_VAR_HOME "HOME"
 
 #define MS_CD "minishell: cd: "
 
@@ -86,7 +87,7 @@ t_ms_error	builtin_cd(
 	if (count > 2)
 		return (dprintf(STDERR_FILENO, MS_CD ERROR_TO_MANY_ARGS "\n"),
 			env_set_code(ctx->env_ctx, 1));
-	home = env_ctx_get_variable(ctx->env_ctx, "HOME");
+	home = env_ctx_get_variable(ctx->env_ctx, ENV_VAR_HOME);
 	if (home == NULL)
 		return (dprintf(STDERR_FILENO, MS_CD ERROR_NO_HOME "\n"),
 			env_set_code(ctx->env_ctx, 1));
