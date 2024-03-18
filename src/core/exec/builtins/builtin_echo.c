@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/15 18:10:55 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/06 17:25:52 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/18 12:38:16 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,29 @@
 
 /* ************************************************************************** */
 /*                                                                            */
+/* Helper protoypes                                                           */
+/*                                                                            */
+/* ************************************************************************** */
+
+bool	_parse_option(
+			const char *arg,
+			bool *nl
+			)
+{
+	if (arg[0] != '-' || arg[1] == '\0')
+		return (false);
+	++arg;
+	while (*arg)
+	{
+		if (*arg++ != 'n')
+			return (false);
+		*nl = true;
+	}
+	return (true);
+}
+
+/* ************************************************************************** */
+/*                                                                            */
 /* Header implementation                                                      */
 /*                                                                            */
 /* ************************************************************************** */
@@ -46,9 +69,10 @@ t_ms_error	builtin_echo(
 	(void)envp;
 	++argv;
 	nl = true;
-	if (argv[0] != NULL && ft_strcmp(argv[0], "-n") == 0)
+	while (*argv)
 	{
-		nl = false;
+		if (!_parse_option(*argv, &nl))
+			break ;
 		++argv;
 	}
 	while (*argv)
