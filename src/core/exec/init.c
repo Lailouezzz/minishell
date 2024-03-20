@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:27 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/02/14 17:25:42 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/20 14:18:31 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,6 @@ void	exec_init(
 	ctx->parser_ctx = parser_ctx;
 	ctx->current_cl = NULL;
 	ctx->current_line = NULL;
+	ctx->tmp_std_fds[0] = -1;
+	ctx->tmp_std_fds[1] = -1;
 }

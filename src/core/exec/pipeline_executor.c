@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 17:55:47 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/12 20:08:22 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/20 14:23:15 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,15 @@
 #include <sys/signal.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+/* ************************************************************************** */
+/*                                                                            */
+/* Defines                                                                    */
+/*                                                                            */
+/* ************************************************************************** */
+
+#define _IN STDIN_FILENO
+#define _OUT STDOUT_FILENO
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -115,30 +124,30 @@ static bool	_test_for_lone_builtin(
 				)
 {
 	size_t	i;
-	int		in;
-	int		out;
 
 	i = (size_t)-1;
+	((void)0, *ctx->tmp_std_fds = dup(_IN), ctx->tmp_std_fds[1] = dup(_OUT));
 	while (++i < BUILTIN_COUNT)
 	{
 		if (ft_strcmp(command->pn, g_builtins[i].name) != 0)
 			continue ;
-		in = dup(STDIN_FILENO);
-		out = dup(STDOUT_FILENO);
-		if (in == -1 || out == -1)
-			return (close(in), close(out), *error = MS_FATAL, true);
+		if (ctx->tmp_std_fds[0] == -1 || ctx->tmp_std_fds[1] == -1)
+			return (exec_cleanup_tmp_fds(ctx), *error = MS_FATAL, true);
 		if (handle_redirect_list(command->redirect_list))
 		{
-			if (dup2(in, STDIN_FILENO) < 0 || dup2(out, STDOUT_FILENO) < 0)
+			if (dup2(ctx->tmp_std_fds[0], _IN) < 0
+				|| dup2(ctx->tmp_std_fds[1], _OUT) < 0)
 				return (*error = MS_FATAL, true);
-			return (close(in), close(out), env_set_code(ctx->env_ctx, 1), true);
+			return (exec_cleanup_tmp_fds(ctx), env_set_code(ctx->env_ctx, 1),
+				true);
 		}
 		g_builtins[i].fun(ctx, command->args->args, ctx->env_ctx->env.env_vars);
-		if (dup2(in, STDIN_FILENO) < 0 || dup2(out, STDOUT_FILENO) < 0)
+		if (dup2(ctx->tmp_std_fds[0], _IN) < 0
+			|| dup2(ctx->tmp_std_fds[1], _OUT) < 0)
 			*error = MS_FATAL;
-		return (close(in), close(out), true);
+		return (exec_cleanup_tmp_fds(ctx), true);
 	}
-	return (false);
+	return (exec_cleanup_tmp_fds(ctx), false);
 }
 
 static t_ms_error	_parent(
@@ -175,13 +184,13 @@ static noreturn void	_child(
 	(signal(SIGINT, SIG_DFL), signal(SIGQUIT, SIG_DFL));
 	if (index > 0)
 	{
-		if (dup2(fds[0], STDIN_FILENO) < 0)
+		if (dup2(fds[0], _IN) < 0)
 			u_quit(ctx, MS_FATAL);
 		(close(fds[0]), close(fds[1]));
 	}
 	if (fds[2] >= 0)
 	{
-		if (dup2(fds[2], STDOUT_FILENO) < 0)
+		if (dup2(fds[2], _OUT) < 0)
 			u_quit(ctx, MS_FATAL);
 		close(fds[2]);
 	}
