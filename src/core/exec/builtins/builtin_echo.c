@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/15 18:10:55 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/18 12:38:16 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/20 17:32:39 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ bool	_parse_option(
 	{
 		if (*arg++ != 'n')
 			return (false);
-		*nl = true;
+		*nl = false;
 	}
 	return (true);
 }
