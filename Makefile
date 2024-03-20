@@ -17,6 +17,7 @@
 
 # Default target
 all: all-minishell
+bonus: all
 
 # Include vars and msg module
 include Makefile.vars Makefile.msg
@@ -76,7 +77,7 @@ cleandoc:
 	$(call qcmd,$(RM) -rf doc/html doc/man)
 
 .PHONY: all clean mclean fclean cleanlibs fcleanlibs mrproper re all-doc \
-	cleandoc
+	cleandoc bonus
 
 # ---
 # Check configuration
