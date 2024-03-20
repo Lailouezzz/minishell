@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:08:41 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/15 01:18:26 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/20 08:48:11 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ extern volatile int	g_signo;
 // *                                                                        * //
 // ************************************************************************** //
 
-# define MS_PROMPT "\e[31;42mminishell\e[m> "
+# define MS_PROMPT "minishell\e[0m> "
 
 typedef char *		t_env_var;
 

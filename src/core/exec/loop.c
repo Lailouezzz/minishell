@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   loop.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/15 01:12:59 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/20 08:59:21 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void	exec_loop(
 
 	exec_set_interactive();
 	ctx->current_line = NULL;
-	pstr = readline(MS_PROMPT);
+	pstr = ms_prompt();
 	while (pstr != NULL)
 	{
 		_exec_loop_handle_signal(ctx);
@@ -103,7 +103,7 @@ void	exec_loop(
 		}
 		free(ctx->current_line);
 		ctx->current_line = NULL;
-		pstr = readline(MS_PROMPT);
+		pstr = ms_prompt();
 	}
 	free(ctx->current_line);
 }
