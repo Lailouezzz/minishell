@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/20 08:59:21 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/20 13:12:41 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void	exec_loop(
 
 	exec_set_interactive();
 	ctx->current_line = NULL;
-	pstr = ms_prompt();
+	pstr = ms_prompt(ctx);
 	while (pstr != NULL)
 	{
 		_exec_loop_handle_signal(ctx);
@@ -103,7 +103,7 @@ void	exec_loop(
 		}
 		free(ctx->current_line);
 		ctx->current_line = NULL;
-		pstr = ms_prompt();
+		pstr = ms_prompt(ctx);
 	}
 	free(ctx->current_line);
 }
