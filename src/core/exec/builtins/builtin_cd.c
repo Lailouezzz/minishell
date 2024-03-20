@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/16 10:30:43 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/20 13:38:45 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,5 +163,5 @@ static t_ms_error	_change_pwd(
 	if (rollback && error == MS_OK)
 		dprintf(STDOUT_FILENO, "%s\n",
 			env_ctx_get_variable(ctx->env_ctx, ENV_VAR_PWD));
-	return (free(old_pwd), error);
+	return (env_set_code(ctx->env_ctx, 0), free(old_pwd), error);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_unset.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/01 00:16:36 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/20 13:40:42 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ t_ms_error	builtin_unset(
 		}
 		error = env_unset_var(&ctx->env_ctx->env, *argv++);
 		if (error)
-			return (env_set_code(ctx->env_ctx, -1), error);
+			return (env_set_code(ctx->env_ctx, 1), error);
 	}
 	return (env_set_code(ctx->env_ctx, should_fail));
 }

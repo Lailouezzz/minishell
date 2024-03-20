@@ -6,7 +6,7 @@
 /*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 13:13:49 by amassias          #+#    #+#             */
-/*   Updated: 2024/03/12 19:27:47 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/20 13:40:23 by amassias         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ t_ms_error	builtin_export(
 			continue ;
 		}
 		if (error != MS_OK)
-			return (env_set_code(ctx->env_ctx, -1), error);
+			return (env_set_code(ctx->env_ctx, 1), error);
 	}
 	return (env_set_code(ctx->env_ctx, should_fail));
 }
@@ -131,7 +131,7 @@ static t_ms_error	_show_envp(
 		++count;
 	sorted = (char **) malloc(sizeof(char *) * count);
 	if (sorted == NULL)
-		return (MS_BAD_ALLOC);
+		return (env_set_code(ctx->env_ctx, 1), MS_BAD_ALLOC);
 	ft_memcpy(sorted, envp, sizeof(char *) * count);
 	ft_qsort(sorted, count, sizeof(char *), (t_comparator)_string_comparator);
 	i = 0;
