@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 01:15:15 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/20 13:12:26 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/20 13:57:29 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,10 @@ t_ms_error		exec_exec(
 					);
 
 void			exec_loop(
+					t_exec_ctx *ctx
+					);
+
+t_ms_error		exec_loop_exec(
 					t_exec_ctx *ctx
 					);
 

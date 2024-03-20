@@ -6,7 +6,7 @@
 /*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 06:12:13 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/15 00:41:56 by ale-boud         ###   ########.fr       */
+/*   Updated: 2024/03/20 13:59:47 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,14 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-static void	_setup_parser_ctx(
-				t_lr_parser_ctx *parser_ctx
-				);
+static void				_setup_parser_ctx(
+							t_lr_parser_ctx *parser_ctx
+							);
+
+noreturn static void	_exec_command(
+							char *command,
+							t_exec_ctx *ctx
+							);
 
 // ************************************************************************** //
 // *                                                                        * //
@@ -57,7 +62,7 @@ static void	_setup_parser_ctx(
 int	main(int argc, char **argv, char **envp)
 {
 	t_lr_parser_ctx	parser_ctx;
-	t_exec_ctx		ex_ctx;
+	t_exec_ctx		ctx;
 	t_env_ctx		env_ctx;
 
 	(void)argc;
@@ -67,8 +72,16 @@ int	main(int argc, char **argv, char **envp)
 		ft_putstr_fd("minishell: fatal error.\n", STDERR_FILENO);
 		return (EXIT_FAILURE);
 	}
-	exec_init(&ex_ctx, &env_ctx, &parser_ctx);
-	exec_loop(&ex_ctx);
+	exec_init(&ctx, &env_ctx, &parser_ctx);
+	if (argc == 3 && ft_strncmp("-c", argv[1], 2) == 0)
+		_exec_command(argv[2], &ctx);
+	else if (argc == 1)
+		exec_loop(&ctx);
+	else
+	{
+		ft_putstr_fd("minishell: invalid argument.\n", STDERR_FILENO);
+		env_ctx.current_code = 1;
+	}
 	env_ctx_destroy(&env_ctx);
 	rl_clear_history();
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
@@ -92,4 +105,17 @@ static void	_setup_parser_ctx(
 	parser_ctx->goto_table = (t_lr_state_id *)g_lr_goto_table;
 	parser_ctx->prod_cb = (t_lr_prod_cb *)g_prod_cbs;
 	parser_ctx->token_free_cbs = (t_lr_token_free_cb *)g_tok_free_cbs;
+}
+
+noreturn static void	_exec_command(
+							char *command,
+							t_exec_ctx *ctx
+							)
+{
+	ctx->current_line = ft_strdup(command);
+	if (ctx->current_line == NULL)
+		exec_cleanup_exit(ctx, MS_STATUS_FAILURE);
+	if (exec_loop_exec(ctx) != MS_OK)
+		exec_cleanup_exit(ctx, MS_STATUS_FAILURE);
+	exec_cleanup_exit(ctx, ctx->env_ctx->current_code);
 }

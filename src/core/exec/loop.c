@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   loop.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amassias <amassias@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: ale-boud <ale-boud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 03:27:07 by ale-boud          #+#    #+#             */
-/*   Updated: 2024/03/20 13:12:41 by amassias         ###   ########.fr       */
+/*   Updated: 2024/03/20 13:58:44 by ale-boud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,6 @@
 // *                                                                        * //
 // ************************************************************************** //
 
-static t_ms_error	_exec_loop_exec(
-						t_exec_ctx *ctx
-						);
-
 static t_ms_error	_exec_loop_parse(
 						t_exec_ctx *ctx,
 						char **pstr
@@ -97,7 +93,7 @@ void	exec_loop(
 		if (*pstr != '\0')
 		{
 			add_history(ctx->current_line);
-			r = _exec_loop_exec(ctx);
+			r = exec_loop_exec(ctx);
 			if (r != MS_OK && r != MS_SYNTAX_ERROR && r != MS_EMPTY_COMMAND)
 				break ;
 		}
@@ -108,15 +104,9 @@ void	exec_loop(
 	free(ctx->current_line);
 }
 
-// ************************************************************************** //
-// *                                                                        * //
-// * Helper function definition.                                            * //
-// *                                                                        * //
-// ************************************************************************** //
-
-static	t_ms_error	_exec_loop_exec(
-						t_exec_ctx *ctx
-						)
+t_ms_error	exec_loop_exec(
+				t_exec_ctx *ctx
+				)
 {
 	t_ms_error		r;
 	char			*pstr;
@@ -142,6 +132,12 @@ static	t_ms_error	_exec_loop_exec(
 		return (MS_FATAL);
 	return (MS_OK);
 }
+
+// ************************************************************************** //
+// *                                                                        * //
+// * Helper function definition.                                            * //
+// *                                                                        * //
+// ************************************************************************** //
 
 static	t_ms_error	_exec_loop_parse(
 						t_exec_ctx *ctx,
