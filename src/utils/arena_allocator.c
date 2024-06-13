@@ -6,7 +6,7 @@
 /*   By: Antoine Massias <massias.antoine.pro@gm    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 14:12:11 by Antoine Mas       #+#    #+#             */
-/*   Updated: 2024/06/13 14:43:45 by Antoine Mas      ###   ########.fr       */
+/*   Updated: 2024/06/13 15:37:49 by Antoine Mas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ void	*arena_allocator_alloc(
 			size_t size
 			)
 {
-	struct s_arena_allocator	*new_page;
-	void						*res;
+	struct s_arena_allocator_page	*new_page;
+	void							*res;
 
 	if (allocator->current_page->remaining < size)
 	{
@@ -89,7 +89,8 @@ void	arena_allocator_destroy(
 {
 	if (allocator_ptr == NULL)
 		return ;
-	_destroy_page(&(*allocator_ptr)->first_page);
+	_destroy_page((*allocator_ptr)->first_page.next);
+	free(*allocator_ptr);
 	*allocator_ptr = NULL;
 }
 
@@ -106,8 +107,9 @@ static struct s_arena_allocator_page	*_create_new_page(
 	struct s_arena_allocator_page	*page;
 	size_t							actual_size;
 
-	actual_size = (size + ARENA_ALLOC_MIN_SIZE - 1) / ARENA_ALLOC_MIN_SIZE;
-	page = malloc(sizeof(*page) + actual_size);
+	actual_size = size + ARENA_ALLOC_MIN_SIZE - 1;
+	actual_size = actual_size - actual_size % ARENA_ALLOC_MIN_SIZE;
+	page = malloc(sizeof(*page) + actual_size * ARENA_ALLOC_MIN_SIZE);
 	if (page == NULL)
 		return (NULL);
 	*page = (struct s_arena_allocator_page){
