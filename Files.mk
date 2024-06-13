@@ -13,8 +13,9 @@ FILES	=																	\
 	tokenizer/lr_token_list tokenizer/tokenize tokenizer/tokenizer_dollar	\
 	tokenizer/tokenizer_io_pipe_and_or tokenizer/tokenizer_word				\
 	tokenizer/generator/bracket tokenizer/generator/word_io_and_or_pipe_end	\
-	tokenizer/generator/free_cb utils/arena_allocator utils/dyn_str			\
-	utils/ft_count_if core/env/destroy core/env/init core/env/set			\
+	tokenizer/generator/free_cb utils/dyn_str utils/ft_count_if				\
+	utils/arena_allocator/destroy utils/arena_allocator/create				\
+	utils/arena_allocator/alloc core/env/destroy core/env/init core/env/set	\
 	core/env/get core/env/helper core/env/restore_termios core/exec/init	\
 	core/exec/sig_handler core/exec/command_runner							\
 	core/exec/command_token_executor core/exec/loop core/exec/_utils2		\

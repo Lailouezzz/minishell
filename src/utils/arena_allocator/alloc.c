@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   arena_allocator.c                                  :+:      :+:    :+:   */
+/*   alloc.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: Antoine Massias <massias.antoine.pro@gm    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/13 14:12:11 by Antoine Mas       #+#    #+#             */
-/*   Updated: 2024/06/13 15:37:49 by Antoine Mas      ###   ########.fr       */
+/*   Created: 2024/06/13 16:43:36 by Antoine Mas       #+#    #+#             */
+/*   Updated: 2024/06/13 16:45:58 by Antoine Mas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file arena_allocator.c
+ * @file alloc.c
  * @author Antoine Massias (amassias@student.42lehavre.fr)
  * @date 2024-06-13
  * @copyright Copyright (c) 2024
@@ -25,6 +25,8 @@
 
 #include "utils/arena_allocator.h"
 
+#include <libft.h>
+
 /* ************************************************************************** */
 /*                                                                            */
 /* Helper prototypes                                                          */
@@ -35,31 +37,11 @@ static struct s_arena_allocator_page	*_create_new_page(
 											size_t size
 											);
 
-static void								_destroy_page(
-											struct s_arena_allocator_page *page
-											);
-
 /* ************************************************************************** */
 /*                                                                            */
 /* Header implementation                                                      */
 /*                                                                            */
 /* ************************************************************************** */
-
-t_arena_allocator	*arena_allocator_create(void)
-{
-	t_arena_allocator	*allocator;
-
-	allocator = malloc(sizeof(t_arena_allocator) + ARENA_ALLOC_MIN_SIZE);
-	if (allocator == NULL)
-		return (NULL);
-	*allocator = (t_arena_allocator){
-		.current_page = &allocator->first_page,
-		.first_page.remaining = ARENA_ALLOC_MIN_SIZE,
-		.first_page.allocated = 0,
-		.first_page.next = NULL
-	};
-	return (allocator);
-}
 
 void	*arena_allocator_alloc(
 			t_arena_allocator *allocator,
@@ -67,8 +49,9 @@ void	*arena_allocator_alloc(
 			)
 {
 	struct s_arena_allocator_page	*new_page;
-	void							*res;
+	char							*res;
 
+	size += sizeof(size_t);
 	if (allocator->current_page->remaining < size)
 	{
 		new_page = _create_new_page(size);
@@ -80,18 +63,31 @@ void	*arena_allocator_alloc(
 	res = allocator->current_page->buffer + allocator->current_page->allocated;
 	allocator->current_page->remaining -= size;
 	allocator->current_page->allocated += size;
-	return (res);
+	*(size_t *)res = size - sizeof(size_t);
+	return (res + sizeof(size_t));
 }
 
-void	arena_allocator_destroy(
-			t_arena_allocator **allocator_ptr
+void	*arena_allocator_realloc(
+			t_arena_allocator *allocator,
+			void *ptr,
+			size_t new_size
 			)
 {
-	if (allocator_ptr == NULL)
-		return ;
-	_destroy_page((*allocator_ptr)->first_page.next);
-	free(*allocator_ptr);
-	*allocator_ptr = NULL;
+	void	*res;
+	size_t	old_size;
+
+	if (new_size == 0)
+		return (NULL);
+	res = arena_allocator_alloc(allocator, new_size);
+	if (res == NULL)
+		return (NULL);
+	if (ptr == NULL)
+		return (res);
+	old_size = *((char *)res - sizeof(size_t));
+	if (old_size < new_size)
+		new_size = old_size;
+	ft_memcpy(res, ptr, new_size);
+	return (res);
 }
 
 /* ************************************************************************** */
@@ -118,14 +114,4 @@ static struct s_arena_allocator_page	*_create_new_page(
 		.next = NULL,
 	};
 	return (page);
-}
-
-static void	_destroy_page(
-				struct s_arena_allocator_page *page
-				)
-{
-	if (page == NULL)
-		return ;
-	_destroy_page(page->next);
-	free(page);
 }

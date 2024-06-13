@@ -1,24 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   arena_allocator.h                                  :+:      :+:    :+:   */
+/*   destroy.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: Antoine Massias <massias.antoine.pro@gm    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/13 14:00:19 by Antoine Mas       #+#    #+#             */
-/*   Updated: 2024/06/13 16:35:59 by Antoine Mas      ###   ########.fr       */
+/*   Created: 2024/06/13 16:44:46 by Antoine Mas       #+#    #+#             */
+/*   Updated: 2024/06/13 16:45:21 by Antoine Mas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
- * @file arena_allocator.h
+ * @file destroy.c
  * @author Antoine Massias (amassias@student.42lehavre.fr)
  * @date 2024-06-13
  * @copyright Copyright (c) 2024
  */
-
-#ifndef ARENA_ALLOCATOR_H
-# define ARENA_ALLOCATOR_H
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -26,59 +23,47 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include <stdlib.h>
+#include "utils/arena_allocator.h"
 
 /* ************************************************************************** */
 /*                                                                            */
-/* Defines                                                                    */
+/* Helper prototypes                                                          */
 /*                                                                            */
 /* ************************************************************************** */
 
-# ifndef ARENA_ALLOC_MIN_SIZE
-#  define ARENA_ALLOC_MIN_SIZE 4096
-# endif
+static void	_destroy_page(
+				struct s_arena_allocator_page *page
+				);
 
 /* ************************************************************************** */
 /*                                                                            */
-/* Structures                                                                 */
+/* Header implementation                                                      */
 /*                                                                            */
 /* ************************************************************************** */
 
-struct s_arena_allocator_page
+void	arena_allocator_destroy(
+			t_arena_allocator **allocator_ptr
+			)
 {
-	size_t							remaining;
-	size_t							allocated;
-	struct s_arena_allocator_page	*next;
-	char							buffer[];
-};
+	if (allocator_ptr == NULL)
+		return ;
+	_destroy_page((*allocator_ptr)->first_page.next);
+	free(*allocator_ptr);
+	*allocator_ptr = NULL;
+}
 
-typedef struct s_arena_allocator
+/* ************************************************************************** */
+/*                                                                            */
+/* Helper implementation                                                      */
+/*                                                                            */
+/* ************************************************************************** */
+
+static void	_destroy_page(
+				struct s_arena_allocator_page *page
+				)
 {
-	struct s_arena_allocator_page	*current_page;
-	struct s_arena_allocator_page	first_page;
-}	t_arena_allocator;
-
-/* ************************************************************************** */
-/*                                                                            */
-/* Header prototypes                                                          */
-/*                                                                            */
-/* ************************************************************************** */
-
-t_arena_allocator	*arena_allocator_create(void);
-
-void				*arena_allocator_alloc(
-						t_arena_allocator *allocator,
-						size_t size
-						);
-
-void				*arena_allocator_realloc(
-						t_arena_allocator *allocator,
-						void *ptr,
-						size_t new_size
-						);
-
-void				arena_allocator_destroy(
-						t_arena_allocator **allocator_ptr
-						);
-
-#endif
+	if (page == NULL)
+		return ;
+	_destroy_page(page->next);
+	free(page);
+}
