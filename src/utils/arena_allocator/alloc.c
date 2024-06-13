@@ -6,7 +6,7 @@
 /*   By: Antoine Massias <massias.antoine.pro@gm    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 16:43:36 by Antoine Mas       #+#    #+#             */
-/*   Updated: 2024/06/13 16:45:58 by Antoine Mas      ###   ########.fr       */
+/*   Updated: 2024/06/13 20:13:05 by Antoine Mas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	*arena_allocator_realloc(
 		return (NULL);
 	if (ptr == NULL)
 		return (res);
-	old_size = *((char *)res - sizeof(size_t));
+	old_size = *((char *)ptr - sizeof(size_t));
 	if (old_size < new_size)
 		new_size = old_size;
 	ft_memcpy(res, ptr, new_size);
