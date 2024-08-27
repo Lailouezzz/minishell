@@ -11,6 +11,7 @@ The goal of this project is to make a rather simple shell. See the list of [feat
 
 - [microparser](#microparser)
 - [libft](#libft)
+- [readline](#readline)
 
 ### Microparser
 
@@ -20,7 +21,12 @@ The goal of this project is to make a rather simple shell. See the list of [feat
 
 [libft](https://github.com/Dyamen1411/42-libft-full), the full libft (highly documented) made by [amassias](https://github.com/Dyamen1411).
 
+### Readline
+
+[readline](https://www.gnu.org/software/readline), command line edition, history support ([GNU](www.gnu.org))
+
 ---
+
 # Minishell
 
 ## Build
