@@ -1,0 +1,27 @@
+# Minishell
+bin/minishell
+minishell
+
+# Build/Doc
+build/
+doc/html
+doc/man
+
+# Buildsystem
+Makefile.cfg
+
+# AMASSIAS
+a.out
+
+# env
+.git*
+.vscode/
+
+# debug
+readline.sup
+
+# doc
+doc/
+
+# Readme
+README.md

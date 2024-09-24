@@ -76,8 +76,24 @@ cleandoc:
 	$(call rmsg,Removing the documentation (doc/html doc/man))
 	$(call qcmd,$(RM) -rf doc/html doc/man)
 
+docker-build: all-minishell
+	$(call omsg,Building Docker image...)
+	$(call bcmd,docker,build,docker build -t $(IMAGE_NAME) -f $(DOCKERFILE) $(DOCKER_BUILD_CONTEXT))
+
+docker-build-no-cache: all-minishell
+	$(call omsg,Building Docker image...)
+	$(call bcmd,docker,build,docker build --no-cache -t $(IMAGE_NAME) -f $(DOCKERFILE) $(DOCKER_BUILD_CONTEXT))
+
+docker-run:
+	$(call omsg,Running Docker container...)
+	$(call qcmd,docker run --rm -it --name $(CONTAINER_NAME) $(IMAGE_NAME))
+
+docker-rm-image:
+	$(call rmsg,Removing Docker image...)
+	$(call qcmd,docker rmi $(IMAGE_NAME))
+
 .PHONY: all clean mclean fclean cleanlibs fcleanlibs mrproper re all-doc \
-	cleandoc bonus
+	cleandoc bonus docker-build docker-build-no-cache docker-run docker-rm-image
 
 # ---
 # Check configuration
