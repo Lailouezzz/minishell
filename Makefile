@@ -76,11 +76,11 @@ cleandoc:
 	$(call rmsg,Removing the documentation (doc/html doc/man))
 	$(call qcmd,$(RM) -rf doc/html doc/man)
 
-docker-build: all-minishell
+docker-build:
 	$(call omsg,Building Docker image...)
 	$(call bcmd,docker,build,docker build -t $(IMAGE_NAME) -f $(DOCKERFILE) $(DOCKER_BUILD_CONTEXT))
 
-docker-build-no-cache: all-minishell
+docker-build-no-cache:
 	$(call omsg,Building Docker image...)
 	$(call bcmd,docker,build,docker build --no-cache -t $(IMAGE_NAME) -f $(DOCKERFILE) $(DOCKER_BUILD_CONTEXT))
 
